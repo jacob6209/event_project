@@ -1,0 +1,15 @@
+# Virtual environment
+venv/
+env/
+*.env
+
+# Django
+*.log
+staticfiles/
+media/
+db.sqlite3
+local_settings.py
+
+# IDE files
+.vscode/
+.idea/
