@@ -1,44 +1,106 @@
 from django.shortcuts import render, redirect
-from .forms import ParticipantForm
 
 from django.forms import inlineformset_factory
 from .models import Registration, Participant
-from .forms import RegistrationForm, ParticipantForm
+
 
 
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm, ParticipantForm
 from .models import Registration, Participant
 
 def registration_view(request):
-    if request.method == "POST":
-        reg_form = RegistrationForm(request.POST)
-        participant_forms_data = request.POST.getlist('participant_data')  # JSON string for each participant
-        
-        if reg_form.is_valid():
-            course = reg_form.cleaned_data['course']
+    pass
 
-            import json
-            for pdata_json in participant_forms_data:
-                pdata = json.loads(pdata_json)
-                participant = Participant.objects.create(
-                    full_name=pdata['full_name'],
-                    national_id=pdata['national_id'],
-                    relation=pdata['relation'],
-                    priority_id=pdata['priority'] if pdata['priority'] else None
-                )
-                Registration.objects.create(course=course, participant=participant)
+from django.shortcuts import render, redirect
+from .forms import ParticipantFormSet, RegistrationForm, FoodReservationFormSet
+from .models import Participant, Registration
 
-            return redirect('success')
+def full_registration_view(request):
+    if request.method == 'POST':
+        registration_form = RegistrationForm(request.POST)
+        participant_formset = ParticipantFormSet(request.POST)
+        participant_food_pairs = []
+
+        if registration_form.is_valid() and participant_formset.is_valid():
+            registration = registration_form.save(commit=False)
+            participants = participant_formset.save(commit=False)
+            valid = True
+
+            # Create a food formset for each participant
+            for i, participant_form in enumerate(participant_formset.forms):
+                prefix = f'food-{i}'
+                food_formset = FoodReservationFormSet(request.POST, instance=participants[i], prefix=prefix)
+                participant_food_pairs.append((participant_form, food_formset))
+                if not food_formset.is_valid():
+                    valid = False
+
+            if valid:
+                # Save the registration first
+                registration.save()
+
+                # Save participants and their food formsets
+                for participant, food_formset in zip(participants, [f[1] for f in participant_food_pairs]):
+                    participant.registration = registration  # link to registration
+                    participant.save()
+                    food_formset.instance = participant
+                    food_formset.save()
+                
+                return redirect('success')
 
     else:
-        reg_form = RegistrationForm()
+        registration_form = RegistrationForm()
+        participant_formset = ParticipantFormSet(queryset=Participant.objects.none())
+        participant_food_pairs = []
+        for i, participant_form in enumerate(participant_formset.forms):
+            prefix = f'food-{i}'
+            food_formset = FoodReservationFormSet(prefix=prefix)
+            participant_food_pairs.append((participant_form, food_formset))
 
-    participant_form = ParticipantForm()
-    return render(request, 'registration_form.html', {
-        'reg_form': reg_form,
-        'participant_form': participant_form
+    return render(request, 'full_registration.html', {
+        'registration_form': registration_form,
+        'participant_formset': participant_formset,
+        'participant_food_pairs': participant_food_pairs,
     })
+
+
+
+
+
+
+
+
+
+
+# js solution
+# def registration_view(request):
+#     if request.method == "POST":
+#         reg_form = RegistrationForm(request.POST)
+#         participant_forms_data = request.POST.getlist('participant_data')  # JSON string for each participant
+        
+#         if reg_form.is_valid():
+#             course = reg_form.cleaned_data['course']
+
+#             import json
+#             for pdata_json in participant_forms_data:
+#                 pdata = json.loads(pdata_json)
+#                 participant = Participant.objects.create(
+#                     full_name=pdata['full_name'],
+#                     national_id=pdata['national_id'],
+#                     relation=pdata['relation'],
+#                     priority_id=pdata['priority'] if pdata['priority'] else None
+#                 )
+#                 Registration.objects.create(course=course, participant=participant)
+
+#             return redirect('success')
+
+#     else:
+#         reg_form = RegistrationForm()
+
+#     participant_form = ParticipantForm()
+#     return render(request, 'registration_form.html', {
+#         'reg_form': reg_form,
+#         'participant_form': participant_form
+#     })
 
 # solution 1
 # Create an inline formset

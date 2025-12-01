@@ -1,0 +1,28 @@
+<form method="POST">
+    {% csrf_token %}
+    
+    <fieldset>
+        <legend>Course Registration</legend>
+        {{ registration_form.as_p }}
+    </fieldset>
+    
+    <fieldset>
+        <legend>Participants & Food Selection</legend>
+        {{ participant_formset.management_form }}
+        
+        {% for participant_form, food_formset in participant_food_pairs %}
+            <div class="participant-card">
+                <h4>Participant {{ forloop.counter }}</h4>
+                {{ participant_form.as_p }}
+                
+                <h5>Food Selection</h5>
+                {{ food_formset.management_form }}
+                {% for food_form in food_formset %}
+                    {{ food_form.as_p }}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </fieldset>
+
+    <button type="submit">Submit All</button>
+</form>

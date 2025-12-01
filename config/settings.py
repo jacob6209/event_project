@@ -38,6 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    ##Third-party apps
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+
     # local app
     'event',
     'accounts',
@@ -55,12 +60,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Redirect URLs after login/logout
+LOGIN_REDIRECT_URL = '/'  
+LOGOUT_REDIRECT_URL= '/'
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [str(BASE_DIR.joinpath("templates"))],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

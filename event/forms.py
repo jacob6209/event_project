@@ -1,36 +1,38 @@
 
+
 from django import forms
-from .models import Participant,Registration
-
-
-# solution 2
-class RegistrationForm(forms.ModelForm):
-    class Meta:
-        model = Registration
-        fields = ['course']  # only select course here
-        widgets = {
-            'course': forms.Select(attrs={'class': 'form-control'}),
-        }
+from django.forms import inlineformset_factory, formset_factory,modelformset_factory
+from .models import Participant, Registration, FoodReservation
 
 class ParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
         fields = ['full_name', 'national_id', 'relation', 'priority']
-        widgets = {
-            'full_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'national_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'relation': forms.Select(attrs={'class': 'form-control'}),
-            'priority': forms.Select(attrs={'class': 'form-control'}),
-        }
 
+class RegistrationForm(forms.ModelForm):
+    class Meta:
+        model = Registration
+        fields = ['course',]
+       
 
-# selotion 1
-# class ParticipantForm(forms.ModelForm):
-#     class Meta:
-#         model = Participant
-#         fields = ['full_name', 'national_id', 'relation']
+class FoodReservationForm(forms.ModelForm):
+    class Meta:
+        model = FoodReservation
+        fields = ['meal_type', 'count']
 
-# class RegistrationForm(forms.ModelForm):
-#     class Meta:
-#         model = Registration
-#         fields = '__all__'
+ParticipantFormSet = modelformset_factory(
+    Participant,
+    form=ParticipantForm,
+    extra=1,
+    can_delete=True
+)
+
+# ParticipantFormSet = formset_factory(ParticipantForm, extra=1, can_delete=True)
+
+FoodReservationFormSet = inlineformset_factory(
+    Registration,
+    FoodReservation,
+    form=FoodReservationForm,
+    extra=1,
+    can_delete=True
+)

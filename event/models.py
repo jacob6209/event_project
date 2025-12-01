@@ -15,7 +15,7 @@ class Event(models.Model):
     is_multi_course = models.BooleanField(default=False)
     rules = models.TextField(blank=True)
     has_food = models.BooleanField(default=False)
-    allows_guests = models.BooleanField(default=False)     # FIXED
+    allows_guests = models.BooleanField(default=False)     
     requires_approval = models.BooleanField(default=False)
 
     def __str__(self):
@@ -50,7 +50,7 @@ class Priority(models.Model):
 class Participant(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
     full_name = models.CharField(max_length=200)
-    national_id = models.CharField(max_length=20, unique=True)
+    national_id = models.CharField(max_length=20)
     relation = models.CharField(
         max_length=20,
         choices=[
@@ -64,6 +64,9 @@ class Participant(models.Model):
 
     def __str__(self):
         return self.full_name
+    
+
+        
 
 
 class Registration(models.Model):
@@ -81,6 +84,9 @@ class Registration(models.Model):
 
     def __str__(self):
         return f"{self.course}"
+    
+    class Meta:
+        unique_together = ('participant', 'course')
 
 
 class FoodReservation(models.Model):
