@@ -1,0 +1,53 @@
+{% extends "_base.html" %}
+
+{% block title %}Home | Event System{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 40px auto; text-align: center; direction: rtl;">
+
+    <h1>.به سیستم ثبت نام رویدادهای رفاهی شرکت نفت و گاز خوش آمدید</h1>
+
+    <p style="margin-top: 15px; font-size: 18px; color: #555;">
+        ثبت و مدیریت رویدادها رفاهی و تفریحی  
+        {% comment %} Register for events, manage your profile, and view your participations easily. {% endcomment %}
+    </p>
+
+    <div style="margin-top: 30px;">
+
+        {% comment %} {% if user.is_authenticated %}
+            <!-- User Greeting with Inline Logout -->
+            <p style="font-size: 19px; margin-bottom: 20px; text-align: center; display: inline-flex; align-items: center; gap: 8px;">
+                <span><strong>{{ user.username }}</strong> سلام</span>
+                
+                <!-- Inline Logout Form -->
+                <form method="POST" action="{% url 'account_logout' %}" style="display: inline-flex;">
+                    {% csrf_token %}
+                    <button type="submit" 
+                            style="padding: 6px 12px; background: #b33; color: #fff; 
+                                   border-radius: 4px; border: none; cursor: pointer; display: inline-block;">
+                        Logout
+                    </button>
+                </form>
+            </p>
+
+        {% else %}
+            <!-- Login/Signup Buttons -->
+            <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                <a href="/accounts/login/" 
+                   style="padding: 12px 25px; background: #007bff; color: white;
+                          border-radius: 6px; text-decoration: none; display: inline-block; text-align: center; cursor: pointer;">
+                    Login
+                </a>
+
+                <a href="/accounts/signup/"
+                   style="padding: 12px 25px; background: #28a745; color: white; 
+                          border-radius: 6px; text-decoration: none; display: inline-block; text-align: center; cursor: pointer;">
+                    Signup
+                </a>
+            </div>
+        {% endif %} {% endcomment %}
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Page Title{% endblock %}</title>
+
+    {% block head %}{% endblock %}
+
+    <style>
+        /* General */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            direction: rtl;  /* RTL for Persian */
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Navbar */
+        header {
+            width: 100%;
+            background: linear-gradient(to left, #3399ff, #1e90ff); /* smooth blue gradient */
+        }
+
+        header nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-start; /* links start from right in RTL */
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px; /* space between links */
+            margin: 0;
+            padding: 0;
+        }
+
+        header nav ul li a,
+        header nav ul li button {
+            color: white;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-weight: bold;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        header nav ul li a:hover,
+        header nav ul li button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Logout button styling */
+        header nav ul li form button {
+            background-color: #b33;
+            color: white;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            text-align: right; /* Right align for Persian */
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f1f1f1;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">خانه</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="#">
+                        کاربر فعال 
+                        {% if user.first_name %}
+                            {{ user.first_name }}
+                        {% else %}
+                            {{ user.username }}
+                        {% endif %}
+                    </a></li>
+                    <li>
+                        <form method="POST" action="{% url 'account_logout' %}" style="display:inline-block; margin:0;">
+                            {% csrf_token %}
+                            <button type="submit">خروج</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'account_login' %}">ورود</a></li>
+                    <li><a href="{% url 'account_signup' %}">ثبت نام</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        <h2>صفحه محتوا</h2>
+        <p>این جایگاه محتوای صفحه است.</p>
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 POGC. کلیه حقوق محفوظ است.</p>
+    </footer>
+
+</body>
+</html>

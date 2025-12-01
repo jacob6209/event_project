@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
+    
 
     # local app
     'event',
@@ -50,19 +51,24 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
+SITE_ID = 1
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # for AllAuth
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 # Redirect URLs after login/logout
-LOGIN_REDIRECT_URL = '/'  
-LOGOUT_REDIRECT_URL= '/'
+LOGIN_REDIRECT_URL = 'index'  
+LOGOUT_REDIRECT_URL= 'index'
+LOGIN_URL = 'account_login'
+
 
 ROOT_URLCONF = 'config.urls'
 
