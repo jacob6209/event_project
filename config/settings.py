@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     ##Third-party apps
+    'crispy_forms',
+    'crispy_bootstrap5',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
+    
     
 
     # local app
@@ -52,6 +55,9 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = "accounts.CustomUser"
 
 SITE_ID = 1
+# crispy Setting:
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

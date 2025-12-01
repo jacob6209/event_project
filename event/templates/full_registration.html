@@ -1,9 +1,19 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+
+
+
+{% block title%}فرم ثبت  نام رویداد {% endblock %}
+{% block head %}
+{% endblock %}
+
+{% block content %}
 <form method="POST">
     {% csrf_token %}
     
     <fieldset>
         <legend>Course Registration</legend>
-        {{ registration_form.as_p }}
+        {{ registration_form| crispy }}
     </fieldset>
     
     <fieldset>
@@ -26,3 +36,4 @@
 
     <button type="submit">Submit All</button>
 </form>
+{% endblock %}
