@@ -1,4 +1,5 @@
 {% extends "_base.html" %}
+{% load crispy_forms_tags%}
 
 {% block title%} Login Page {% endblock %}
 {% block head %}
@@ -6,7 +7,7 @@
 {% block content %}
 <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}  <!-- Allauth's login form -->
+    {{ form | crispy }} 
     <button type="submit">Login</button>
 </form>
 <p>Don't have an account? <a href="{% url 'account_signup' %}">Sign up here</a></p>
