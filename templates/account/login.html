@@ -1,18 +1,63 @@
 {% extends "_base.html" %}
-{% load crispy_forms_tags%}
+{% load static %}
 
-{% block title%} Login Page {% endblock %}
+{% block title %}صفحه ورود{% endblock %}
+
 {% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
 {% endblock %}
+
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
-    {{ form | crispy }} 
-    <button type="submit">Login</button>
-</form>
-<p>Don't have an account? <a href="{% url 'account_signup' %}">Sign up here</a></p>
+<div class="login-page-container">
+    <div class="login-form-container">
+        <h2 class="login-title">ورود به سامانه</h2>
+
+        {% if form.errors %}
+        <div class="error-message">
+            نام کاربری یا رمز عبور اشتباه است. لطفاً دوباره تلاش کنید.
+        </div>
+        {% endif %}
+
+        <form method="POST" class="login-form">
+            {% csrf_token %}
+            
+            <!-- Username/Email field -->
+            <div class="form-group">
+                <input type="text" 
+                       name="login" 
+                       placeholder="نام کاربری یا ایمیل" 
+                       required 
+                       autofocus
+                       id="id_login">
+            </div>
+            
+            <!-- Password field -->
+            <div class="form-group">
+                <input type="password" 
+                       name="password" 
+                       placeholder="رمز عبور" 
+                       required
+                       id="id_password">
+            </div>
+            
+            <!-- Remember me checkbox - CORRECT RTL (Text right, Checkbox left) -->
+            <div class="remember-me-container">
+                <label class="remember-me-label">
+                    مرا به خاطر بسپار
+                    <input type="checkbox" name="remember" class="remember-me-checkbox" id="id_remember">
+                </label>
+            </div>
+
+            <button type="submit" class="login-submit-btn">ورود به سامانه</button>
+        </form>
+
+        <div class="register-link">
+            حساب ندارید؟ 
+            <a href="{% url 'account_signup' %}">اینجا ثبت نام کنید</a>
+        </div>
+        
+    </div>
+</div>
 {% endblock %}
 
-{% block footer%}
-
-{% endblock %}
+{% block footer %}{% endblock %}

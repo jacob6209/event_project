@@ -1,39 +1,77 @@
 {% extends "_base.html" %}
-{% load crispy_forms_tags %}
+{% load static %}
+{% load event_tags %}
 
-
-
-{% block title%}فرم ثبت  نام رویداد {% endblock %}
+{% block title %}فرم ثبت نام رویداد{% endblock %}
 {% block head %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% endblock %}
 
 {% block content %}
-<form method="POST">
-    {% csrf_token %}
-    
-    <fieldset>
-        <legend>Course Registration</legend>
-        {{ registration_form| crispy }}
-    </fieldset>
-    
-    <fieldset>
-        <legend>Participants & Food Selection</legend>
-        {{ participant_formset.management_form }}
+<div class="main-content" style="max-width: 800px; margin: 40px auto;">
+    <h2 class="page-title text-center mb-20">فرم ثبت نام دوره</h2>
+    <form method="POST" class="horizontal-form">
+        {% csrf_token %}
         
-        {% for participant_form, food_formset in participant_food_pairs %}
-            <div class="participant-card">
-                <h4>Participant {{ forloop.counter }}</h4>
-                {{ participant_form.as_p }}
+        <!-- Registration Form -->
+        <fieldset class="ltr-section">  
+            <div class="form-row">
+                <div class="form-group">
+                    {{ registration_form.course.label_tag }}
+                    {{ registration_form.course }}
+                </div>
+            </div>
+        </fieldset>
+        
+        <!-- Participant & Food -->
+        <fieldset>
+            {{ participant_formset.management_form }}
+            
+            {% for participant_form, food_formset in participant_food_pairs %}
+            <div class="participant-card horizontal-form">
+                <h4>شرکت کننده ({{ forloop.counter | number_to_farsi }})</h4>
                 
-                <h5>Food Selection</h5>
+                <!-- Participant fields in a row -->
+                <div class="participant-fields-row">
+                    <div class="form-group">
+                        {{ participant_form.full_name.label_tag }}
+                        {{ participant_form.full_name }}
+                    </div>
+                    <div class="form-group">
+                        {{ participant_form.national_id.label_tag }}
+                        {{ participant_form.national_id }}
+                    </div>
+                    <div class="form-group">
+                        {{ participant_form.relation.label_tag }}
+                        {{ participant_form.relation }}
+                    </div>
+                    <div class="form-group">
+                        {{ participant_form.priority.label_tag }}
+                        {{ participant_form.priority }}
+                    </div>
+                </div>
+                
+                <h5>غذا</h5>
                 {{ food_formset.management_form }}
+                
                 {% for food_form in food_formset %}
-                    {{ food_form.as_p }}
+                <div class="food-form form-row">
+                    <div class="form-group">
+                        {{ food_form.meal_type.label_tag }}
+                        {{ food_form.meal_type }}
+                    </div>
+                    <div class="form-group">
+                        {{ food_form.count.label_tag }}
+                        {{ food_form.count }}
+                    </div>
+                </div>
                 {% endfor %}
             </div>
-        {% endfor %}
-    </fieldset>
+            {% endfor %}
+        </fieldset>
 
-    <button type="submit">Submit All</button>
-</form>
+        <button type="submit" class="btn-submit">ارسال</button>
+    </form>
+</div>
 {% endblock %}

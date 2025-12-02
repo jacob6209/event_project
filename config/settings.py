@@ -151,3 +151,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # static file config
 STATIC_URL = "/static/"
 STATICFILES_DIRS=[str(BASE_DIR.joinpath('static'))]
+
+# AllAuth Settings
+ACCOUNT_FORMS = {
+    'login': 'accounts.forms.CustomLoginForm',
+}

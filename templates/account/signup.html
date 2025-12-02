@@ -1,12 +1,55 @@
 {% extends "_base.html" %}
-
-{% block title%} SignUp Page {% endblock %}
-{% block head %}
-{% endblock %}
+{% load static%}
 {% block content %}
-    {{form.as_p}}
-{% endblock %}
+<div style="
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 75vh;
+    padding: 20px;
+">
 
-{% block footer%}
+    <!-- Logo (Adjusted Size) -->
+    <img src="{% static 'icons/logo.gif' %}" 
+         alt="Logo" 
+         style="width: 200px; margin-bottom: 40px;">
 
+    <!-- Forbidden Message -->
+    <h2 style="
+        color: #c0392b;
+        font-weight: bold;
+        margin-bottom: 20px;
+        font-size: 26px;
+    ">
+        دسترسی به صفحه ثبت‌نام مجاز نیست
+    </h2>
+
+    <p style="
+        font-size: 18px;
+        max-width: 550px;
+        line-height: 2;
+        color: #444;
+        margin-bottom: 20px;
+    ">
+        کاربر گرامی، ایجاد حساب کاربری جدید برای کاربران عادی امکان‌پذیر نمی‌باشد.
+        در صورتی که نیاز به حساب کاربری دارید، لطفاً با مدیر سامانه تماس بگیرید تا دسترسی لازم برای شما فعال شود.
+    </p>
+
+    <div style="
+        font-size: 17px;
+        color: #333;
+        background: #eef6ff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: 1px solid #cce5ff;
+    ">
+        تماس با مدیر سامانه:
+        <span style="color: #0b5ed7; font-weight: bold;">
+            admin@example.com
+        </span>
+    </div>
+
+</div>
 {% endblock %}
