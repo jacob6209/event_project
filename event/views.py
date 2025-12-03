@@ -1,19 +1,8 @@
 from django.shortcuts import render, redirect
-
 from django.forms import inlineformset_factory
 from .models import Registration, Participant
 
-
-
-from django.shortcuts import render, redirect
-from .models import Registration, Participant
-
-def registration_view(request):
-    pass
-
-from django.shortcuts import render, redirect
 from .forms import ParticipantFormSet, RegistrationForm, FoodReservationFormSet
-from .models import Participant, Registration
 
 def full_registration_view(request):
     if request.method == 'POST':
@@ -29,28 +18,28 @@ def full_registration_view(request):
             # Create a food formset for each participant
             for i, participant_form in enumerate(participant_formset.forms):
                 prefix = f'food-{i}'
-                food_formset = FoodReservationFormSet(request.POST, instance=participants[i], prefix=prefix)
+                food_formset = FoodReservationFormSet(
+                    request.POST, instance=participants[i], prefix=prefix
+                )
                 participant_food_pairs.append((participant_form, food_formset))
                 if not food_formset.is_valid():
                     valid = False
 
             if valid:
-                # Save the registration first
-                registration.save()
+                registration.save()  # save registration if needed
 
-                # Save participants and their food formsets
                 for participant, food_formset in zip(participants, [f[1] for f in participant_food_pairs]):
-                    participant.registration = registration  # link to registration
-                    participant.save()
-                    food_formset.instance = participant
+                    participant.save()  # save participant first
+                    food_formset.instance = participant  # link food to participant
                     food_formset.save()
-                
+
                 return redirect('success')
 
     else:
         registration_form = RegistrationForm()
         participant_formset = ParticipantFormSet(queryset=Participant.objects.none())
         participant_food_pairs = []
+
         for i, participant_form in enumerate(participant_formset.forms):
             prefix = f'food-{i}'
             food_formset = FoodReservationFormSet(prefix=prefix)
@@ -61,13 +50,6 @@ def full_registration_view(request):
         'participant_formset': participant_formset,
         'participant_food_pairs': participant_food_pairs,
     })
-
-
-
-
-
-
-
 
 
 

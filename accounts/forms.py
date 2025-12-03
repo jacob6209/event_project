@@ -5,6 +5,7 @@ from django import forms
 
 
 class CustomLoginForm(LoginForm):
+   
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['login'].label = "نام کاربری یا ایمیل"

@@ -48,20 +48,21 @@ class PriorityAdmin(admin.ModelAdmin):
     ordering = ("level",)
 
 
-
+# Inline FoodReservations inside Registration
+class FoodReservationInline(admin.TabularInline):
+    model = FoodReservation
+    extra = 1
+    
 # Participant Admin
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
     list_display = ("id", "full_name", "national_id", "relation", "priority", "user")
     list_filter = ("relation", "priority")
     search_fields = ("full_name", "national_id")
+    inlines = [FoodReservationInline]
 
 
 
-# Inline FoodReservations inside Registration
-class FoodReservationInline(admin.TabularInline):
-    model = FoodReservation
-    extra = 1
 
 
 # Registration Admin
@@ -70,12 +71,12 @@ class RegistrationAdmin(admin.ModelAdmin):
     list_display = ("id", "participant", "course", "status", "registered_at")
     list_filter = ("status", "course")
     search_fields = ("participant__full_name", "course__title")
-    inlines = [FoodReservationInline]
+    
 
 
 
 # FoodReservation Admin
 @admin.register(FoodReservation)
 class FoodReservationAdmin(admin.ModelAdmin):
-    list_display = ("id", "registration", "meal_type", "count")
+    list_display = ("id", "participant", "meal_type", "count")
     list_filter = ("meal_type",)

@@ -67,6 +67,8 @@ class FoodReservationForm(forms.ModelForm):
             'count': forms.NumberInput(attrs={'placeholder': 'تعداد'}),
         }
 
+    
+
 
 # Create formset for Participants
 ParticipantFormSet = modelformset_factory(
@@ -78,7 +80,7 @@ ParticipantFormSet = modelformset_factory(
 
 # Create inline formset for FoodReservations
 FoodReservationFormSet = inlineformset_factory(
-    Registration,
+    Participant,
     FoodReservation,
     form=FoodReservationForm,
     extra=1,

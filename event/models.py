@@ -68,7 +68,6 @@ class Participant(models.Model):
 
         
 
-
 class Registration(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
@@ -97,7 +96,7 @@ class FoodReservation(models.Model):
         ('dinner', 'شام'),
     ]
     meal_type = models.CharField(max_length=20,default=MEAL_TYPE_CHOICES[0][0], choices=MEAL_TYPE_CHOICES)
-    registration = models.ForeignKey(Registration, on_delete=models.CASCADE, related_name="food_reservations")
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE, related_name="food_reservations")
     count = models.PositiveIntegerField(default=1)
 
 
