@@ -1,5 +1,6 @@
 {% extends "_base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block title %}صفحه ورود{% endblock %}
 
@@ -11,7 +12,6 @@
 <div class="login-page-container">
     <div class="login-form-container">
         <h2 class="login-title">ورود به سامانه</h2>
-
         {% if form.errors %}
         <div class="error-message">
             نام کاربری یا رمز عبور اشتباه است. لطفاً دوباره تلاش کنید.
@@ -20,31 +20,21 @@
 
         <form method="POST" class="login-form">
             {% csrf_token %}
-            
-            <!-- Username/Email field -->
+            <!-- Render login field -->
             <div class="form-group">
-                <input type="text" 
-                       name="login" 
-                       placeholder="نام کاربری یا ایمیل" 
-                       required 
-                       autofocus
-                       id="id_login">
+                {{ form.login }}
             </div>
-            
-            <!-- Password field -->
+
+            <!-- Render password field -->
             <div class="form-group">
-                <input type="password" 
-                       name="password" 
-                       placeholder="رمز عبور" 
-                       required
-                       id="id_password">
+                {{ form.password }}
             </div>
-            
-            <!-- Remember me checkbox - CORRECT RTL (Text right, Checkbox left) -->
+
+            <!-- Render remember field (RTL checkbox) -->
             <div class="remember-me-container">
                 <label class="remember-me-label">
-                    مرا به خاطر بسپار
-                    <input type="checkbox" name="remember" class="remember-me-checkbox" id="id_remember">
+                    {{ form.remember }}
+                    {{ form.remember.label }}
                 </label>
             </div>
 
@@ -52,10 +42,10 @@
         </form>
 
         <div class="register-link">
-            حساب ندارید؟ 
+            حساب ندارید؟
             <a href="{% url 'account_signup' %}">اینجا ثبت نام کنید</a>
         </div>
-        
+
     </div>
 </div>
 {% endblock %}

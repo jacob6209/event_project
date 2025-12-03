@@ -11,7 +11,7 @@ class CustomLoginForm(LoginForm):
         self.fields['password'].label = "کلمه عبور"
 
         # Optional placeholders
-        self.fields['login'].widget.attrs['placeholder'] = "کد ملی کاربر"
+        self.fields['login'].widget.attrs['placeholder'] = "کد ملی "
         self.fields['password'].widget.attrs['placeholder'] = "کلمه عبور"
 
          # Change the label for 'remember' field
