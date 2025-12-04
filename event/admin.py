@@ -2,10 +2,23 @@ from django.contrib import admin
 from .models import (
     EventType, Event, Course,
     Priority, Participant,
-    Registration, FoodReservation
+    Registration, FoodReservation,RegisteredParticipant
 )
 
+@admin.register(RegisteredParticipant)
+class ReegistrayionParticipant(admin.ModelAdmin):
+    list_display = ('get_user','participant', 'get_course_title', 'registered_at', 'is_confirmed')
+    list_filter = ('is_confirmed', 'registered_at')
+    search_fields = ('participant__full_name', 'registration__course__title','registration__user')
+    readonly_fields = ('registered_at',)
 
+    def get_course_title(self, obj):
+        return obj.registration.course.title
+    get_course_title.short_description = 'Course Title'
+
+    def get_user(self, obj):
+        return obj.participant.user.username if obj.participant.user else "-"
+    get_user.short_description = 'User'
 
 # EventType Admin
 @admin.register(EventType)

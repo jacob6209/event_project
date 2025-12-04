@@ -1,0 +1,58 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}تراکنش موفق {% endblock %}
+
+{% block head %}
+<style>
+    main {
+        height: 100h;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f8f5;
+    }
+
+    .success-container {
+        text-align: center;
+        background-color: #ffffff;
+        padding: 50px 40px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        font-family: 'Tahoma', sans-serif;
+        direction: rtl;
+    }
+
+    .success-container h1 {
+        color: #28a745;
+        font-size: 36px;
+        margin-bottom: 20px;
+    }
+
+    .success-container p {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .transaction-number {
+        font-weight: bold;
+        font-size: 22px;
+        color: #333;
+        margin-top: 10px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        background-color: #e6f4ea;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="success-container">
+        <h1>تراکنش با موفقیت انجام شد!</h1>
+        <p>شماره تراکنش شما: <span class="transaction-number">#{{ transaction_code }}</span></p>
+        <p>با این شماره می‌توانید وضعیت تراکنش را پیگیری کنید.</p>
+    </div>
+</main>
+{% endblock %}

@@ -5,6 +5,6 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
-    national_id=models.CharField(max_length=20, unique=True)
+    # national_id=models.CharField(max_length=20, unique=True)
     department=models.CharField(max_length=20)
     phone=models.CharField(max_length=11)

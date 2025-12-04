@@ -48,7 +48,11 @@ class Priority(models.Model):
 
 
 class Participant(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="participants"
+    )
     full_name = models.CharField(max_length=200)
     national_id = models.CharField(max_length=20)
     relation = models.CharField(
@@ -60,7 +64,6 @@ class Participant(models.Model):
             ('guest', 'مهمان')
         ]
     )
-    # priority = models.ForeignKey(Priority, on_delete=models.PROTECT, null=True, blank=True)
 
     # Add new BooleanField
     is_active = models.BooleanField(default=False)
@@ -70,7 +73,7 @@ class Participant(models.Model):
     
 
         
-
+User = get_user_model()
 class Registration(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
@@ -78,6 +81,7 @@ class Registration(models.Model):
         ('rejected', 'Rejected'),
         ('canceled', 'Canceled'),
     )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='registrations')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='registrations')
     registered_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -85,6 +89,17 @@ class Registration(models.Model):
     priority = models.ForeignKey(Priority,on_delete=models.SET_NULL,null=True,blank=True)
           
     
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'course'],  # restricts user to same course only once
+                name='unique_user_course'
+            ),
+        ]
+
+    @property
+    def event(self):
+        return self.course.event
 
     def __str__(self):
         return f"{self.course}"
@@ -111,6 +126,7 @@ class RegisteredParticipant(models.Model):
 
     def __str__(self):
         return f"Registered: {self.participant.full_name} for {self.registration.course.title}"
+    
 
     class Meta:
         unique_together = ('participant', 'registration')
