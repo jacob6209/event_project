@@ -1,33 +1,45 @@
 from django import forms
 from allauth.account.forms import LoginForm
-from django.forms import inlineformset_factory, modelformset_factory
+from django.forms import formset_factory, inlineformset_factory, modelformset_factory
 from .models import Participant, Registration, FoodReservation
 
+class ParticipantActiveForm(forms.ModelForm):
+    class Meta:
+        model = Participant
+        fields = ['is_active']
+        widgets = {
+            'is_active': forms.CheckboxInput(attrs={'class': 'participant-checkbox'})
+        }
 
 class ParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
-        fields = ['full_name', 'national_id', 'relation', 'priority']
+        fields = ['full_name', 'national_id', 'relation', 'is_active']
 
         labels = {
             'full_name': 'نام ',
             'national_id': 'کد ملی',
             'relation': 'رابطه',
-            'priority': 'اولویت',
+            'is_active':'رزرو'
         }
 
         help_texts = {
             'full_name': 'لطفاً نام کامل خود را وارد کنید.',
             'national_id': 'کد ملی خود را وارد کنید.',
             'relation': 'رابطه شما با شخص ثبت‌نام‌شده را وارد کنید.',
-            'priority': 'اولویت خود را مشخص کنید.',
+            'is_active': 'رزرو و عدم رزرو کاربر را وارد کنید.',
         }
 
         widgets = {
             'full_name': forms.TextInput(attrs={'placeholder': 'نام کامل'}),
             'national_id': forms.TextInput(attrs={'placeholder': 'کد ملی'}),
-            'priority': forms.Select(attrs={'placeholder': 'اولویت'}),
         }
+
+ParticipantFormSet = modelformset_factory(
+    Participant,
+    fields=['full_name', 'national_id', 'relation','is_active'],
+    extra=1  # How many empty participant forms to show
+)
 
 
 class RegistrationForm(forms.ModelForm):
@@ -70,13 +82,22 @@ class FoodReservationForm(forms.ModelForm):
     
 
 
-# Create formset for Participants
-ParticipantFormSet = modelformset_factory(
-    Participant,
-    form=ParticipantForm,
-    extra=1,
-    can_delete=True
-)
+# # Create formset for Participants
+# ParticipantFormSet = modelformset_factory(
+#     Participant,
+#     form=ParticipantForm,
+#     extra=1,
+#     can_delete=True
+# )
+
+# Inline formset for Registration -> Participant
+# ParticipantFormSet = inlineformset_factory(
+#     Registration,
+#     Participant,
+#     form=ParticipantForm,
+#     extra=1,  # number of empty forms to show for adding new participants
+#     can_delete=True  # allow users to remove extra forms
+# )
 
 # Create inline formset for FoodReservations
 FoodReservationFormSet = inlineformset_factory(

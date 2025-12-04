@@ -345,3 +345,76 @@ footer p {
     color: #0c5460;
     border-color: #bee5eb;
 }
+
+/*  */
+/* style.css */
+
+.main-content {
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+.card {
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-25 {
+    margin-bottom: 25px;
+}
+
+.card h2 {
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: sans-serif;
+}
+
+thead tr {
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+th {
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+tbody tr {
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+td {
+    padding: 12px;
+}
+
+.text-center button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.text-center button:hover {
+    background-color: #2980b9;
+}
+
+/* Optional: make checkbox bigger */
+input.participant-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}

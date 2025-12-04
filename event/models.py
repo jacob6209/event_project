@@ -60,7 +60,10 @@ class Participant(models.Model):
             ('guest', 'مهمان')
         ]
     )
-    priority = models.ForeignKey(Priority, on_delete=models.PROTECT, null=True, blank=True)
+    # priority = models.ForeignKey(Priority, on_delete=models.PROTECT, null=True, blank=True)
+
+    # Add new BooleanField
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.full_name
@@ -75,11 +78,14 @@ class Registration(models.Model):
         ('rejected', 'Rejected'),
         ('canceled', 'Canceled'),
     )
-    participant = models.ForeignKey(Participant, on_delete=models.CASCADE, related_name='registrations')
+    participant = models.ForeignKey(Participant,on_delete=models.CASCADE,related_name='participants')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='registrations')
     registered_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     notes = models.TextField(blank=True, null=True)
+    priority = models.ForeignKey(Priority,on_delete=models.SET_NULL,null=True,blank=True)
+          
+    
 
     def __str__(self):
         return f"{self.course}"
