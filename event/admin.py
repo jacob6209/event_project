@@ -56,7 +56,7 @@ class FoodReservationInline(admin.TabularInline):
 # Participant Admin
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
-    list_display = ("id", "full_name", "national_id", "relation", "user")
+    list_display = ("id", "full_name","is_active","national_id", "relation", "user")
     search_fields = ("full_name", "national_id")
     inlines = [FoodReservationInline]
 

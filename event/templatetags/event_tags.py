@@ -30,3 +30,16 @@ farsi_numbers = {
 def number_to_farsi(value):
     """Converts a number to its Farsi equivalent."""
     return farsi_numbers.get(value, str(value))  # Default returns the number if not in dictionary
+
+
+
+# Persian digits
+PERSIAN_DIGITS = {
+    '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴', '5': '۵',
+    '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+}
+
+@register.filter(name='persian_digits')
+def persian_digits(value):
+    """Convert digits to Persian (Farsi) numerals."""
+    return ''.join(PERSIAN_DIGITS.get(c, c) for c in str(value))

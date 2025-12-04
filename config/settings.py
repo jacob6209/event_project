@@ -156,3 +156,5 @@ STATICFILES_DIRS=[str(BASE_DIR.joinpath('static'))]
 ACCOUNT_FORMS = {
     'login': 'accounts.forms.CustomLoginForm',
 }
+
+LANGUAGE_CODE = 'en'

@@ -78,7 +78,6 @@ class Registration(models.Model):
         ('rejected', 'Rejected'),
         ('canceled', 'Canceled'),
     )
-    participant = models.ForeignKey(Participant,on_delete=models.CASCADE,related_name='participants')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='registrations')
     registered_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -90,8 +89,6 @@ class Registration(models.Model):
     def __str__(self):
         return f"{self.course}"
     
-    class Meta:
-        unique_together = ('participant', 'course')
 
 
 class FoodReservation(models.Model):
@@ -105,6 +102,18 @@ class FoodReservation(models.Model):
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE, related_name="food_reservations")
     count = models.PositiveIntegerField(default=1)
 
+
+class RegisteredParticipant(models.Model):
+    registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    registered_at = models.DateTimeField(auto_now_add=True)
+    is_confirmed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Registered: {self.participant.full_name} for {self.registration.course.title}"
+
+    class Meta:
+        unique_together = ('participant', 'registration')
 
 # #  اولویت بندیها 
 # class PriorityCriterion(models.Model):
