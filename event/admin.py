@@ -7,10 +7,14 @@ from .models import (
 
 @admin.register(RegisteredParticipant)
 class ReegistrayionParticipant(admin.ModelAdmin):
-    list_display = ('get_user','participant', 'get_course_title', 'registered_at', 'is_confirmed')
+    list_display = ('get_user','get_registration_id','participant', 'get_course_title', 'registered_at', 'is_confirmed')
     list_filter = ('is_confirmed', 'registered_at')
     search_fields = ('participant__full_name', 'registration__course__title','registration__user')
     readonly_fields = ('registered_at',)
+
+    def get_registration_id(self,obj):
+        return obj.registration.id
+    get_registration_id.short_description = 'transaction'
 
     def get_course_title(self, obj):
         return obj.registration.course.title

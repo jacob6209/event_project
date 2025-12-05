@@ -1,5 +1,6 @@
 {% extends "_base.html" %}
 {% load static %}
+{% load event_tags%}
 
 {% block title %}تراکنش موفق {% endblock %}
 
@@ -51,7 +52,7 @@
 <main>
     <div class="success-container">
         <h1>تراکنش با موفقیت انجام شد!</h1>
-        <p>شماره تراکنش شما: <span class="transaction-number">#{{ transaction_code }}</span></p>
+        <p>شماره تراکنش شما: <span class="transaction-number">#{{ transaction_code | persian_digits }}</span></p>
         <p>با این شماره می‌توانید وضعیت تراکنش را پیگیری کنید.</p>
     </div>
 </main>
