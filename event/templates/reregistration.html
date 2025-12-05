@@ -5,10 +5,20 @@
 {% block title %}ثبت نام رویداد{% endblock %}
 
 {% block content %}
+ <!-- Messages -->
+ {% if messages %}
+ <div style="margin-bottom: 20px;">
+     {% for m in messages %}
+         <div class="alert alert-{{ m.tags }}" 
+             style="padding: 12px 15px; border-radius: 6px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;">
+             {{ m }}
+         </div>
+     {% endfor %}
+ </div>
+ {% endif %}
 <div class="main-content" style="max-width: 800px; margin: 40px auto;">
     <div class="card" style="padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         <h2 class="text-center mb-25" style="border-bottom: 2px solid #3498db; padding-bottom: 10px;">مدیریت شرکت‌کنندگان شما</h2>
-        
         <form method="POST">
             {% csrf_token %}
 
@@ -30,7 +40,7 @@
                         <th style="padding: 12px; border-bottom: 2px solid #ddd;">نام کامل</th>
                         <th style="padding: 12px; border-bottom: 2px solid #ddd;">کد ملی</th>
                         <th style="padding: 12px; border-bottom: 2px solid #ddd;">رابطه</th>
-                        <th style="padding: 12px; border-bottom: 2px solid #ddd;">فعال</th>
+                        <th style="padding: 12px; border-bottom: 2px solid #ddd;">رزرو شود</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,7 +50,7 @@
                         <td style="padding: 12px;">{{ participant.national_id | persian_digits }}</td>
                         <td style="padding: 12px;">{{ participant.get_relation_display }}</td>
                         <td style="padding: 12px;">
-                            {{ form.is_active }}
+                            {{ form.is_reserved }}
                         </td>
                     </tr>
                     {% endfor %}

@@ -7,8 +7,8 @@ from .models import (
 
 @admin.register(RegisteredParticipant)
 class ReegistrayionParticipant(admin.ModelAdmin):
-    list_display = ('get_user','get_registration_id','participant', 'get_course_title', 'registered_at', 'is_confirmed')
-    list_filter = ('is_confirmed', 'registered_at')
+    list_display = ('get_user','get_registration_id','participant', 'get_course_event', 'registered_at', 'is_reserved')
+    list_filter = ('is_reserved', 'registered_at')
     search_fields = ('participant__full_name', 'registration__course__title','registration__user')
     readonly_fields = ('registered_at',)
 
@@ -16,9 +16,11 @@ class ReegistrayionParticipant(admin.ModelAdmin):
         return obj.registration.id
     get_registration_id.short_description = 'transaction'
 
-    def get_course_title(self, obj):
-        return obj.registration.course.title
-    get_course_title.short_description = 'Course Title'
+    def get_course_event(self, obj):
+        course_title = obj.registration.course.title
+        event_title = obj.registration.course.event.title if obj.registration.course.event else ''
+        return f"{event_title} ({course_title})"
+    get_course_event.short_description = 'Event (Course)'
 
     def get_user(self, obj):
         return obj.participant.user.username if obj.participant.user else "-"
@@ -73,11 +75,14 @@ class FoodReservationInline(admin.TabularInline):
 # Participant Admin
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
-    list_display = ("id", "full_name","is_active","national_id", "relation", "user")
+    list_display = ("id","user","user_full_name","full_name","national_id", "relation","is_active" )
+    list_editable=("is_active",)
     search_fields = ("full_name", "national_id")
     inlines = [FoodReservationInline]
 
-
+    def user_full_name(self, obj):
+        return obj.user.get_full_name()
+    user_full_name.short_description="User Full Nam"
 
 
 # Registration Admin

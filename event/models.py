@@ -66,7 +66,8 @@ class Participant(models.Model):
     )
 
     # Add new BooleanField
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_reserved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.full_name
@@ -104,6 +105,8 @@ class Registration(models.Model):
     def __str__(self):
         return f"{self.course}"
     
+    
+    
 
 
 class FoodReservation(models.Model):
@@ -122,7 +125,7 @@ class RegisteredParticipant(models.Model):
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     registered_at = models.DateTimeField(auto_now_add=True)
-    is_confirmed = models.BooleanField(default=False)
+    is_reserved = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Registered: {self.participant.full_name} for {self.registration.course.title}"

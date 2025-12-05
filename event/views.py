@@ -1,12 +1,13 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from .models import Participant, RegisteredParticipant, Registration, Course
 from django.contrib.auth.decorators import login_required
 from .forms import ParticipantActiveForm
+from django.contrib import messages
 
 @login_required
 def reregistration_view(request):
     user = request.user
-    participants = Participant.objects.filter(user=user)
+    participants = Participant.objects.filter(user=user).filter(is_active=True)
     courses = Course.objects.all()
 
     # Create forms for each participant
@@ -27,7 +28,28 @@ def reregistration_view(request):
 
         # Safely get course
         selected_course = get_object_or_404(Course, id=selected_course_id)
+        selected_event_type = selected_course.event.event_type
+        # check if the user already registered for this EVENT TYPE
+        already_registered = Registration.objects.filter(
+            user=user,
+            course__event__event_type=selected_event_type
+        ).exists()
 
+        if already_registered:
+            messages.error(
+                request,
+                "شما قبلاً در یک رویداد از این نوع ثبت‌نام کرده‌اید و امکان ثبت‌نام دوباره وجود ندارد."
+            )
+                # Rebuild forms and stop execution
+            participant_forms = [
+                (p, ParticipantActiveForm(prefix=str(p.id), instance=p))
+                for p in participants
+            ]
+            return render(request, 'reregistration.html', {
+                'participant_forms': participant_forms,
+                'courses': courses,
+            })
+        
         # Get or create registration for this user and course
         registration, created = Registration.objects.get_or_create(
             user=user,
@@ -38,14 +60,15 @@ def reregistration_view(request):
         for p, form in participant_forms:
             form = ParticipantActiveForm(request.POST, prefix=str(p.id), instance=p)
             if form.is_valid():
-                is_active = form.cleaned_data['is_active']
+                is_reserved = form.cleaned_data['is_reserved']
 
                 RegisteredParticipant.objects.update_or_create(
                     registration=registration,
                     participant=p,
-                    defaults={'is_confirmed': is_active}
+                    defaults={'is_reserved': is_reserved}
                 )
         transaction_code= registration.id
+
         return render(request,'success.html',{"transaction_code":transaction_code})  # replace with your actual success URL
 
     return render(request, 'reregistration.html', {

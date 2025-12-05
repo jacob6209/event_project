@@ -4,9 +4,9 @@ from .models import Participant
 class ParticipantActiveForm(forms.ModelForm):
     class Meta:
         model = Participant
-        fields = ['is_active']
+        fields = ['is_reserved']
         widgets = {
-            'is_active': forms.CheckboxInput(attrs={'class': 'participant-checkbox'})
+            'is_reserved': forms.CheckboxInput(attrs={'class': 'participant-checkbox'})
         }
 
 # class ParticipantForm(forms.ModelForm):
