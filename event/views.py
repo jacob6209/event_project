@@ -38,7 +38,7 @@ def reregistration_view(request):
         if already_registered:
             messages.error(
                 request,
-                "⚠ شما قبلاً در این رویداد ثبت‌ نام کرده‌اید. امکان ثبت‌ نام دوباره وجود ندارد."
+                "شما قبلاً در این رویداد ثبت‌ نام کرده‌اید. امکان ثبت‌ نام دوباره وجود ندارد."
             )
                 # Rebuild forms and stop execution
             participant_forms = [
