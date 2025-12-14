@@ -3,6 +3,7 @@ from .models import Participant, RegisteredParticipant, Registration, Course
 from django.contrib.auth.decorators import login_required
 from .forms import ParticipantActiveForm
 from django.contrib import messages
+from django.db import transaction
 
 @login_required
 def reregistration_view(request):
@@ -29,6 +30,7 @@ def reregistration_view(request):
         # Safely get course
         selected_course = get_object_or_404(Course, id=selected_course_id)
         selected_event_type = selected_course.event.event_type
+        
         # check if the user already registered for this EVENT TYPE
         already_registered = Registration.objects.filter(
             user=user,
@@ -50,28 +52,31 @@ def reregistration_view(request):
                 'courses': courses,
             })
         
-        # Get or create registration for this user and course
-        registration, created = Registration.objects.get_or_create(
-            user=user,
-            course=selected_course
-        )
+        with transaction.atomic():
+            # Get or create registration for this user and course
+            registration, created = Registration.objects.get_or_create(
+                user=user,
+                course=selected_course
+            )
 
-        # Process each participant form
-        for p, form in participant_forms:
-            form = ParticipantActiveForm(request.POST, prefix=str(p.id), instance=p)
-            if form.is_valid():
-                is_reserved = form.cleaned_data['is_reserved']
+            # Process each participant form
+            for p, form in participant_forms:
+                form = ParticipantActiveForm(request.POST, prefix=str(p.id), instance=p)
+                if form.is_valid():
+                    is_reserved = form.cleaned_data['is_reserved']
 
-                RegisteredParticipant.objects.update_or_create(
-                    registration=registration,
-                    participant=p,
-                    defaults={'is_reserved': is_reserved}
-                )
+                    RegisteredParticipant.objects.update_or_create(
+                        registration=registration,
+                        participant=p,
+                        defaults={'is_reserved': is_reserved}
+                    )
+
         transaction_code= registration.id
 
         return render(request,'success.html',{"transaction_code":transaction_code})  # replace with your actual success URL
 
-    return render(request, 'reregistration.html', {
+    return render(request,
+        'reregistration.html', {
         'participant_forms': participant_forms,
         'courses': courses,
     })
