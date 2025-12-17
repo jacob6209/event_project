@@ -30,7 +30,7 @@ def reregistration_view(request):
         # Safely get course
         selected_course = get_object_or_404(Course, id=selected_course_id)
         selected_event_type = selected_course.event.event_type
-        
+
         # check if the user already registered for this EVENT TYPE
         already_registered = Registration.objects.filter(
             user=user,
@@ -54,11 +54,15 @@ def reregistration_view(request):
         
         with transaction.atomic():
             # Get or create registration for this user and course
-            registration, created = Registration.objects.get_or_create(
+            # registration, created = Registration.objects.get_or_create(
+            #     user=user,
+            #     course=selected_course
+            # )
+            # Only "Create" Caz already had check before and sure it not Exist
+            registration = Registration.objects.create(
                 user=user,
                 course=selected_course
             )
-
             # Process each participant form
             for p, form in participant_forms:
                 form = ParticipantActiveForm(request.POST, prefix=str(p.id), instance=p)

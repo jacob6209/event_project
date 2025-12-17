@@ -88,7 +88,7 @@ class ParticipantAdmin(admin.ModelAdmin):
 # Registration Admin
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ("id", "course", "status", "registered_at")
+    list_display = ("id","user", "course", "status", "registered_at")
     list_filter = ("status", "course")
     search_fields = ("participant__full_name", "course__title")
     

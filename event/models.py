@@ -105,6 +105,19 @@ class Registration(models.Model):
     def __str__(self):
         return f"{self.course}"
     
+class RegisteredParticipant(models.Model):
+    registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    registered_at = models.DateTimeField(auto_now_add=True)
+    is_reserved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Registered: {self.participant.full_name} for {self.registration.course.title}"
+    
+
+    class Meta:
+        unique_together = ('participant', 'registration')
+
     
     
 
@@ -119,21 +132,6 @@ class FoodReservation(models.Model):
     meal_type = models.CharField(max_length=20,default=MEAL_TYPE_CHOICES[0][0], choices=MEAL_TYPE_CHOICES)
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE, related_name="food_reservations")
     count = models.PositiveIntegerField(default=1)
-
-
-class RegisteredParticipant(models.Model):
-    registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
-    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    registered_at = models.DateTimeField(auto_now_add=True)
-    is_reserved = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"Registered: {self.participant.full_name} for {self.registration.course.title}"
-    
-
-    class Meta:
-        unique_together = ('participant', 'registration')
-
 # #  اولویت بندیها 
 # class PriorityCriterion(models.Model):
 #     title = models.CharField(max_length=200)
