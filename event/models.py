@@ -1,4 +1,5 @@
 from django.db import models
+import random
 from django.contrib.auth import get_user_model
 
 class EventType(models.Model):
@@ -82,13 +83,35 @@ class Registration(models.Model):
         ('rejected', 'Rejected'),
         ('canceled', 'Canceled'),
     )
+    transaction_id = models.CharField(
+        max_length=9,
+        unique=True,
+        null=True,
+        editable=False
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='registrations')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='registrations')
     registered_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     notes = models.TextField(blank=True, null=True)
     priority = models.ForeignKey(Priority,on_delete=models.SET_NULL,null=True,blank=True)
-          
+    
+
+    def save(self, *args, **kwargs):
+        if not self.transaction_id:
+            self.transaction_id = self.generate_transaction_id()
+        super().save(*args, **kwargs)
+
+    def generate_transaction_id(self):
+        """
+        Generate a short unique number with TX- prefix, e.g. TX-123456
+        """
+        for _ in range(10):  # try 10 times
+            number = random.randint(100000, 999999)  # 6-digit number
+            tid = f"tx-{number}"
+            if not Registration.objects.filter(transaction_id=tid).exists():
+                return tid
+        raise ValueError("Failed to generate unique transaction_id")
     
     class Meta:
         constraints = [

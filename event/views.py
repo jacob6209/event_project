@@ -75,7 +75,7 @@ def reregistration_view(request):
                         defaults={'is_reserved': is_reserved}
                     )
 
-        transaction_code= registration.id
+        transaction_code= registration.transaction_id
 
         return render(request,'success.html',{"transaction_code":transaction_code})  # replace with your actual success URL
 

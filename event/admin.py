@@ -13,7 +13,7 @@ class ReegistrayionParticipant(admin.ModelAdmin):
     readonly_fields = ('registered_at',)
 
     def get_registration_id(self,obj):
-        return obj.registration.id
+        return obj.registration.transaction_id
     get_registration_id.short_description = 'transaction'
 
     def get_course_event(self, obj):
@@ -88,7 +88,7 @@ class ParticipantAdmin(admin.ModelAdmin):
 # Registration Admin
 @admin.register(Registration)
 class RegistrationAdmin(admin.ModelAdmin):
-    list_display = ("id","user", "course", "status", "registered_at")
+    list_display = ("id","transaction_id","user", "course", "status", "registered_at")
     list_filter = ("status", "course")
     search_fields = ("participant__full_name", "course__title")
     
