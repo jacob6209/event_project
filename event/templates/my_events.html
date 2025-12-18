@@ -1,0 +1,58 @@
+{% extends "_base.html" %}
+{% load static %}
+{% load event_tags %}
+
+{% block title %}تراکنش موفق{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+{% for registration in registrations %}
+
+  <div class="card farsi-status mb-25">
+
+    <h4 class="mb-20 h4.page-title" >
+        <a href="{% url 'registration_lookup' registration.transaction_id %}" style="text-decoration: none; color: inherit;">
+            📚 اطلاعات رویداد ثبت‌شده
+        </a>
+    </h4>
+
+    <p>{{ registration.course.event }}</p>
+    <p>{{ registration.course.title }}</p>
+
+    <p>
+      <strong>کد تراکنش:</strong>
+      {{ registration.transaction_id }}
+    </p>
+
+    <p class="{% if registration.status == 'pending' %}status-pending
+               {% elif registration.status == 'accepted' %}status-accepted
+               {% elif registration.status == 'rejected' %}status-rejected
+               {% elif registration.status == 'canceled' %}status-canceled
+               {% endif %}">
+      <strong>وضعیت:</strong>
+      {{ registration.get_status_display }}
+    </p>
+
+  </div>
+  {% empty %}
+  <div class="empty-animation" style="text-align: center; margin-top: 50px;">
+      <lottie-player 
+          src="{% static 'animations/empty.json' %}"  
+          background="transparent"  
+          speed="1"  
+          style="width: 300px; height: 300px; margin: auto;"  
+          loop  
+          autoplay>
+      </lottie-player>
+  
+      <p style="font-size: 1.2rem; color: #555; margin-top: 20px;">
+           هنوز در هیچ رویدادی ثبت‌نام نکرده‌اید.❗
+      </p>
+  </div>
+  {% endfor %}
+  
+  <script src="{% static 'animations/lottie-player.js' %}"></script>
+{%endblock%}

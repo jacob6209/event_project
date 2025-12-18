@@ -111,6 +111,20 @@ def registration_lookup_view(request, code):
         }
     )
 
+@login_required
+def my_events_view(request):
+    registrations = (
+        Registration.objects
+        .filter(user=request.user)
+        .select_related("course", "course__event")
+        .order_by("-registered_at")
+    )
+
+    return render(
+        request,
+        "my_events.html",
+        {"registrations": registrations}
+    )
 # def registration_lookup_form(request):
 #     if request.method == "POST":
 #         code = request.POST.get("code")

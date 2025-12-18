@@ -20,6 +20,7 @@
         <nav>
             <ul>
                 <li><a href="{% url 'index' %}">خانه</a></li>
+                <li><a href="{% url 'my_events' %}">رویدادهای من</a></li>
                 <li><a href="{% url 'registration' %}">نام نویسی دوره</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="#" class="user-info">
