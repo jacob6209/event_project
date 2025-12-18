@@ -1,7 +1,6 @@
 {% extends "_base.html" %}
 {% load static %}
 {% load event_tags %}
-
 {% block title %}تراکنش موفق{% endblock %}
 
 {% block head %}
@@ -16,7 +15,6 @@
     <h4 class="mb-20 h4.page-title">📚 اطلاعات رویداد انتخاب شده</h4>
     <p>{{ course.event }}</p>
     <p>{{ course.title | persian_digits }}</p>
-    <p><strong>تاریخ ثبت رویداد :</strong>{{registration.registered_at}}</p>
     <p><strong>کد تراکنش:</strong> {{ registration.transaction_id|persian_digits }}</p>
     <p class="{% if registration.status == 'pending' %}status-pending
     {% elif registration.status == 'accepted' %}status-accepted
@@ -24,6 +22,7 @@
     {% elif registration.status == 'canceled' %}status-canceled
     {% endif %}">
     <strong>وضعیت:</strong> {{ registration.get_status_display }}
+    <p><strong>تاریخ ثبت رویداد :</strong>{{ registration.registered_at|to_jalali|persian_digits }}</p>
 </p>
   </div>
 

@@ -35,7 +35,7 @@
       <strong>وضعیت:</strong>
       {{ registration.get_status_display }}
     </p>
-
+    <p><strong>تاریخ ثبت رویداد :</strong>{{ registration.registered_at|to_jalali|persian_digits }}</p>
   </div>
   {% empty %}
   <div class="empty-animation" style="text-align: center; margin-top: 50px;">

@@ -1,4 +1,5 @@
 from django import template
+import jdatetime
 
 register = template.Library()
 
@@ -43,3 +44,9 @@ PERSIAN_DIGITS = {
 def persian_digits(value):
     """Convert digits to Persian (Farsi) numerals."""
     return ''.join(PERSIAN_DIGITS.get(c, c) for c in str(value))
+
+@register.filter
+def to_jalali(value):
+    if value:
+        return jdatetime.datetime.fromgregorian(datetime=value).strftime('%H:%M:%S-%Y/%m/%d')
+    return ''
