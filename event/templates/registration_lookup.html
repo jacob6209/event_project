@@ -16,6 +16,7 @@
     <h4 class="mb-20 h4.page-title">📚 اطلاعات رویداد انتخاب شده</h4>
     <p>{{ course.event }}</p>
     <p>{{ course.title | persian_digits }}</p>
+    <p><strong>تاریخ ثبت رویداد :</strong>{{registration.registered_at}}</p>
     <p><strong>کد تراکنش:</strong> {{ registration.transaction_id|persian_digits }}</p>
     <p class="{% if registration.status == 'pending' %}status-pending
     {% elif registration.status == 'accepted' %}status-accepted
