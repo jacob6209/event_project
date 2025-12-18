@@ -78,10 +78,10 @@ class Participant(models.Model):
 User = get_user_model()
 class Registration(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('accepted', 'Accepted'),
-        ('rejected', 'Rejected'),
-        ('canceled', 'Canceled'),
+        ('pending', 'تحت بررسی'),
+        ('accepted', 'قبول شده'),
+        ('rejected', 'مردود شده'),
+        ('canceled', 'منصرف شده'),
     )
     transaction_id = models.CharField(
         max_length=9,

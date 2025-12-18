@@ -367,6 +367,9 @@ footer p {
 .mb-25 {
     margin-bottom: 25px;
 }
+.mb-20 {
+    margin-bottom: 20px;
+}
 
 .card h2 {
     border-bottom: 2px solid #3498db;
@@ -417,4 +420,95 @@ input.participant-checkbox {
     width: 20px;
     height: 20px;
     cursor: pointer;
+}
+
+
+/* Badge-style registration statuses */
+.status-pending {
+    color: rgb(217, 128, 19);
+    font-weight: bold;
+    background-color: #efbd7359;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-accepted {
+    color: #006400;
+    font-weight: bold;
+    background-color: #d4edda;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-rejected {
+    color: rgb(181, 7, 7);
+    font-weight: bold;
+    background-color: #f8d7da;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-canceled {
+    color: #4B4B4B;
+    font-weight: bold;
+    background-color: #e2e2e2;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Notice text under cards */
+.notice-text {
+    margin-top: 15px;
+    color: #004085;
+    text-align: center;
+    font-weight: bold;
+}
+/* Table styling for perfect header alignment */
+table {
+    width: 100%;
+    border-collapse: collapse; /* ensures borders align */
+    font-family: 'BYekan', sans-serif;
+    table-layout: fixed; /* makes columns fixed width */
+}
+
+thead tr {
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+th, td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle; /* ensures text is centered vertically */
+    word-wrap: break-word;
+}
+
+/* Right-align Persian text in first 2 columns */
+td:first-child,
+td:nth-child(2),
+th:first-child,
+th:nth-child(2) {
+    text-align: right;
+}
+
+/* Status column centered */
+td:last-child,
+th:last-child {
+    text-align: center;
+}
+
+/* Optional: alternating row colors */
+tbody tr:nth-child(even) {
+    background-color: #f7faff;
+}
+h4,.page-title {
+    display: inline-block;   /* shrink width to text content */
+    border-bottom: 2px solid rgb(133, 133, 140); /* keeps the line */
+    text-align: right;       /* align text to right */
+    direction: rtl;          /* for Persian text */
+    padding-bottom: 2px;     /* optional spacing between text and line */
+}
+p.notice-text {
+    font-weight: 700; /* کمی پررنگ‌تر از معمول */ 
+    text-align: right;
 }

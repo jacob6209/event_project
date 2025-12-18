@@ -1,0 +1,68 @@
+{% extends "_base.html" %}
+{% load static %}
+{% load event_tags %}
+
+{% block title %}تراکنش موفق{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+
+  <!-- Registration Info Card -->
+  <div class="card farsi-status mb-25">
+    <h4 class="mb-20 h4.page-title">📚 اطلاعات رویداد انتخاب شده</h4>
+    <p>{{ course.event }}</p>
+    <p>{{ course.title | persian_digits }}</p>
+    <p><strong>کد تراکنش:</strong> {{ registration.transaction_id|persian_digits }}</p>
+    <p class="{% if registration.status == 'pending' %}status-pending
+    {% elif registration.status == 'accepted' %}status-accepted
+    {% elif registration.status == 'rejected' %}status-rejected
+    {% elif registration.status == 'canceled' %}status-canceled
+    {% endif %}">
+    <strong>وضعیت:</strong> {{ registration.get_status_display }}
+</p>
+  </div>
+
+  <!-- Participants Table Card -->
+  <div class="card mb-20">
+    <h4 class="mb-25">👥 اطلاعات افراد تحت تکفل</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>نام و نام خانوادگی</th>
+          <th>نسبت</th>
+          <th>وضعیت</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in participants %}
+          <tr>
+            <td>{{ item.participant.full_name }}</td>
+            <td>{{ item.participant.get_relation_display }}</td>
+            <td>
+              {% if item.is_reserved %}
+                <span class="status-accepted">✔ رزرو شده</span>
+              {% else %}
+                <span class="status-rejected">✖ رزرو نشده</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3">هیچ شرکت‌کننده‌ای ثبت نشده است</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Notice Text -->
+  <p class="notice-text">
+    لطفاً این کد را ذخیره کنید تا در هر زمان بتوانید وضعیت ثبت‌نام خود را مشاهده کنید.
+  </p>
+
+</div>
+{% endblock %}

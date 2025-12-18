@@ -1,0 +1,31 @@
+{% extends "_base.html" %}
+{% load static %}
+{% load event_tags%}
+
+{% block title %}تراکنش موفق{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+<main class="main-content">
+    <div class="card text-center content-container">
+
+        <h2 class="page-title mb-25">
+            ❌ اطلاعاتی پیدا نشد
+        </h2>
+
+        <p class="mb-25">
+            نتیجه‌ای برای این کد پیگیری وجود ندارد
+            <br>
+            یا شما اجازه مشاهده آن را ندارید.
+        </p>
+
+        <a href="{% url 'index' %}" class="btn-submit">
+            بازگشت به صفحه اصلی
+        </a>
+
+    </div>
+</main>
+{% endblock %}

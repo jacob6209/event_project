@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404,redirect
 from .models import Participant, RegisteredParticipant, Registration, Course
 from django.contrib.auth.decorators import login_required
 from .forms import ParticipantActiveForm
@@ -74,13 +75,45 @@ def reregistration_view(request):
                         participant=p,
                         defaults={'is_reserved': is_reserved}
                     )
-
-        transaction_code= registration.transaction_id
-
-        return render(request,'success.html',{"transaction_code":transaction_code})  # replace with your actual success URL
+                transaction_code= registration.transaction_id
+        return redirect("registration_lookup",code=transaction_code)
+        # return render(request,'success.html',{"transaction_code":transaction_code})  # replace with your actual success URL
 
     return render(request,
         'reregistration.html', {
         'participant_forms': participant_forms,
         'courses': courses,
     })
+
+@login_required
+def registration_lookup_view(request, code):
+    try:
+        registration = get_object_or_404(
+            Registration,
+            transaction_id=code,
+            user=request.user
+        )
+        participants = registration.registeredparticipant_set.select_related("participant")
+        course=registration.course
+    except Http404:
+        return render(
+            request,
+            "registration_not_found.html",
+            status=404
+        )
+    return render(
+        request,
+        "registration_lookup.html",
+        {
+            "registration": registration,
+            "participants": participants,
+            "course":course, 
+        }
+    )
+
+# def registration_lookup_form(request):
+#     if request.method == "POST":
+#         code = request.POST.get("code")
+#         return redirect("registration_lookup", code=code)
+
+#     return render(request, "registration_lookup_form.html")
