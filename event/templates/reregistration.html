@@ -10,16 +10,23 @@
 <div class="main-content" style="max-width: 800px; margin: 40px auto;">
     <div class="card" style="padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         <h2 class="text-center mb-25" style="border-bottom: 2px solid #3498db; padding-bottom: 10px;">مدیریت شرکت‌کنندگان شما</h2>
-        <form method="POST">
+        <form method="post" action="{% if is_edit %}
+            {% url 'registration_edit' registration.id %}
+            {% else %}
+            {% url 'reregistration' %}
+            {% endif %}">
             {% csrf_token %}
 
             <!-- Course Selection -->
             <div class="form-group" style="margin-top: 20px;">
                 <label for="course">دوره انتخابی</label>
                 <select name="course" id="course" class="form-control" required>
-                    <option value="" disabled selected>انتخاب دوره</option>
+                    <option value="" disabled {% if not selected_course %} selected {% endif %}>
+                        انتخاب دوره
+                    </option>
                     {% for course in courses %}
-                        <option value="{{ course.id }}">
+                        <option value="{{ course.id }}" {% if selected_course and course.id == selected_course.id %} selected {% endif %}
+                        >
                             {{ course.event.title }} - {{ course.title }}
                         </option>
                     {% endfor %}
@@ -54,7 +61,11 @@
             <div style="text-align: center; margin-top: 25px;">
                 <button type="submit" class="btn-submit" 
                         style="background-color: #3498db; color: white; border: none; padding: 12px 25px; border-radius: 6px; font-size: 16px; cursor: pointer;">
-                    ثبت تغییرات
+                        {%if is_edit%}
+                        💾 ذخیره تغییرات
+                        {%else%}
+                        ثبت درخواست
+                        {%endif%}
                 </button>
             </div>
         </form>

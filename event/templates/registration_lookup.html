@@ -12,6 +12,7 @@
 
   <!-- Registration Info Card -->
   <div class="card farsi-status mb-25">
+    
     <h4 class="mb-20 h4.page-title">📚 اطلاعات رویداد انتخاب شده</h4>
     <p>{{ course.event }}</p>
     <p>{{ course.title | persian_digits }}</p>
@@ -23,6 +24,16 @@
     {% endif %}">
     <strong>وضعیت:</strong> {{ registration.get_status_display }}
     <p><strong>تاریخ ثبت رویداد :</strong>{{ registration.registered_at|to_jalali|persian_digits }}</p>
+   
+    {%if registration.status == 'pending' %}
+        <!-- ✅ EDIT / RE-REGISTER BUTTON -->
+    <div class="card-action">
+      <a href="{% url 'registration_edit' registration.id %}" class="btn-edit">
+        ✏️ ویرایش
+      </a>
+    </div>
+    {%endif%}
+
 </p>
   </div>
 
@@ -44,11 +55,13 @@
             <td>{{ item.participant.get_relation_display }}</td>
             <td>
               {% if item.is_reserved %}
-                <span class="status-accepted">✔ رزرو شده</span>
+                <span class="status-accepted">✔ رزرو شود</span>
               {% else %}
-                <span class="status-rejected">✖ رزرو نشده</span>
+                <span class="status-rejected">✖ رزرو نشود</span>
               {% endif %}
             </td>
+            
+
           </tr>
         {% empty %}
           <tr>

@@ -7,6 +7,122 @@ from django.contrib import messages
 from django.db import transaction
 
 @login_required
+def registration_edit_view(request, registration_id):
+    user = request.user
+
+    registration = get_object_or_404(
+        Registration,
+        id=registration_id,
+        user=user,
+        status="pending"
+    )
+
+    participants = Participant.objects.filter(user=user, is_active=True)
+    courses = Course.objects.all()
+
+    # Preselect current course
+    selected_course = registration.course
+
+    participant_forms = [
+        (p,ParticipantActiveForm(prefix=str(p.id),
+                instance=p,
+                initial={
+                    "is_reserved": RegisteredParticipant.objects.filter(
+                        registration=registration,
+                        participant=p
+                    ).values_list("is_reserved", flat=True).first() or False
+                }
+            )
+        )
+        for p in participants
+    ]
+
+    if request.method == "POST":
+        selected_course_id = request.POST.get("course")
+
+        if not selected_course_id:
+            return render(request, "reregistration.html", {
+                "participant_forms": participant_forms,
+                "courses": courses,
+                "selected_course": selected_course,
+                "error": "لطفا یک دوره انتخاب کنید."
+            })
+
+        selected_course = get_object_or_404(Course, id=selected_course_id)
+        selected_event_type = selected_course.event.event_type
+
+        # 🔹 Prevent duplicate registration for the same event type (exclude current registration)
+        already_registered = Registration.objects.filter(
+            user=user,
+            course__event__event_type=selected_event_type
+        ).exclude(id=registration.id).exists()
+
+        if already_registered:
+            messages.error(
+                request,
+                "⚠️ شما قبلاً در این رویداد ثبت‌نام کرده‌اید. امکان ثبت‌نام دوباره وجود ندارد."
+            )
+            # Rebuild forms and stop execution
+            participant_forms = [
+                (p,ParticipantActiveForm(prefix=str(p.id),
+                        instance=p,
+                        initial={
+                            "is_reserved": RegisteredParticipant.objects.filter(
+                                registration=registration,
+                                participant=p
+                            ).values_list("is_reserved", flat=True).first() or False
+                        }
+                    )
+                )
+                for p in participants
+            ]
+            context={
+                'participant_forms': participant_forms,
+                'courses': courses,
+                "registration": registration,
+                "is_edit": True,
+                "error": "⚠️ شما قبلاً در این رویداد ثبت‌نام کرده‌اید. امکان ثبت‌نام دوباره وجود ندارد.",
+                'selected_course': selected_course,
+            }
+            return render(request, 'reregistration.html',context)
+
+        with transaction.atomic():
+            # ✅ Update registration instead of creating
+            registration.course = selected_course
+            registration.save(update_fields=["course"])
+
+            for p, _ in participant_forms:
+                form = ParticipantActiveForm(
+                    request.POST,
+                    prefix=str(p.id),
+                    instance=p
+                )
+
+                if form.is_valid():
+                    is_reserved = form.cleaned_data["is_reserved"]
+
+                    RegisteredParticipant.objects.update_or_create(
+                        registration=registration,
+                        participant=p,
+                        defaults={"is_reserved": is_reserved}
+                    )
+
+        messages.success(request, "✅ اطلاعات ثبت‌نام با موفقیت ویرایش شد")
+        return redirect(
+            "registration_lookup",
+            code=registration.transaction_id
+        )
+
+    return render(request, "reregistration.html", {
+        "participant_forms": participant_forms,
+        "courses": courses,
+        "selected_course": selected_course,
+        "registration": registration,
+        "is_edit": True,   # 🔥 useful in template
+    })
+
+
+@login_required
 def reregistration_view(request):
     user = request.user
     participants = Participant.objects.filter(user=user).filter(is_active=True)

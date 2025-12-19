@@ -512,3 +512,41 @@ p.notice-text {
     font-weight: 700; /* کمی پررنگ‌تر از معمول */ 
     text-align: right;
 }
+
+/* Card top action (edit button) */
+.card-action {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+  
+  /* Edit button style */
+  .btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  
+    color: #856404;                 /* warning text */
+    background-color: #ffc506;      /* soft warning bg */
+    border: 1px solid #ffc506;
+    border-radius: 6px;
+  
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  
+  /* Hover effect */
+  .btn-edit:hover {
+    background-color: #f5950eb6;
+    color: #533f03;
+    transform: translateY(-1px);
+  }
+  
+  /* Active click */
+  .btn-edit:active {
+    transform: translateY(0);
+  }
