@@ -25,14 +25,23 @@
     <strong>وضعیت:</strong> {{ registration.get_status_display }}
     <p><strong>تاریخ ثبت رویداد :</strong>{{ registration.registered_at|to_jalali|persian_digits }}</p>
    
-    {%if registration.status == 'pending' %}
-        <!-- ✅ EDIT / RE-REGISTER BUTTON -->
+    {% if registration.status == 'pending' %}
     <div class="card-action">
       <a href="{% url 'registration_edit' registration.id %}" class="btn-edit">
-        ✏️ ویرایش
+          ✏️ ویرایش
       </a>
+      <form action="{% url 'registration_delete' registration.id %}"
+            method="post"
+            class="inline-form no-card"
+            onsubmit="return confirm('آیا از حذف این ثبت‌نام مطمئن هستید؟');"
+            >
+        {% csrf_token %}
+        <button type="submit" class="btn-delete">
+          🗑️ حذف
+        </button>
+      </form>
     </div>
-    {%endif%}
+{% endif %}
 
 </p>
   </div>

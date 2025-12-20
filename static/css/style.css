@@ -513,40 +513,68 @@ p.notice-text {
     text-align: right;
 }
 
-/* Card top action (edit button) */
+/* Container for action buttons */
 .card-action {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 12px;
-  }
-  
-  /* Edit button style */
-  .btn-edit {
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Edit button */
+.btn-edit {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-  
     padding: 6px 14px;
     font-size: 0.85rem;
     font-weight: 500;
-  
-    color: #856404;                 /* warning text */
-    background-color: #ffc506;      /* soft warning bg */
+    color: #302505;
+    background-color: #ffc506;
     border: 1px solid #ffc506;
     border-radius: 6px;
-  
     text-decoration: none;
     transition: all 0.2s ease;
-  }
-  
-  /* Hover effect */
-  .btn-edit:hover {
-    background-color: #f5950eb6;
-    color: #533f03;
+}
+.btn-edit:hover {
+    background-color: #d7830db6;
+    color: #fafafa;
     transform: translateY(-1px);
-  }
-  
-  /* Active click */
-  .btn-edit:active {
+}
+
+/* Delete button */
+.inline-form {
+    margin: 0;
+    display: inline;
+}
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #302505; /* white text for better contrast */
+    background-color: #e74c3c; /* bright red background */
+    border: 1px solid #c0392b; /* darker red border */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b; /* slightly darker on hover */
+    color: #fafafa; /* keep text white */
+    transform: translateY(-1px);
+}
+.btn-delete:active {
     transform: translateY(0);
-  }
+}
+form.no-card {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}

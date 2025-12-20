@@ -7,6 +7,21 @@ from django.contrib import messages
 from django.db import transaction
 
 @login_required
+def registration_delete_view(request, registration_id):
+    registration = get_object_or_404(
+        Registration,
+        id=registration_id,
+        user=request.user,
+        status="pending"
+    )
+
+    if request.method == "POST":
+        registration.delete()
+        messages.success(request, "ثبت‌نام با موفقیت حذف شد")
+
+    return redirect("my_events")
+
+@login_required
 def registration_edit_view(request, registration_id):
     user = request.user
 
@@ -107,7 +122,7 @@ def registration_edit_view(request, registration_id):
                         defaults={"is_reserved": is_reserved}
                     )
 
-        messages.success(request, "✅ اطلاعات ثبت‌نام با موفقیت ویرایش شد")
+        messages.success(request, "✅ اطلاعات ثبت‌نام با موفقیت ویرایش یافت")
         return redirect(
             "registration_lookup",
             code=registration.transaction_id
@@ -120,7 +135,6 @@ def registration_edit_view(request, registration_id):
         "registration": registration,
         "is_edit": True,   # 🔥 useful in template
     })
-
 
 @login_required
 def reregistration_view(request):
