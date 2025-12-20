@@ -7,6 +7,7 @@
 
     <!-- Link to local CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/message.css' %}">
 
     <title>{% block title %}Page Title{% endblock %}</title>
 
@@ -21,6 +22,7 @@
             <ul>
                 <li><a href="{% url 'index' %}">خانه</a></li>
                 <li><a href="{% url 'my_events' %}">رویدادهای من</a></li>
+                <li><a href="{% url 'registration_guest' %}">درخواست ثبت مهمان</a></li>
                 <li><a href="{% url 'reregistration' %}">نام نویسی دوره</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="#" class="user-info">
@@ -48,33 +50,14 @@
     </header>
         <!-- Messages -->
         {% block messages %}
-        {% if messages %}
-        <div style="max-width: 800px; margin: 20px auto; padding: 0 15px;">
-            {% for m in messages %}
-                {% if 'success' in m.tags %}
-                    <div style="padding: 12px 15px; border-radius: 6px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin-bottom: 10px; text-align: right;">
-                        {{ m }}
-                    </div>
-                {% elif 'info' in m.tags %}
-                    <div style="padding: 12px 15px; border-radius: 6px; background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; margin-bottom: 10px; text-align: right;">
-                        {{ m }}
-                    </div>
-                {% elif 'warning' in m.tags %}
-                    <div style="padding: 12px 15px; border-radius: 6px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; margin-bottom: 10px; text-align: right;">
-                        {{ m }}
-                    </div>
-                {% elif 'error' in m.tags or 'danger' in m.tags %}
-                    <div style="padding: 12px 15px; border-radius: 6px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 10px; text-align: right;">
-                        {{ m }}
-                    </div>
-                {% else %}
-                    <div style="padding: 12px 15px; border-radius: 6px; background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; margin-bottom: 10px; text-align: right;">
-                        {{ m }}
-                    </div>
-                {% endif %}
+            <!-- Toast container -->
+        <div class="toast-container">
+            {% for message in messages %}
+            <div class="toast {{ message.tags }}">
+            {{ message }}
+            </div>
             {% endfor %}
         </div>
-        {% endif %}
         {% endblock %}
     <!-- Main Content -->
     <main>
@@ -93,5 +76,19 @@
     </footer>
     {% endblock %}
 
+    <!-- Toast removal script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toasts = document.querySelectorAll('.toast');
+        
+            toasts.forEach(toast => {
+                // Auto remove after 3.5s
+                setTimeout(() => {
+                    toast.style.animation = 'fadeOut 0.5s forwards';
+                    toast.addEventListener('animationend', () => toast.remove());
+                }, 3500);
+            });
+        });
+    </script>
 </body>
 </html>

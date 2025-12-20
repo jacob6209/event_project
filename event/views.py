@@ -2,9 +2,32 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import Participant, RegisteredParticipant, Registration, Course
 from django.contrib.auth.decorators import login_required
-from .forms import ParticipantActiveForm
+from .forms import ParticipantActiveForm,GuestForm
 from django.contrib import messages
 from django.db import transaction
+
+@login_required
+def register_guest(request):
+    """
+    View to handle adding a guest.
+    - GET: display empty form
+    - POST: validate and save guest
+    """
+    if request.method == 'POST':
+        form = GuestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "مهمان با موفقیت ثبت شد!")
+            return redirect('my_events')  # replace with your desired page
+        else:
+            messages.error(request, "لطفا اطلاعات وارد شده را بررسی کنید.")
+    else:
+        form = GuestForm()
+
+    context = {
+        'form': form
+    }
+    return render(request, 'registration_guest.html', context)
 
 @login_required
 def registration_delete_view(request, registration_id):
@@ -75,7 +98,7 @@ def registration_edit_view(request, registration_id):
         if already_registered:
             messages.error(
                 request,
-                "⚠️ شما قبلاً در این رویداد ثبت‌نام کرده‌اید. امکان ثبت‌نام دوباره وجود ندارد."
+                "⚠️ شما قبلاً در این رویداد ثبت‌نام کرده‌اید. امکان ثبت‌نام مجدد وجود ندارد."
             )
             # Rebuild forms and stop execution
             participant_forms = [
@@ -171,7 +194,7 @@ def reregistration_view(request):
         if already_registered:
             messages.error(
                 request,
-                "شما قبلاً در این رویداد ثبت‌ نام کرده‌اید. امکان ثبت‌ نام دوباره وجود ندارد."
+                "شما قبلاً در این رویداد ثبت‌ نام کرده‌اید. امکان ثبت‌ نام مجدد وجود ندارد."
             )
                 # Rebuild forms and stop execution
             participant_forms = [

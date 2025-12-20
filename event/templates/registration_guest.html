@@ -1,0 +1,46 @@
+{% extends "_base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}ثبت مهمان{% endblock %}
+
+{% block content %}
+<div class="guest-page">
+    <div class="card guest-card">
+        <h2 class="text-center mb-25">فرم درخواست ثبت مهمان</h2>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Full Name -->
+            <div class="form-group">
+                <label>{{ form.full_name.label }}</label>
+                {{ form.full_name|add_class:"error" }}
+                {% if form.full_name.errors %}
+                    <div class="form-error">{{ form.full_name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- National ID -->
+            <div class="form-group">
+                <label>{{ form.national_id.label }}</label>
+                {{ form.national_id|add_class:"error" }}
+                {% if form.national_id.errors %}
+                    <div class="form-error">{{ form.national_id.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Relation -->
+            <div class="form-group">
+                <label>{{ form.relation.label }}</label>
+                {{ form.relation|add_class:"error" }}
+                {% if form.relation.errors %}
+                    <div class="form-error">{{ form.relation.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-submit">ثبت مهمان</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -370,6 +370,9 @@ footer p {
 .mb-20 {
     margin-bottom: 20px;
 }
+.mb-10 {
+    margin-bottom: 10px;
+}
 
 .card h2 {
     border-bottom: 2px solid #3498db;
@@ -577,4 +580,71 @@ form.no-card {
     padding: 0 !important;
     margin: 0 !important;
     border-radius: 0 !important;
+}
+
+/* ===== Django Error List ===== */
+.errorlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: #c0392b;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+Input error border
+input.error,
+select.error,
+textarea.error {
+    border: 1.5px solid #e74c3c !important;
+    background-color: #fff !important; /* فقط سفید، نه صورتی */
+}
+
+/* ===== Error text ===== */
+.guest-page .form-error {
+    margin-top: 2px; /* very close to input */
+    font-size: 0.75rem;
+    color: #dc3545;
+}
+
+/* ===== Guest Card ===== */
+.guest-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Card stays at top */
+    padding-top: 40px; /* distance from top of screen */
+}
+
+.guest-card {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* ===== Form spacing ===== */
+.guest-page .mb-20 {
+    margin-bottom: 0px; /* slightly bigger for clarity */
+}
+
+.guest-page label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 2px; /* reduced spacing */
+}
+
+.guest-page input,
+.guest-page select,
+.guest-page textarea {
+    margin-bottom: 0; /* remove extra bottom margin */
+}
+
+/* ===== Form Title ===== */
+.page-title {
+    text-align: center;
+    margin-bottom: 15px; /* distance to form */
+    font-weight: bold;
 }

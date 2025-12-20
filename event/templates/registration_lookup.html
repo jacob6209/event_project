@@ -27,6 +27,7 @@
    
     {% if registration.status == 'pending' %}
     <div class="card-action">
+      
       <a href="{% url 'registration_edit' registration.id %}" class="btn-edit">
           ✏️ ویرایش
       </a>
@@ -40,6 +41,7 @@
           🗑️ حذف
         </button>
       </form>
+      
     </div>
 {% endif %}
 

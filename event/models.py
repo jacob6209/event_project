@@ -47,6 +47,15 @@ class Priority(models.Model):
     def __str__(self):
         return self.title
 
+class Guest(models.Model):
+    full_name = models.CharField(max_length=200)
+    national_id = models.CharField(max_length=20, blank=True, null=True)
+    relation= models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
+    is_reserved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.full_name
 
 class Participant(models.Model):
     user = models.ForeignKey(
@@ -131,6 +140,7 @@ class Registration(models.Model):
 class RegisteredParticipant(models.Model):
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    guest=models.ForeignKey(Guest,on_delete=models.CASCADE,null=True,blank=True)
     registered_at = models.DateTimeField(auto_now_add=True)
     is_reserved = models.BooleanField(default=False)
 

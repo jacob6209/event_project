@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     EventType, Event, Course,
     Priority, Participant,
-    Registration, FoodReservation,RegisteredParticipant
+    Registration, FoodReservation,RegisteredParticipant,Guest
 )
 
 @admin.register(RegisteredParticipant)
@@ -31,6 +31,11 @@ class ReegistrayionParticipant(admin.ModelAdmin):
 class EventTypeAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
     search_fields = ("name",)
+
+# Guest Admin
+@admin.register(Guest)
+class EventTypeAdmin(admin.ModelAdmin):
+    list_display = ("id", "full_name","national_id")
 
 
 # Event Admin
