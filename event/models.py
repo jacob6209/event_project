@@ -18,7 +18,8 @@ class Event(models.Model):
     is_multi_course = models.BooleanField(default=False)
     rules = models.TextField(blank=True)
     has_food = models.BooleanField(default=False)
-    allows_guests = models.BooleanField(default=False)     
+    allows_guests = models.BooleanField(default=False)
+    max_guests = models.PositiveIntegerField(default=0)     
     requires_approval = models.BooleanField(default=False)
 
     def __str__(self):
