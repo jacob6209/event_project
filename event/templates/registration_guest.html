@@ -11,7 +11,14 @@
 
         <form method="post" novalidate>
             {% csrf_token %}
-
+            <!-- Registered Course -->
+            <div class="form-group">
+                <label>{{ form.registration.label }}</label>
+                {{ form.registration }}
+                {% if form.registration.errors %}
+                <div class="form-error">{{ form.registration.errors }}</div>
+                {% endif %}
+            </div>
             <!-- Full Name -->
             <div class="form-group">
                 <label>{{ form.full_name.label }}</label>

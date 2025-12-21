@@ -1,6 +1,8 @@
+from django import forms
 from django.db import models
 import random
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 class EventType(models.Model):
     name = models.CharField(max_length=200)
@@ -48,14 +50,33 @@ class Priority(models.Model):
         return self.title
 
 class Guest(models.Model):
+    registration = models.ForeignKey(
+    "Registration",
+    on_delete=models.CASCADE,
+    related_name='guests'
+    )
     full_name = models.CharField(max_length=200)
     national_id = models.CharField(max_length=20, blank=True, null=True)
     relation= models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     is_reserved = models.BooleanField(default=False)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['national_id','registration'],
+                name='unique_national_event'
+            )
+        ]
+    
+   
+
     def __str__(self):
-        return self.full_name
+        return f"{self.full_name} ({self.national_id}-{self.registration})"
+    # def __str__(self):
+    #     return self.full_name
+    
+    
 
 class Participant(models.Model):
     user = models.ForeignKey(
@@ -104,7 +125,10 @@ class Registration(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     notes = models.TextField(blank=True, null=True)
     priority = models.ForeignKey(Priority,on_delete=models.SET_NULL,null=True,blank=True)
-    
+
+
+    def get_absolute_url(self):
+        return reverse('registration_lookup', kwargs={'code': self.transaction_id})
 
     def save(self, *args, **kwargs):
         if not self.transaction_id:
@@ -140,7 +164,6 @@ class Registration(models.Model):
 class RegisteredParticipant(models.Model):
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    guest=models.ForeignKey(Guest,on_delete=models.CASCADE,null=True,blank=True)
     registered_at = models.DateTimeField(auto_now_add=True)
     is_reserved = models.BooleanField(default=False)
 

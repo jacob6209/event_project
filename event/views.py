@@ -14,15 +14,19 @@ def register_guest(request):
     - POST: validate and save guest
     """
     if request.method == 'POST':
-        form = GuestForm(request.POST)
+        form = GuestForm(request.POST,user=request.user)
         if form.is_valid():
-            form.save()
+            guest=form.save()
             messages.success(request, "مهمان با موفقیت ثبت شد!")
-            return redirect('my_events')  # replace with your desired page
-        else:
-            messages.error(request, "لطفا اطلاعات وارد شده را بررسی کنید.")
+            return redirect(guest.registration.get_absolute_url())
+       
+
+        # Forward ALL form errors to messages
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, error)
     else:
-        form = GuestForm()
+        form = GuestForm(user=request.user)
 
     context = {
         'form': form

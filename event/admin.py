@@ -35,7 +35,7 @@ class EventTypeAdmin(admin.ModelAdmin):
 # Guest Admin
 @admin.register(Guest)
 class EventTypeAdmin(admin.ModelAdmin):
-    list_display = ("id", "full_name","national_id")
+    list_display = ("id","full_name","national_id","registration",)
 
 
 # Event Admin
