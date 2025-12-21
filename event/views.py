@@ -17,7 +17,7 @@ def register_guest(request):
         form = GuestForm(request.POST,user=request.user)
         if form.is_valid():
             guest=form.save()
-            messages.success(request, "مهمان با موفقیت ثبت شد!")
+            messages.success(request, "اطلاعات مهمان جدید با موفقیت ثبت شد")
             return redirect(guest.registration.get_absolute_url())
        
 
