@@ -54,7 +54,9 @@
     <table>
       <thead>
         <tr>
+          <th class="row-num" >ردیف</th>
           <th>نام و نام خانوادگی</th>
+          <th>کد ملی</th>
           <th>نسبت</th>
           <th>وضعیت</th>
         </tr>
@@ -62,7 +64,9 @@
       <tbody>
         {% for item in participants %}
           <tr>
+            <td class="row-num">{{ forloop.counter|persian_digits }}</td>
             <td>{{ item.participant.full_name }}</td>
+            <td>{{ item.participant.national_id|persian_digits}}</td>
             <td>{{ item.participant.get_relation_display }}</td>
             <td>
               {% if item.is_reserved %}
@@ -71,14 +75,32 @@
                 <span class="status-rejected">✖ رزرو نشود</span>
               {% endif %}
             </td>
-            
-
           </tr>
         {% empty %}
-          <tr>
-            <td colspan="3">هیچ شرکت‌کننده‌ای ثبت نشده است</td>
+          {% if not participants and not guests %}
+            <tr>
+              <td colspan="3">هیچ شرکت‌کننده‌ای ثبت نشده است</td>
+            </tr>
+          {% endif%}
+        {% endfor %}
+
+      {% if guests %}
+            {% for guest in guests %}
+          <tr class="guest-row">
+            <td class="row-num">{{ forloop.counter|add:participants_count|persian_digits }}</td>
+            <td>{{ guest.full_name }}</td>
+            <td>{{ guest.national_id|persian_digits }}</td>
+            <td>مهمان</td>
+            <td>
+              {% if guest.is_reserved %}
+                <span class="status-accepted">✔ رزرو شود</span>
+              {% else %}
+                <span class="status-rejected">✖ رزرو نشود</span>
+              {% endif %}
+            </td>
           </tr>
         {% endfor %}
+      {% endif %}
       </tbody>
     </table>
   </div>

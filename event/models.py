@@ -60,7 +60,7 @@ class Guest(models.Model):
     national_id = models.CharField(max_length=20, blank=True, null=True)
     relation= models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
-    is_reserved = models.BooleanField(default=False)
+    is_reserved = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
@@ -93,7 +93,8 @@ class Participant(models.Model):
             ('self', 'خودم'),
             ('spouse', 'همسر'),
             ('child', 'فرزند'),
-            ('guest', 'مهمان')
+            ('father', 'پدر'),
+            ('mother', 'مادر'),
         ]
     )
 

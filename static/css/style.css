@@ -648,3 +648,8 @@ textarea.error {
     margin-bottom: 15px; /* distance to form */
     font-weight: bold;
 }
+.row-num {
+    width: 60px;          /* adjust as needed */
+    text-align: center;
+    white-space: nowrap;
+  }

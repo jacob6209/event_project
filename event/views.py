@@ -1,6 +1,6 @@
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404,redirect
-from .models import Participant, RegisteredParticipant, Registration, Course
+from .models import Participant, RegisteredParticipant, Registration, Course,Guest
 from django.contrib.auth.decorators import login_required
 from .forms import ParticipantActiveForm,GuestForm
 from django.contrib import messages
@@ -51,13 +51,20 @@ def registration_delete_view(request, registration_id):
 @login_required
 def registration_edit_view(request, registration_id):
     user = request.user
+    try:
+        registration = get_object_or_404(
+            Registration,
+            id=registration_id,
+            user=user,
+            status="pending"
+        )
+    except Http404:
+        return render(
+            request,
+            "registration_not_found.html",
+            status=404
+        )
 
-    registration = get_object_or_404(
-        Registration,
-        id=registration_id,
-        user=user,
-        status="pending"
-    )
 
     participants = Participant.objects.filter(user=user, is_active=True)
     courses = Course.objects.all()
@@ -251,7 +258,9 @@ def registration_lookup_view(request, code):
             user=request.user
         )
         participants = registration.registeredparticipant_set.select_related("participant")
+        guests = Guest.objects.filter(registration=registration)
         course=registration.course
+        participants_count = participants.count()
     except Http404:
         return render(
             request,
@@ -264,6 +273,8 @@ def registration_lookup_view(request, code):
         {
             "registration": registration,
             "participants": participants,
+            "guests": guests,
+            "participants_count":participants_count,
             "course":course, 
         }
     )
