@@ -167,7 +167,7 @@ def registration_edit_view(request, registration_id):
         "courses": courses,
         "selected_course": selected_course,
         "registration": registration,
-        "is_edit": True,   # 🔥 useful in template
+        "is_edit": True,
     })
 
 @login_required
@@ -217,13 +217,26 @@ def reregistration_view(request):
                 'courses': courses,
             })
         
+        # CHECK CAPACITY
+        participants_count = RegisteredParticipant.objects.filter(
+            registration__course=selected_course
+        ).count()
+
+        guests_count = Guest.objects.filter(
+            registration__course=selected_course,
+            is_reserved=True
+        ).count()
+
+        if participants_count + guests_count >= selected_course.max_capacity:
+            messages.error(
+                request,
+                "ظرفیت این دوره تکمیل شده است."
+            )
+            return render(request, 'reregistration.html', {
+                'participant_forms': participant_forms,
+                'courses': courses,
+            })
         with transaction.atomic():
-            # Get or create registration for this user and course
-            # registration, created = Registration.objects.get_or_create(
-            #     user=user,
-            #     course=selected_course
-            # )
-            # Only "Create" Caz already had check before and sure it not Exist
             registration = Registration.objects.create(
                 user=user,
                 course=selected_course
@@ -233,7 +246,7 @@ def reregistration_view(request):
                 form = ParticipantActiveForm(request.POST, prefix=str(p.id), instance=p)
                 if form.is_valid():
                     is_reserved = form.cleaned_data['is_reserved']
-
+                    
                     RegisteredParticipant.objects.update_or_create(
                         registration=registration,
                         participant=p,

@@ -35,7 +35,11 @@ class EventTypeAdmin(admin.ModelAdmin):
 # Guest Admin
 @admin.register(Guest)
 class EventTypeAdmin(admin.ModelAdmin):
-    list_display = ("id","full_name","national_id","registration",)
+    list_display = ("id",'guest_user',"full_name","national_id","registration",)
+
+    def guest_user(self,obj):
+        return obj.registration.user if obj.registration else None
+    guest_user.short_description = "User"
 
 
 # Event Admin
