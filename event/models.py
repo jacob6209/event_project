@@ -57,9 +57,9 @@ class Guest(models.Model):
     STATUS_REJECTED = "rejected"
 
     STATUS_CHOICES = (
-        (STATUS_PENDING, "Pending"),
-        (STATUS_ACCEPTED, "Accepted"),
-        (STATUS_REJECTED, "Rejected"),
+        (STATUS_PENDING, "در حال بررسی"),
+        (STATUS_ACCEPTED, "قبول"),
+        (STATUS_REJECTED, "مردود"),
     )
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default=STATUS_PENDING )
     registration = models.ForeignKey(
@@ -114,10 +114,8 @@ class Guest(models.Model):
 
         
     
-   
-
     def __str__(self):
-        return f"{self.full_name} ({self.national_id}-{self.registration})"
+        return f"{self.full_name} ({self.national_id}-{self.registration}-{self.get_status_display()})"
     # def __str__(self):
     #     return self.full_name
     
@@ -214,9 +212,9 @@ class RegisteredParticipant(models.Model):
     STATUS_REJECTED = "rejected"
 
     STATUS_CHOICES = (
-        (STATUS_PENDING, "Pending"),
-        (STATUS_ACCEPTED, "Accepted"),
-        (STATUS_REJECTED, "Rejected"),
+        (STATUS_PENDING, "در حال بررسی"),
+        (STATUS_ACCEPTED, "قبول"),
+        (STATUS_REJECTED, "مردود"),
     )
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default=STATUS_PENDING )
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
@@ -225,7 +223,7 @@ class RegisteredParticipant(models.Model):
     is_reserved = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Registered: {self.participant.full_name} for {self.registration.course.title}"
+        return f"Registered: {self.participant.full_name} for {self.registration.course.title}-{self.get_status_display()}"
     
 
     class Meta:

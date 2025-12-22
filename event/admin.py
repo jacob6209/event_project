@@ -7,7 +7,7 @@ from .models import (
 
 @admin.register(RegisteredParticipant)
 class ReegistrayionParticipant(admin.ModelAdmin):
-    list_display = ('get_user','get_registration_id','participant', 'get_course_event', 'registered_at', 'is_reserved')
+    list_display = ('get_user','get_registration_id','participant', 'get_course_event','status', 'registered_at', 'is_reserved')
     list_filter = ('is_reserved', 'registered_at')
     search_fields = ('participant__full_name', 'registration__course__title','registration__user')
     readonly_fields = ('registered_at',)
@@ -35,7 +35,7 @@ class EventTypeAdmin(admin.ModelAdmin):
 # Guest Admin
 @admin.register(Guest)
 class EventTypeAdmin(admin.ModelAdmin):
-    list_display = ("id",'guest_user',"full_name","national_id","registration",)
+    list_display = ("id",'status','guest_user',"full_name","national_id","registration",)
 
     def guest_user(self,obj):
         return obj.registration.user if obj.registration else None

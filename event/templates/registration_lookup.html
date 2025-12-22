@@ -58,6 +58,7 @@
           <th>نام و نام خانوادگی</th>
           <th>کد ملی</th>
           <th>نسبت</th>
+          <th>رزرو</th>
           <th>وضعیت</th>
         </tr>
       </thead>
@@ -75,6 +76,7 @@
                 <span class="status-rejected">✖ رزرو نشود</span>
               {% endif %}
             </td>
+            <td>{{ item.get_status_display }}</td>
           </tr>
         {% empty %}
           {% if not participants and not guests %}
@@ -98,6 +100,7 @@
                 <span class="status-rejected">✖ رزرو نشود</span>
               {% endif %}
             </td>
+            <td>{{guest.get_status_display }}</td>
           </tr>
         {% endfor %}
       {% endif %}
