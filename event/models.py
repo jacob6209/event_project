@@ -80,11 +80,17 @@ class Guest(models.Model):
             registration__course=self.registration.course
         ).count()
         total_people = participants_count + guests_count
+        event = self.registration.course.event
+        # Check if registration allows guests
+        if not event.allows_guests:
+            raise ValidationError(
+                "ثبت مهمان برای این رویداد غیر فعال است"
+            )
         if total_people >= self.registration.course.max_capacity:
             raise ValidationError("متاسفانه ظرفیت این دوره تکمیل شده است")
 
         # ----- EVENT CAPACITY -----
-        event = self.registration.course.event
+        
 
         participants_count = RegisteredParticipant.objects.filter(
             registration__course__event=event
@@ -205,49 +211,6 @@ class RegisteredParticipant(models.Model):
     class Meta:
         unique_together = ('participant', 'registration')
     
-    # def clean(self):
-    #     course = self.registration.course
-
-    #     # ---- ظرفیت دوره ----
-    #     participants_count = RegisteredParticipant.objects.filter(
-    #         registration__course=course,
-    #         participant__is_active=True
-    #     ).exclude(pk=self.pk).count()
-
-    #     guests_count = Guest.objects.filter(
-    #         registration__course=course,
-    #         is_reserved=True
-    #     ).count()
-
-    #     total_people = participants_count + guests_count
-    #     print("course capacity:", course.max_capacity)
-    #     print("participants:", participants_count)
-    #     print("guests:", guests_count)
-    #     print("total:", total_people)
-    #     if total_people >= course.max_capacity:
-    #         raise ValidationError("ظرفیت این دوره تکمیل شده است")
-
-    #     # ---- ظرفیت رویداد ----
-    #     event = course.event
-
-    #     participants_count = RegisteredParticipant.objects.filter(
-    #         registration__course__event=event,
-    #         participant__is_active=True
-    #     ).exclude(pk=self.pk).count()
-
-    #     guests_count = Guest.objects.filter(
-    #         registration__course__event=event,
-    #         is_reserved=True
-    #     ).count()
-
-    #     total_people = participants_count + guests_count
-
-    #     if total_people >= event.max_capacity:
-    #         raise ValidationError("ظرفیت رویداد تکمیل شده است")
-            
-    # def save(self, *args, **kwargs):
-    #     self.full_clean()  # trigger clean() before saving
-    #     super().save(*args, **kwargs)
     
 
 

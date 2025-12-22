@@ -86,10 +86,6 @@ class GuestForm(forms.ModelForm):
         national_id = cleaned_data.get('national_id')
         registration = cleaned_data.get('registration')
 
-        # Check if registration allows guests
-        if registration:
-            if not registration.event.allows_guests:
-                raise forms.ValidationError("متاسفانه ثبت مهمان برای این دوره فعال نمی باشد .")
 
         # Check if max number of guests is reached
         current_guests_count = Guest.objects.filter(registration=registration).count()
