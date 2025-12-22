@@ -37,15 +37,17 @@
             <table style="width:100%; border-collapse: collapse; font-family: sans-serif; margin-top: 20px;">
                 <thead>
                     <tr style="background-color: #f5f5f5; text-align: center;">
+                        <th class="row-num" >ردیف</th>
                         <th style="padding: 12px; border-bottom: 2px solid #ddd;">نام کامل</th>
                         <th style="padding: 12px; border-bottom: 2px solid #ddd;">کد ملی</th>
                         <th style="padding: 12px; border-bottom: 2px solid #ddd;">رابطه</th>
-                        <th style="padding: 12px; border-bottom: 2px solid #ddd;">رزرو شود</th>
+                        <th style="padding: 12px; border-bottom: 2px solid #ddd;"/>رزرو شود/نشود</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for participant, form in participant_forms %}
                     <tr style="text-align: center; border-bottom: 1px solid #eee;">
+                        <td style="padding: 12px;">{{ forloop.counter|persian_digits }}</td>
                         <td style="padding: 12px;">{{ participant.full_name }}</td>
                         <td style="padding: 12px;">{{ participant.national_id | persian_digits }}</td>
                         <td style="padding: 12px;">{{ participant.get_relation_display }}</td>

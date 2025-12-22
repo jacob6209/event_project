@@ -21,6 +21,7 @@ class Event(models.Model):
     allows_guests = models.BooleanField(default=False)
     max_guests = models.PositiveIntegerField(default=0)     
     requires_approval = models.BooleanField(default=False)
+    max_capacity = models.PositiveIntegerField(default=10)
 
     def __str__(self):
         return f"{self.title} ({self.event_type})"
@@ -31,9 +32,9 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     start_date = models.DateField()
     end_date = models.DateField()
-    capacity = models.PositiveIntegerField()
     registration_start = models.DateTimeField()
     registration_end = models.DateTimeField()
+    max_capacity = models.PositiveIntegerField(default=10)
 
     def __str__(self):
         return f"{self.event.title} - {self.title}"

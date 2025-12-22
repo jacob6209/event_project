@@ -57,7 +57,7 @@ class CourseInline(admin.TabularInline):
 # Course Admin
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "event", "start_date", "end_date", "capacity")
+    list_display = ("id", "title", "event", "start_date", "end_date", "max_capacity")
     list_filter = ("event", "start_date")
     search_fields = ("title", "event__title")
     date_hierarchy = "start_date"

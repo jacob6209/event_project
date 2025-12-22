@@ -4,6 +4,7 @@ Django==5.2.8
 django-allauth==65.13.1
 django-crispy-forms==2.5
 django-jalali==7.4.0
+django-widget-tweaks==1.5.0
 jalali_core==1.0.0
 jdatetime==5.2.0
 sqlparse==0.5.4
