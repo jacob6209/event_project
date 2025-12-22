@@ -653,3 +653,35 @@ textarea.error {
     text-align: center;
     white-space: nowrap;
   }
+/* table setting */
+table {
+    width: 100%;
+    border-collapse: collapse; /* خیلی مهم */
+    font-family: 'BYekan', sans-serif;
+    table-layout: fixed;
+    border: 1px solid #ccc; /* کادر دور جدول */
+}
+
+/* Header */
+thead.table-header tr {
+    background-color: #97b7f2;
+}
+
+thead.table-header th {
+    color: #fff;
+    padding: 12px 10px;
+    text-align: center;
+    border: 1px solid #ccc; /* خط دور هر ستون */
+}
+
+/* Body cells */
+tbody td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc; /* خطوط داخلی */
+}
+
+/* Optional: hover effect */
+tbody tr:hover {
+    background-color: #f9f9f9;
+}
