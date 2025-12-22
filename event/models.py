@@ -52,6 +52,16 @@ class Priority(models.Model):
         return self.title
 
 class Guest(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_REJECTED = "rejected"
+
+    STATUS_CHOICES = (
+        (STATUS_PENDING, "Pending"),
+        (STATUS_ACCEPTED, "Accepted"),
+        (STATUS_REJECTED, "Rejected"),
+    )
+    status = models.CharField(max_length=20,choices=STATUS_CHOICES,default=STATUS_PENDING )
     registration = models.ForeignKey(
     "Registration",
     on_delete=models.CASCADE,
@@ -146,8 +156,8 @@ class Registration(models.Model):
     STATUS_CHOICES = (
         ('pending', 'درخواست تحت بررسی'),
         ('accepted', 'درخواست قبول شده'),
-        ('rejected', ' درخواست مردود شده'),
-        ('canceled', ' درخواست منصرف شده '),
+        ('rejected', ' مردودی از طرف ادمین'),
+        ('canceled', '  انصراف از طرف کاربر'),
     )
     transaction_id = models.CharField(
         max_length=9,
@@ -199,6 +209,16 @@ class Registration(models.Model):
     
    
 class RegisteredParticipant(models.Model):
+    STATUS_PENDING = "pending"
+    STATUS_ACCEPTED = "accepted"
+    STATUS_REJECTED = "rejected"
+
+    STATUS_CHOICES = (
+        (STATUS_PENDING, "Pending"),
+        (STATUS_ACCEPTED, "Accepted"),
+        (STATUS_REJECTED, "Rejected"),
+    )
+    status = models.CharField(max_length=20,choices=STATUS_CHOICES,default=STATUS_PENDING )
     registration = models.ForeignKey(Registration, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     registered_at = models.DateTimeField(auto_now_add=True)
