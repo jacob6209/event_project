@@ -25,11 +25,12 @@ class GuestForm(forms.ModelForm):
 
     class Meta:
         model = Guest
-        fields = ['registration','full_name', 'national_id', 'relation']
+        fields = ["registration",'full_name', 'national_id', 'relation',"is_reserved"]
         
     
         # Custom widgets for nicer UI
         widgets = {
+            'is_reserved': forms.CheckboxInput(attrs={'class': 'participant-checkbox'}),
             'full_name': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'title': 'نام و نام خانوادگی مهمان را وارد کنید'
@@ -107,7 +108,6 @@ class GuestForm(forms.ModelForm):
             registration__course__event=registration.event
             # registration=registration,
         ).count()
-        print(f'user_guest_count====>{user_guest_count}')
 
         if user_guest_count >= event.max_guests_per_user:
             raise forms.ValidationError(
@@ -120,7 +120,7 @@ class GuestForm(forms.ModelForm):
                 raise forms.ValidationError(
                     "این کد ملی قبلاً برای این رویداد ثبت شده است."
                 )
-               # Check in RegistrationParticipant / Participant model
+            # Check in RegistrationParticipant / Participant model
             if RegisteredParticipant.objects.filter(
                 registration=registration,
                 participant__national_id=national_id
@@ -139,4 +139,16 @@ class GuestForm(forms.ModelForm):
             self.fields['registration'].queryset = (
                 Registration.objects.filter(user=user,status='pending')
             )
-        
+
+class GuestEditForm(forms.ModelForm):
+    class Meta:
+        model = Guest
+        fields = ['full_name', 'national_id', 'relation', 'is_reserved'] 
+
+        widgets = {
+            'is_reserved': forms.CheckboxInput(attrs={'class': 'participant-checkbox'}),
+          }
+    
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)

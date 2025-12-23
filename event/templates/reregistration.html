@@ -44,15 +44,27 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% comment %} for Prticipant table section {% endcomment %}
                     {% for participant, form in participant_forms %}
+                        <tr>
+                            <td>{{ forloop.counter|persian_digits }}</td>
+                            <td>{{ participant.full_name }}</td>
+                            <td>{{ participant.national_id|persian_digits }}</td>
+                            <td>{{ participant.get_relation_display }}</td>
+                            <td>{{ form.is_reserved }}</td>
+                        </tr>
+                    {% endfor %}
+                    {% comment %} for guest table section {% endcomment %}
+                    {% for guest,form in guest_forms%}
                     <tr>
-                        <td>{{ forloop.counter|persian_digits }}</td>
-                        <td>{{ participant.full_name }}</td>
-                        <td>{{ participant.national_id|persian_digits }}</td>
-                        <td>{{ participant.get_relation_display }}</td>
+                        <td>{{ forloop.counter|add:participants_count|persian_digits }}</td>
+                        <td>{{ form.full_name }}</td>
+                        <td><input type="text" name="{{ form.national_id.html_name }}" value="{{ form.national_id.value|default_if_none:''|persian_digits }}"></td>
+                        {% comment %} <td><input type="text" name="{{ form.national_id.name }}" value="{{ form.national_id.value|default_if_none:''|persian_digits }}"></td> {% endcomment %}
+                        <td>{{ form.relation }}</td>
                         <td>{{ form.is_reserved }}</td>
                     </tr>
-                    {% endfor %}
+                    {%endfor%}
                 </tbody>
             </table>
 

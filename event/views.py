@@ -2,7 +2,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import Participant, RegisteredParticipant, Registration, Course,Guest
 from django.contrib.auth.decorators import login_required
-from .forms import ParticipantActiveForm,GuestForm
+from .forms import ParticipantActiveForm,GuestForm,GuestEditForm
 from django.contrib import messages
 from django.db import transaction
 
@@ -67,7 +67,9 @@ def registration_edit_view(request, registration_id):
 
 
     participants = Participant.objects.filter(user=user, is_active=True)
+    participants_count=participants.count()
     courses = Course.objects.all()
+    guests=Guest.objects.filter(registration=registration)
 
     # Preselect current course
     selected_course = registration.course
@@ -85,13 +87,23 @@ def registration_edit_view(request, registration_id):
         )
         for p in participants
     ]
-
+    # guest_forms=[
+    #     (g,GuestForm(
+    #         prefix=str(g.id),
+    #         instance=g
+    #     ))
+    #     for g in guests
+    # ]
+    guest_forms = [
+        (g, GuestEditForm(prefix=str(g.id), instance=g, user=request.user))
+        for g in guests
+    ]
     if request.method == "POST":
         selected_course_id = request.POST.get("course")
-
         if not selected_course_id:
             return render(request, "reregistration.html", {
                 "participant_forms": participant_forms,
+                "guest_forms": guest_forms,
                 "courses": courses,
                 "selected_course": selected_course,
                 "error": "لطفا یک دوره انتخاب کنید."
@@ -100,7 +112,7 @@ def registration_edit_view(request, registration_id):
         selected_course = get_object_or_404(Course, id=selected_course_id)
         selected_event_type = selected_course.event.event_type
 
-        # 🔹 Prevent duplicate registration for the same event type (exclude current registration)
+        #  Prevent duplicate registration for the same event type (exclude current registration)
         already_registered = Registration.objects.filter(
             user=user,
             course__event__event_type=selected_event_type
@@ -111,22 +123,10 @@ def registration_edit_view(request, registration_id):
                 request,
                 "⚠️ شما قبلاً در این رویداد ثبت‌نام کرده‌اید. امکان ثبت‌نام مجدد وجود ندارد."
             )
-            # Rebuild forms and stop execution
-            participant_forms = [
-                (p,ParticipantActiveForm(prefix=str(p.id),
-                        instance=p,
-                        initial={
-                            "is_reserved": RegisteredParticipant.objects.filter(
-                                registration=registration,
-                                participant=p
-                            ).values_list("is_reserved", flat=True).first() or False
-                        }
-                    )
-                )
-                for p in participants
-            ]
+                
             context={
                 'participant_forms': participant_forms,
+                "guest_forms": guest_forms,
                 'courses': courses,
                 "registration": registration,
                 "is_edit": True,
@@ -136,17 +136,17 @@ def registration_edit_view(request, registration_id):
             return render(request, 'reregistration.html',context)
 
         with transaction.atomic():
-            # ✅ Update registration instead of creating
+            # Update registration 
             registration.course = selected_course
             registration.save(update_fields=["course"])
 
+            # Update participant forms
             for p, _ in participant_forms:
                 form = ParticipantActiveForm(
                     request.POST,
                     prefix=str(p.id),
                     instance=p
                 )
-
                 if form.is_valid():
                     is_reserved = form.cleaned_data["is_reserved"]
 
@@ -155,6 +155,17 @@ def registration_edit_view(request, registration_id):
                         participant=p,
                         defaults={"is_reserved": is_reserved}
                     )
+            print("POST KEYS:", list(request.POST.keys()))
+            # Update guest forms
+            for g, _ in guest_forms:
+                form = GuestEditForm(request.POST, prefix=str(g.id), instance=g, user=request.user)
+                if form.is_valid():
+                    guest = form.save(commit=False)
+                    guest.registration = registration 
+                    guest.save()
+            else:
+                print(f"فرم مهمان خطا داد: {form.errors}")
+                
 
         messages.success(request, "✅ اطلاعات ثبت‌نام با موفقیت ویرایش یافت")
         return redirect(
@@ -164,7 +175,9 @@ def registration_edit_view(request, registration_id):
 
     return render(request, "reregistration.html", {
         "participant_forms": participant_forms,
+        "guest_forms": guest_forms,
         "courses": courses,
+        "participants_count" : participants_count,
         "selected_course": selected_course,
         "registration": registration,
         "is_edit": True,
