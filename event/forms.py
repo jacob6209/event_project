@@ -1,5 +1,7 @@
 from django import forms
-from .models import Participant,Guest,Registration
+
+from event.utils import persian_to_english_numbers
+from .models import Participant,Guest,Registration,RegisteredParticipant
 
 class ParticipantActiveForm(forms.ModelForm):
     class Meta:
@@ -66,10 +68,13 @@ class GuestForm(forms.ModelForm):
                 'required': '* لطفا نسبت را وارد کنید.',
             }
         }
+    
         
             # Custom validation for national_id
     def clean_national_id(self):
         national_id = self.cleaned_data.get('national_id')
+        national_id = persian_to_english_numbers(national_id)
+        print(national_id)
         if not national_id:  # empty field
             raise forms.ValidationError("* لطفا کد ملی  را وارد کنید.")
         if not national_id.isdigit():
@@ -110,10 +115,18 @@ class GuestForm(forms.ModelForm):
             )
         # --- DUPLICATE NATIONAL ID ---
         if national_id and registration:
-            # Check if the combination already exists
+            # Check in Guest model
             if Guest.objects.filter(national_id=national_id, registration=registration).exists():
                 raise forms.ValidationError(
                     "این کد ملی قبلاً برای این رویداد ثبت شده است."
+                )
+               # Check in RegistrationParticipant / Participant model
+            if RegisteredParticipant.objects.filter(
+                registration=registration,
+                participant__national_id=national_id
+            ).exists():
+                raise forms.ValidationError(
+                    "این کد ملی قبلاً به عنوان شرکت‌کننده برای این رویداد ثبت شده است."
                 )
         return cleaned_data
     

@@ -25,7 +25,13 @@ def number_to_farsi(n):
     }
     return farsi_numbers.get(n, str(n))
 
-
+def persian_to_english_numbers(s):
+    if not s:
+        return s
+    persian_numbers = '۰۱۲۳۴۵۶۷۸۹'
+    english_numbers = '0123456789'
+    translation_table = str.maketrans(persian_numbers, english_numbers)
+    return s.translate(translation_table)
 
 
 
