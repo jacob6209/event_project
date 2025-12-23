@@ -8,7 +8,6 @@
     <!-- Link to local CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/message.css' %}">
-
     <title>{% block title %}Page Title{% endblock %}</title>
 
     {% block head %}
@@ -20,7 +19,7 @@
     <header>
         <nav>
             <ul>
-                <li><a href="{% url 'index' %}">خانه</a></li>
+                <li><a href="{% url 'index' %}"> <i class="fa-solid fa-house"></i>خانه</a></li>
                 <li><a href="{% url 'my_events' %}">رویدادهای من</a></li>
                 <li><a href="{% url 'registration_guest' %}">درخواست ثبت مهمان</a></li>
                 <li><a href="{% url 'reregistration' %}">نام نویسی دوره</a></li>

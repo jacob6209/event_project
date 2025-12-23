@@ -85,15 +85,30 @@ class GuestForm(forms.ModelForm):
         
         national_id = cleaned_data.get('national_id')
         registration = cleaned_data.get('registration')
+        # جلوگیری از کرش برنامه اگر رجیستریشن خالی باشد
+        if not registration:
+            return cleaned_data        
+        event = registration.event
 
-
-        # Check if max number of guests is reached
-        current_guests_count = Guest.objects.filter(registration=registration).count()
+         # --- TOTAL GUEST CAPACITY ---
+        current_guests_count = Guest.objects.filter(registration=registration,status="accepted").count()
         if registration.event.max_guests is not None and current_guests_count >= registration.event.max_guests:
             raise forms.ValidationError(
-                "تعداد مهمانان این دوره به حداکثر رسیده است."
+                "ظرفیت پذیرش مهمان تکمیل شده است"
             )
+        # --- PER USER GUEST LIMIT ---
+        user_guest_count = Guest.objects.filter(
+            registration__user=self.user,
+            registration__course__event=registration.event
+            # registration=registration,
+        ).count()
+        print(f'user_guest_count====>{user_guest_count}')
 
+        if user_guest_count >= event.max_guests_per_user:
+            raise forms.ValidationError(
+                "سقف درخواست شما برای ثبت مهمان در این رویداد تکمیل شده است"
+            )
+        # --- DUPLICATE NATIONAL ID ---
         if national_id and registration:
             # Check if the combination already exists
             if Guest.objects.filter(national_id=national_id, registration=registration).exists():
@@ -105,6 +120,7 @@ class GuestForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        self.user = user #Save the user 
 
         if user:
             self.fields['registration'].queryset = (

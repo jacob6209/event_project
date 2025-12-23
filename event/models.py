@@ -22,6 +22,7 @@ class Event(models.Model):
     max_guests = models.PositiveIntegerField(default=0)     
     requires_approval = models.BooleanField(default=False)
     max_capacity = models.PositiveIntegerField(default=10)
+    max_guests_per_user = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.title} ({self.event_type})"
@@ -38,6 +39,7 @@ class Course(models.Model):
 
     def __str__(self):
         return f"{self.event.title} - {self.title}"
+    
 
 
 class Priority(models.Model):
@@ -84,10 +86,10 @@ class Guest(models.Model):
     def clean(self):
         # ----- COURSE CAPACITY -----
         participants_count = RegisteredParticipant.objects.filter(
-            registration__course=self.registration.course
+            registration__course=self.registration.course,status="accepted"
         ).count()
         guests_count = Guest.objects.filter(
-            registration__course=self.registration.course
+            registration__course=self.registration.course,status="accepted"
         ).count()
         total_people = participants_count + guests_count
         event = self.registration.course.event
@@ -97,20 +99,22 @@ class Guest(models.Model):
                 "ثبت مهمان برای این رویداد غیر فعال است"
             )
         if total_people >= self.registration.course.max_capacity:
-            raise ValidationError("متاسفانه ظرفیت این دوره تکمیل شده است")
+            raise ValidationError("متاسفانه ظرفیت پذیرش دوره تکمیل شده است")
 
         # ----- EVENT CAPACITY -----
         
 
         participants_count = RegisteredParticipant.objects.filter(
-            registration__course__event=event
+            registration__course__event=event,
+            status="accepted"
         ).count()
         guests_count = Guest.objects.filter(
-            registration__course__event=event
+            registration__course__event=event,status="accepted"
         ).count()
+        print(f'----> im here gust accepteted count in guest table {guests_count}')
         total_people = participants_count + guests_count
         if total_people >= event.max_capacity:
-            raise ValidationError(" متاسفانه ظرفیت رویداد تکمیل شده است")
+            raise ValidationError(" متاسفانه ظرفیت پذیرش رویداد تکمیل شده است")
 
         
     

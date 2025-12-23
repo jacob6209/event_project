@@ -76,7 +76,11 @@
                 <span class="status-rejected">✖ رزرو نشود</span>
               {% endif %}
             </td>
-            <td>{{ item.get_status_display }}</td>
+            <td class="{% if item.status == 'pending' %}status-pending
+            {% elif item.status == 'accepted' %}status-accepted
+            {% elif item.status == 'rejected' %}status-rejected
+            {% elif item.status == 'canceled' %}status-canceled
+            {% endif %}">{{ item.get_status_display }}</td>
           </tr>
         {% empty %}
           {% if not participants and not guests %}
@@ -100,7 +104,11 @@
                 <span class="status-rejected">✖ رزرو نشود</span>
               {% endif %}
             </td>
-            <td>{{guest.get_status_display }}</td>
+            <td class="{% if guest.status == 'pending' %}status-pending
+            {% elif guest.status == 'accepted' %}status-accepted
+            {% elif guest.status == 'rejected' %}status-rejected
+            {% elif guest.status == 'canceled' %}status-canceled
+            {% endif %}">{{guest.get_status_display }}</td>
           </tr>
         {% endfor %}
       {% endif %}
