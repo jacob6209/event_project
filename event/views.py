@@ -134,11 +134,13 @@ def registration_edit_view(request, registration_id):
                 'selected_course': selected_course,
             }
             return render(request, 'reregistration.html',context)
-
+        bound_participant_forms = []
+        bound_guest_forms = []
+        has_error = False
         with transaction.atomic():
             # Update registration 
             registration.course = selected_course
-            registration.save(update_fields=["course"])
+            registration.save(update_fields=["course"]) 
 
             # Update participant forms
             for p, _ in participant_forms:
@@ -147,6 +149,7 @@ def registration_edit_view(request, registration_id):
                     prefix=str(p.id),
                     instance=p
                 )
+                bound_participant_forms.append((p, form))
                 if form.is_valid():
                     is_reserved = form.cleaned_data["is_reserved"]
 
@@ -155,33 +158,49 @@ def registration_edit_view(request, registration_id):
                         participant=p,
                         defaults={"is_reserved": is_reserved}
                     )
-            print("POST KEYS:", list(request.POST.keys()))
             # Update guest forms
             for g, _ in guest_forms:
                 form = GuestEditForm(request.POST, prefix=str(g.id), instance=g, user=request.user)
+                
+                bound_guest_forms.append((g, form))
                 if form.is_valid():
                     guest = form.save(commit=False)
                     guest.registration = registration 
                     guest.save()
-            else:
-                print(f"فرم مهمان خطا داد: {form.errors}")
+                else:
+                    has_error = True
+                    for error in form.non_field_errors():
+                        messages.error(request, error)
                 
-
+        if has_error:
+            return render(request, "reregistration.html", {
+                "participant_forms": bound_participant_forms,
+                "guest_forms": bound_guest_forms,
+                # "participant_forms": participant_forms,
+                # "guest_forms": guest_forms,
+                "courses": courses,
+                "participants_count" : participants_count,
+                "selected_course": selected_course,
+                "registration": registration,
+                "is_edit": True,
+            })
+        
         messages.success(request, "✅ اطلاعات ثبت‌نام با موفقیت ویرایش یافت")
         return redirect(
             "registration_lookup",
             code=registration.transaction_id
         )
-
     return render(request, "reregistration.html", {
-        "participant_forms": participant_forms,
-        "guest_forms": guest_forms,
-        "courses": courses,
-        "participants_count" : participants_count,
-        "selected_course": selected_course,
-        "registration": registration,
-        "is_edit": True,
-    })
+            "participant_forms": participant_forms,
+            "guest_forms": guest_forms,
+            "courses": courses,
+            "participants_count" : participants_count,
+            "selected_course": selected_course,
+            "registration": registration,
+            "is_edit": True,
+        })
+
+    
 
 @login_required
 def reregistration_view(request):

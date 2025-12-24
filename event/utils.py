@@ -33,7 +33,13 @@ def persian_to_english_numbers(s):
     translation_table = str.maketrans(persian_numbers, english_numbers)
     return s.translate(translation_table)
 
-
+def english_to_persian_numbers(s):
+    if not s:
+        return s
+    english_numbers = '0123456789'
+    persian_numbers = '۰۱۲۳۴۵۶۷۸۹'
+    translation_table = str.maketrans(english_numbers, persian_numbers)
+    return s.translate(translation_table)
 
 # def calculate_priority_score(participant, event_type):
 #     score = 0

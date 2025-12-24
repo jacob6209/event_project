@@ -685,3 +685,35 @@ tbody td {
 tbody tr:hover {
     background-color: #f9f9f9;
 }
+
+
+/* used for Show Error in registration file input text in table  */
+
+td {
+    vertical-align: top;
+}
+
+.input-wrapper {
+    position: relative;
+    display: block;
+}
+
+.input-wrapper input {
+    display: block;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.errorlist {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12px;
+    line-height: 1.2;
+    color: #fd4a14;
+}

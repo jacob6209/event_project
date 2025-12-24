@@ -1,6 +1,6 @@
 from django import forms
 
-from event.utils import persian_to_english_numbers
+from event.utils import english_to_persian_numbers, persian_to_english_numbers
 from .models import Participant,Guest,Registration,RegisteredParticipant
 
 class ParticipantActiveForm(forms.ModelForm):
@@ -75,7 +75,6 @@ class GuestForm(forms.ModelForm):
     def clean_national_id(self):
         national_id = self.cleaned_data.get('national_id')
         national_id = persian_to_english_numbers(national_id)
-        print(national_id)
         if not national_id:  # empty field
             raise forms.ValidationError("* لطفا کد ملی  را وارد کنید.")
         if not national_id.isdigit():
@@ -149,6 +148,79 @@ class GuestEditForm(forms.ModelForm):
             'is_reserved': forms.CheckboxInput(attrs={'class': 'participant-checkbox'}),
           }
     
+    def clean_national_id(self):
+        national_id = self.cleaned_data.get('national_id')
+        national_id = persian_to_english_numbers(national_id)
+        
+        print(national_id)
+        if not national_id:  # empty field
+            raise forms.ValidationError("*لطفا کد ملی را وارد کنید.")
+        if not national_id.isdigit():
+            raise forms.ValidationError("*کد ملی باید عددی باشد.")
+        if len(national_id) != 10:
+            raise forms.ValidationError("*کد ملی 10 رقمی است.")
+        
+        #  check if dublicate national_id
+        if Guest.objects.filter(
+            national_id=national_id
+        ).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError(
+                "این کد ملی قبلا ثبت شده است"
+            )
+        return national_id
+    def clean(self):
+        cleaned_data = super().clean()
+        if not cleaned_data:
+            cleaned_data = {}
+        
+        national_id = cleaned_data.get('national_id')
+        registration = self.instance.registration
+        print(f'im here this is my registration===>{registration}')
+        # جلوگیری از کرش برنامه اگر رجیستریشن خالی باشد
+        if not registration:
+            return cleaned_data        
+        event = registration.event
+
+         # --- TOTAL GUEST CAPACITY ---
+        current_guests_count = Guest.objects.filter(registration=registration,status="accepted").count()
+        if registration.event.max_guests is not None and current_guests_count >= registration.event.max_guests:
+            raise forms.ValidationError(
+                "ظرفیت پذیرش مهمان تکمیل شده است"
+            )
+        # --- PER USER GUEST LIMIT ---
+        user_guest_count = Guest.objects.filter(
+            registration__user=self.user,
+            registration__course__event=registration.event
+            # registration=registration,
+        ).count()
+
+        if user_guest_count >= event.max_guests_per_user:
+            raise forms.ValidationError(
+                "سقف درخواست شما برای ثبت مهمان در این رویداد تکمیل شده است"
+            )
+        # --- DUPLICATE NATIONAL ID ---
+        if national_id and registration:
+            normalized_national_id = persian_to_english_numbers(national_id)
+            # Check in Guest model
+            if Guest.objects.filter(national_id=normalized_national_id, registration=registration).exists():
+                raise forms.ValidationError(
+                    "این کد ملی قبلاً برای این رویداد ثبت شده است."
+                )
+            # Check in RegistrationParticipant / Participant model
+            if RegisteredParticipant.objects.filter(
+                 participant__national_id__in=[
+                    normalized_national_id,
+                    english_to_persian_numbers(normalized_national_id)
+        ]
+            ).exists():
+                raise forms.ValidationError(
+                    "این کد ملی قبلاً به عنوان شرکت‌کننده برای این رویداد ثبت شده است."
+                )
+        return cleaned_data
+    
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.national_id:
+             self.initial['national_id'] = persian_to_english_numbers(self.instance.national_id)
