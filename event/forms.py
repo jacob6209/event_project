@@ -25,12 +25,11 @@ class GuestForm(forms.ModelForm):
 
     class Meta:
         model = Guest
-        fields = ["registration",'full_name', 'national_id', 'relation',"is_reserved"]
+        fields = ["registration",'full_name', 'national_id', 'relation']
         
     
         # Custom widgets for nicer UI
         widgets = {
-            'is_reserved': forms.CheckboxInput(attrs={'class': 'participant-checkbox'}),
             'full_name': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'title': 'نام و نام خانوادگی مهمان را وارد کنید'
@@ -152,21 +151,13 @@ class GuestEditForm(forms.ModelForm):
         national_id = self.cleaned_data.get('national_id')
         national_id = persian_to_english_numbers(national_id)
         
-        print(national_id)
         if not national_id:  # empty field
             raise forms.ValidationError("*لطفا کد ملی را وارد کنید.")
         if not national_id.isdigit():
             raise forms.ValidationError("*کد ملی باید عددی باشد.")
         if len(national_id) != 10:
             raise forms.ValidationError("*کد ملی 10 رقمی است.")
-        
-        #  check if dublicate national_id
-        if Guest.objects.filter(
-            national_id=national_id
-        ).exclude(pk=self.instance.pk).exists():
-            raise forms.ValidationError(
-                "این کد ملی قبلا ثبت شده است"
-            )
+       
         return national_id
     def clean(self):
         cleaned_data = super().clean()
@@ -175,34 +166,15 @@ class GuestEditForm(forms.ModelForm):
         
         national_id = cleaned_data.get('national_id')
         registration = self.instance.registration
-        print(f'im here this is my registration===>{registration}')
-        # جلوگیری از کرش برنامه اگر رجیستریشن خالی باشد
         if not registration:
             return cleaned_data        
-        event = registration.event
-
-         # --- TOTAL GUEST CAPACITY ---
-        current_guests_count = Guest.objects.filter(registration=registration,status="accepted").count()
-        if registration.event.max_guests is not None and current_guests_count >= registration.event.max_guests:
-            raise forms.ValidationError(
-                "ظرفیت پذیرش مهمان تکمیل شده است"
-            )
-        # --- PER USER GUEST LIMIT ---
-        user_guest_count = Guest.objects.filter(
-            registration__user=self.user,
-            registration__course__event=registration.event
-            # registration=registration,
-        ).count()
-
-        if user_guest_count >= event.max_guests_per_user:
-            raise forms.ValidationError(
-                "سقف درخواست شما برای ثبت مهمان در این رویداد تکمیل شده است"
-            )
         # --- DUPLICATE NATIONAL ID ---
         if national_id and registration:
             normalized_national_id = persian_to_english_numbers(national_id)
             # Check in Guest model
-            if Guest.objects.filter(national_id=normalized_national_id, registration=registration).exists():
+            if Guest.objects.filter(national_id=normalized_national_id,
+                                    registration=registration).exclude(pk=self.instance.pk).exists():
+                print(f'duplicated field======>{national_id}')
                 raise forms.ValidationError(
                     "این کد ملی قبلاً برای این رویداد ثبت شده است."
                 )
