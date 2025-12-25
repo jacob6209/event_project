@@ -40,15 +40,20 @@ def register_guest(request):
 
 @login_required
 def delete_guest(request, guest_id):
-    guest = get_object_or_404(Guest,id=guest_id,registration__user=request.user,status="pending")
-    print(f'===> guest id to delete: {guest.id}')
-
-    if request.method == 'GET':  # یا بدون چک method
-        guest.delete()
-        messages.success(request, 'مهمان با موفقیت حذف شد.')
+    try:
+        guest = Guest.objects.get(
+            id=guest_id,
+            registration__user=request.user,
+            status="pending"
+        )
+        if request.method =='GET': 
+            guest.delete()
+            messages.success(request, 'مهمان با موفقیت حذف شد.')
+    except Guest.DoesNotExist:
+        messages.error(request, 'مهمان مورد نظر یافت نشد یا شما دسترسی لازم برای حذف آن را ندارید.')
         
-
     return redirect(guest.get_absolute_url())
+    
         
 
 @login_required
