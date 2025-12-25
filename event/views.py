@@ -5,7 +5,18 @@ from django.contrib.auth.decorators import login_required
 from .forms import ParticipantActiveForm,GuestForm,GuestEditForm
 from django.contrib import messages
 from django.db import transaction
+from django.contrib.admin.views.decorators import staff_member_required
 
+# stuff View
+@login_required
+def stuff_events(request):
+    if not request.user.is_staff:
+        messages.error(request, "شما اجازه دسترسی به این صفحه را ندارید.")
+        return render(request, "registration_not_found.html")
+    return render(request,"stuff_events.html")
+
+
+# User View
 @login_required
 def register_guest(request):
     """
@@ -53,9 +64,7 @@ def delete_guest(request, guest_id):
         messages.error(request, 'مهمان مورد نظر یافت نشد یا شما دسترسی لازم برای حذف آن را ندارید.')
         
     return redirect(guest.get_absolute_url())
-    
-        
-
+           
 @login_required
 def registration_delete_view(request, registration_id):
     registration = get_object_or_404(
@@ -226,8 +235,6 @@ def registration_edit_view(request, registration_id):
             "is_edit": True,
         })
 
-    
-
 @login_required
 def reregistration_view(request):
     user = request.user
@@ -364,9 +371,3 @@ def my_events_view(request):
         "my_events.html",
         {"registrations": registrations}
     )
-# def registration_lookup_form(request):
-#     if request.method == "POST":
-#         code = request.POST.get("code")
-#         return redirect("registration_lookup", code=code)
-
-#     return render(request, "registration_lookup_form.html")

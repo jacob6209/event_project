@@ -8,6 +8,7 @@
     <!-- Link to local CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/message.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
     <title>{% block title %}Page Title{% endblock %}</title>
 
     {% block head %}
@@ -15,46 +16,91 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header>
         <nav>
             <ul>
-                <li><a href="{% url 'index' %}"> <i class="fa-solid fa-house"></i>خانه</a></li>
+                <!-- Home -->
+                <li>
+                    <a href="{% url 'index' %}">
+                        <i class="fa-solid fa-house"></i> خانه
+                    </a>
+                </li>
+    
                 {% if user.is_staff %}
-                        <li><a href="">رویدادها</a></li>
-                        <li><a href="">تنظیمات</a></li>
-                        <li><a href="">گزارش‌ها </a> </li>
-                {% elif user.is_authenticated%}
-                        <li><a href="{% url 'my_events' %}">رویدادهای من</a></li>
-                        <li><a href="{% url 'registration_guest' %}">درخواست ثبت مهمان</a></li>
-                        <li><a href="{% url 'reregistration' %}">نام نویسی دوره</a></li>
-                        <!-- STAFF MENU -->  
+                    <!-- Staff Menu -->
+                    <li>
+                        <a href="{% url 'stuff_events' %}">
+                            <i class="fa-solid fa-calendar-days"></i> رویدادها
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-gear"></i> تنظیمات
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-chart-line"></i> گزارش‌ها
+                        </a>
+                    </li>
+    
+                {% elif user.is_authenticated %}
+                    <!-- Regular Authenticated User Menu -->
+                    <li>
+                        <a href="{% url 'my_events' %}">
+                            <i class="fa-solid fa-calendar-check"></i> رویدادهای من
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'registration_guest' %}">
+                            <i class="fa-solid fa-user-plus"></i> درخواست ثبت مهمان
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'reregistration' %}">
+                            <i class="fa-solid fa-pen-to-square"></i> نام نویسی دوره
+                        </a>
+                    </li>
                 {% endif %}
-
+    
+                <!-- User Info & Logout -->
                 {% if user.is_authenticated %}
-                    <li><a href="#" class="user-info">
-                        کاربر فعال 
-                        {% if user.first_name and user.last_name %}
-                            {{ user.first_name }} {{ user.last_name }}
-                        {% elif user.first_name %}
-                            {{ user.first_name }}
-                        {% else %}
-                            {{ user.username }}
-                        {% endif %}
-                    </a></li>
+                    <li>
+                        <a href="#" class="user-info">
+                            <i class="fa-solid fa-user"></i> کاربر فعال:
+                            {% if user.first_name and user.last_name %}
+                                {{ user.first_name }} {{ user.last_name }}
+                            {% elif user.first_name %}
+                                {{ user.first_name }}
+                            {% else %}
+                                {{ user.username }}
+                            {% endif %}
+                        </a>
+                    </li>
                     <li>
                         <form method="POST" action="{% url 'account_logout' %}" class="logout-form">
                             {% csrf_token %}
-                            <button type="submit" class="logout-btn">خروج</button>
+                            <button type="submit" class="logout-btn">
+                                <i class="fa-solid fa-right-from-bracket"></i> خروج
+                            </button>
                         </form>
                     </li>
                 {% else %}
-                    <li><a href="{% url 'account_login' %}">ورود</a></li>
-                    <li><a href="{% url 'account_signup' %}">ثبت نام در سامانه</a></li>
+                    <li>
+                        <a href="{% url 'account_login' %}">
+                            <i class="fa-solid fa-right-to-bracket"></i> ورود
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'account_signup' %}">
+                            <i class="fa-solid fa-user-plus"></i> ثبت نام در سامانه
+                        </a>
+                    </li>
                 {% endif %}
             </ul>
         </nav>
     </header>
+    
         <!-- Messages -->
         {% block messages %}
             <!-- Toast container -->

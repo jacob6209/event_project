@@ -753,4 +753,15 @@ td {
 .is-invalid {
     border-color: red;
 }
-/* header Submenue */
+/* font fa-solid for icon  */
+/* Apply BYekan only to text elements */
+/* Your custom font for text */
+body, p, h1, h2, h3, h4, h5, h6, span, div, a, label, input, select, textarea {
+    font-family: 'BYekan', sans-serif;
+}
+
+/* Ensure Font Awesome icons use the correct font */
+i.fa, i.fas, i.far, i.fab {
+    font-family: "Font Awesome 6 Free"; /* for solid icons */
+    font-weight: 900; /* necessary for solid icons */
+}
