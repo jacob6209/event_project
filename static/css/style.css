@@ -750,3 +750,6 @@ td {
     pointer-events: none;
     background-color: #e9ecef;
 }
+.is-invalid {
+    border-color: red;
+}

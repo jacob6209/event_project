@@ -16,7 +16,10 @@ class GuestForm(forms.ModelForm):
         queryset=Registration.objects.none(),
         label="دوره ثبت‌نام‌شده",
         empty_label="انتخاب دوره",
-        widget=forms.Select(attrs={'class': 'form-control'}),
+        widget=forms.Select(attrs={
+        'class': 'form-control',
+        'required': 'required', 
+        }),
         error_messages={
         'required': '* انتخاب دوره الزامی است',
         'invalid_choice': 'دوره انتخاب‌شده معتبر نیست.',
@@ -82,17 +85,16 @@ class GuestForm(forms.ModelForm):
             raise forms.ValidationError("* کد ملی باید دقیقا ۱۰ رقم باشد.")
         return national_id
     
+    
     def clean(self):
         cleaned_data = super().clean()
-        if not cleaned_data:
-            cleaned_data = {}
-        
-        national_id = cleaned_data.get('national_id')
-        registration = cleaned_data.get('registration')
-        # جلوگیری از کرش برنامه اگر رجیستریشن خالی باشد
+        registration = cleaned_data.get("registration")
+
         if not registration:
-            return cleaned_data        
-        event = registration.event
+            raise forms.ValidationError("لطفا یک دوره را انتخاب کنید.")
+        
+        national_id = cleaned_data.get('national_id')     
+        event = registration.course.event
 
          # --- TOTAL GUEST CAPACITY ---
         current_guests_count = Guest.objects.filter(registration=registration,status="accepted").count()

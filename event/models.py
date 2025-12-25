@@ -1,3 +1,4 @@
+from django import forms
 from django.forms import ValidationError
 from django.db import models
 import random
@@ -67,7 +68,7 @@ class Guest(models.Model):
     registration = models.ForeignKey(
     "Registration",
     on_delete=models.CASCADE,
-    related_name='guests'
+    related_name='guests',
     )
     full_name = models.CharField(max_length=200,blank=False,null=False)
     national_id = models.CharField(max_length=20,blank=False,null=False)
@@ -75,6 +76,12 @@ class Guest(models.Model):
     is_active = models.BooleanField(default=True)
     is_reserved = models.BooleanField(default=True)
 
+    def get_absolute_url(self):
+        return reverse(
+            "registration_edit",
+            kwargs={"registration_id": self.registration.id}
+        )
+    
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -84,6 +91,8 @@ class Guest(models.Model):
         ]
     
     def clean(self):
+        cleaned_data = super().clean()  # always call super
+        # safe to validate other fields with registration here
         # ----- COURSE CAPACITY -----
         participants_count = RegisteredParticipant.objects.filter(
             registration__course=self.registration.course,status="accepted"
@@ -115,6 +124,8 @@ class Guest(models.Model):
         total_people = participants_count + guests_count
         if total_people >= event.max_capacity:
             raise ValidationError(" متاسفانه ظرفیت پذیرش رویداد تکمیل شده است")
+        
+        return cleaned_data
 
         
     

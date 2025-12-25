@@ -41,6 +41,7 @@
                         <th>کد ملی</th>
                         <th>نسبت</th>
                         <th>رزرو شود / نشود</th>
+                        <th>*</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,11 +67,12 @@
                         
                         </td>
                         <td class="field-cell">
-    <div class="input-wrapper">
-        {{ form.national_id }}
-        <div class="field-error">
-            {{ form.national_id.errors }}
-        </div>
+                            <div class="input-wrapper">
+                                {{ form.national_id }}
+                                <div class="field-error">
+                                    {{ form.national_id.errors }}
+                                </div>
+                            </div>
                         <td class="field-cell">
                             <div class="input-wrapper">
                                 {{ form.relation }}
@@ -80,6 +82,12 @@
                             </div>
                         </td>
                         <td>{{ form.is_reserved }}</td>
+                        <td>
+                            <a href="{% url 'delete_guest' guest.id %}" class="btn-delete"
+                                onclick="return confirm('آیا از حذف این مهمان مطمئن هستید؟');">
+                                🗑️ حذف
+                            </a>
+                        </td>
                     </tr>
                     {%endfor%}
                 </tbody>

@@ -15,13 +15,18 @@ def register_guest(request):
     """
     if request.method == 'POST':
         form = GuestForm(request.POST,user=request.user)
+        
         if form.is_valid():
-            guest=form.save()
+            guest = form.save(commit=False)
+            print ("im here ..1..")
+            if not guest.registration:
+                print ("im here ..2..")
+                messages.error(request, "لطفا یک دوره را انتخاب کنید")
+                return redirect('registration_guest')
+            guest.save()
             messages.success(request, "اطلاعات مهمان جدید با موفقیت ثبت شد")
             return redirect(guest.registration.get_absolute_url())
-       
-
-        # Forward ALL form errors to messages
+        
         for field, errors in form.errors.items():
             for error in errors:
                 messages.error(request, error)
@@ -32,6 +37,19 @@ def register_guest(request):
         'form': form
     }
     return render(request, 'registration_guest.html', context)
+
+@login_required
+def delete_guest(request, guest_id):
+    guest = get_object_or_404(Guest,id=guest_id,registration__user=request.user,status="pending")
+    print(f'===> guest id to delete: {guest.id}')
+
+    if request.method == 'GET':  # یا بدون چک method
+        guest.delete()
+        messages.success(request, 'مهمان با موفقیت حذف شد.')
+        
+
+    return redirect(guest.get_absolute_url())
+        
 
 @login_required
 def registration_delete_view(request, registration_id):
