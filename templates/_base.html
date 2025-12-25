@@ -20,9 +20,17 @@
         <nav>
             <ul>
                 <li><a href="{% url 'index' %}"> <i class="fa-solid fa-house"></i>خانه</a></li>
-                <li><a href="{% url 'my_events' %}">رویدادهای من</a></li>
-                <li><a href="{% url 'registration_guest' %}">درخواست ثبت مهمان</a></li>
-                <li><a href="{% url 'reregistration' %}">نام نویسی دوره</a></li>
+                {% if user.is_staff %}
+                        <li><a href="">رویدادها</a></li>
+                        <li><a href="">تنظیمات</a></li>
+                        <li><a href="">گزارش‌ها </a> </li>
+                {% elif user.is_authenticated%}
+                        <li><a href="{% url 'my_events' %}">رویدادهای من</a></li>
+                        <li><a href="{% url 'registration_guest' %}">درخواست ثبت مهمان</a></li>
+                        <li><a href="{% url 'reregistration' %}">نام نویسی دوره</a></li>
+                        <!-- STAFF MENU -->  
+                {% endif %}
+
                 {% if user.is_authenticated %}
                     <li><a href="#" class="user-info">
                         کاربر فعال 
