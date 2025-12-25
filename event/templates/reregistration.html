@@ -19,7 +19,7 @@
             <!-- Course Selection -->
             <div class="form-group">
                 <label for="course">دوره انتخابی</label>
-                <select name="course" id="course" class="form-control" required>
+                <select name="course" id="course" class="form-control {% if is_edit %}course-locked{% endif %}" required >
                     <option value="" disabled {% if not selected_course %} selected {% endif %}>
                         انتخاب دوره
                     </option>
@@ -57,26 +57,20 @@
                     {% comment %} for guest table section {% endcomment %}
                     {% for guest,form in guest_forms%}
                     <tr>
-                        <td class="row-num">{{ forloop.counter|add:participants_count|persian_digits }}</td>
-                    
+                        <td>{{ forloop.counter|add:participants_count|persian_digits }}</td>
                         <td class="field-cell">
                             <div class="input-wrapper">
                                 {{ form.full_name }}
-                                <div class="field-error">
-                                    {{ form.full_name.errors }}
-                                </div>
+                                {{ form.full_name.errors }}
                             </div>
+                        
                         </td>
-                    
                         <td class="field-cell">
-                            <div class="input-wrapper">
-                                {{ form.national_id }}
-                                <div class="field-error">
-                                    {{ form.national_id.errors }}
-                                </div>
-                            </div>
-                        </td>
-                    
+    <div class="input-wrapper">
+        {{ form.national_id }}
+        <div class="field-error">
+            {{ form.national_id.errors }}
+        </div>
                         <td class="field-cell">
                             <div class="input-wrapper">
                                 {{ form.relation }}
@@ -85,10 +79,8 @@
                                 </div>
                             </div>
                         </td>
-                    
                         <td>{{ form.is_reserved }}</td>
                     </tr>
-                    
                     {%endfor%}
                 </tbody>
             </table>

@@ -98,13 +98,16 @@ def registration_edit_view(request, registration_id):
         (g, GuestEditForm(prefix=str(g.id), instance=g, user=request.user))
         for g in guests
     ]
+    # ToDo i have to Handle Unexpected Error 
     if request.method == "POST":
         selected_course_id = request.POST.get("course")
         if not selected_course_id:
             return render(request, "reregistration.html", {
+                "participants_count": participants_count,
                 "participant_forms": participant_forms,
                 "guest_forms": guest_forms,
                 "courses": courses,
+                "is_edit": True,
                 "selected_course": selected_course,
                 "error": "لطفا یک دوره انتخاب کنید."
             })

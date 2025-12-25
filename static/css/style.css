@@ -1,4 +1,6 @@
-/* ================= FONT ================= */
+/* style.css - CLEAN VERSION */
+
+/* Import font family */
 @font-face {
     font-family: "BYekan";
     src: url("../fonts/BYekan+.ttf");
@@ -9,7 +11,7 @@
     font-weight: bold;
 }
 
-/* ================= RESET ================= */
+/* Reset and Base Styles */
 * {
     font-family: 'BYekan', sans-serif;
     line-height: 1.6rem;
@@ -20,7 +22,7 @@
 
 html, body {
     height: 100%;
-    direction: rtl;
+    direction: rtl;  /* RTL for Persian */
 }
 
 body {
@@ -30,203 +32,721 @@ body {
     background-color: #f8f9fa;
 }
 
-/* ================= HEADER ================= */
+/* ========== HEADER / NAVBAR STYLES ========== */
 header {
+    width: 100%;
     background: linear-gradient(to left, #3399ff, #1e90ff);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 header nav {
     max-width: 1200px;
-    margin: auto;
+    margin: 0 auto;
     padding: 10px 20px;
 }
 
 header nav ul {
+    list-style: none;
     display: flex;
     gap: 15px;
-    list-style: none;
-    align-items: center;
+    margin: 0;
+    padding: 10px 0;
     flex-wrap: wrap;
+    align-items: center;
 }
 
+/* All links in navbar */
 header nav ul li a {
     color: white;
     text-decoration: none;
     padding: 8px 16px;
     border-radius: 4px;
     font-weight: bold;
-    transition: .3s;
+    transition: all 0.3s ease;
+    display: inline-block;
 }
 
 header nav ul li a:hover {
-    background-color: rgba(255,255,255,.2);
+    background-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
 }
 
-.logout-btn {
-    background-color: #d9534f;
-    color: #fff;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
+/* User info styling */
+header nav ul li a.user-info {
+    background-color: rgba(255, 255, 255, 0.1);
+    font-weight: normal;
 }
 
-/* ================= MAIN ================= */
+/* Logout form - FIXED */
+.logout-form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+.logout-btn {
+    background-color: #d9534f !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 20px !important;
+    border-radius: 4px !important;
+    font-weight: bold !important;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+    font-family: 'BYekan', sans-serif !important;
+    font-size: 0.9rem !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    min-width: auto !important;
+    margin: 0 !important;
+}
+
+.logout-btn:hover {
+    background-color: #c9302c !important;
+    transform: translateY(-2px) !important;
+}
+
+/* ========== MAIN CONTENT AREA ========== */
 main {
     flex: 1;
     max-width: 1200px;
     margin: 30px auto;
     padding: 0 20px;
+    width: 100%;
 }
 
+/* Container for forms in main content */
 .content-container {
-    background: #fff;
+    background: white;
     border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     padding: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    margin-bottom: 30px;
 }
 
-/* ================= FORMS ================= */
+/* Form styles */
 form:not(.logout-form) {
     max-width: 900px;
     margin: 25px auto;
     padding: 20px;
-    background: #f9f9f9;
+    background-color: #f9f9f9;
     border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-input:not([type="submit"]),
-select,
-textarea {
+/* Fieldsets and legends */
+fieldset {
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 15px;
+}
+
+legend {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #007bff;
+    padding: 0 8px;
+}
+
+/* Participant cards */
+.participant-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    background-color: #ffffff;
+    transition: 0.3s;
+}
+
+/* Alternate card background colors */
+.participant-card:nth-child(even) {
+    background-color: #f7faff;
+}
+
+/* Headings in cards */
+.participant-card h4, .participant-card h5 {
+    color: #007bff;
+    margin-bottom: 8px;
+    font-size: 1.2em;
+}
+
+/* Food forms inside participant card */
+.participant-card .food-form {
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+}
+
+/* Hover effect for food-form */
+.participant-card .food-form:hover {
+    background-color: #e0f0ff;
+    border-color: #007bff;
+}
+
+/* Food form label and inputs */
+.participant-card .food-form input, 
+.participant-card .food-form select, 
+.participant-card .food-form textarea {
     width: 100%;
     padding: 12px;
+    margin-bottom: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
 }
 
+/* Form inputs */
+input:not([type="submit"]), select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Submit button */
 .btn-submit {
-    background: #007bff;
-    color: white;
+    background-color: #007bff;
+    color: #fff;
     font-size: 18px;
     font-weight: bold;
     padding: 12px 30px;
-    border-radius: 5px;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
-    margin: 20px auto;
+    transition: 0.3s;
+    font-family: 'BYekan', sans-serif;
     display: block;
+    margin: 20px auto;
 }
 
 .btn-submit:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 91, 187, 0.3);
 }
 
-/* ================= TABLE ================= */
+/* Horizontal form fields */
+.horizontal-form .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.horizontal-form .form-row > div {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* Horizontal alignment for participant fields only */
+.participant-fields-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.participant-fields-row .form-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* ========== FOOTER STYLES ========== */
+footer {
+    text-align: center;
+    padding: 25px 20px;
+    background-color: #2c3e50;
+    color: white;
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+footer p {
+    margin: 0;
+    color: #ecf0f1;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+    header nav {
+        padding: 0 15px;
+    }
+    
+    header nav ul {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px 0;
+        align-items: stretch;
+    }
+    
+    header nav ul li a,
+    .logout-btn {
+        width: 100%;
+        text-align: center;
+        padding: 10px !important;
+    }
+    
+    .logout-form {
+        width: 100%;
+    }
+    
+    main {
+        padding: 0 15px;
+        margin: 20px auto;
+    }
+    
+    .content-container {
+        padding: 20px 15px;
+    }
+    
+    form:not(.logout-form) {
+        padding: 15px;
+    }
+}
+
+/* Utility Classes */
+.page-title {
+    color: #2c3e50;
+    text-align: center;
+    margin: 20px 0 30px 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #007bff;
+}
+
+/* Alert messages */
+.alert {
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+
+/*  */
+/* style.css */
+
+.main-content {
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+.card {
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-25 {
+    margin-bottom: 25px;
+}
+.mb-20 {
+    margin-bottom: 20px;
+}
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.card h2 {
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
-    font-family: 'BYekan', sans-serif;
-    border: 1px solid #ccc;
+    font-family: sans-serif;
 }
 
+thead tr {
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+th {
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+tbody tr {
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+td {
+    padding: 12px;
+}
+
+.text-center button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.text-center button:hover {
+    background-color: #2980b9;
+}
+
+/* Optional: make checkbox bigger */
+input.participant-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+
+/* Badge-style registration statuses */
+.status-pending {
+    color: rgb(217, 128, 19);
+    font-weight: bold;
+    background-color: #efbd7359;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-accepted {
+    color: #006400;
+    font-weight: bold;
+    background-color: #d4edda;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-rejected {
+    color: rgb(181, 7, 7);
+    font-weight: bold;
+    background-color: #f8d7da;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-canceled {
+    color: #4B4B4B;
+    font-weight: bold;
+    background-color: #e2e2e2;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Notice text under cards */
+.notice-text {
+    margin-top: 15px;
+    color: #004085;
+    text-align: center;
+    font-weight: bold;
+}
+/* Table styling for perfect header alignment */
+table {
+    width: 100%;
+    border-collapse: collapse; /* ensures borders align */
+    font-family: 'BYekan', sans-serif;
+    table-layout: fixed; /* makes columns fixed width */
+}
+
+thead tr {
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+th, td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle; /* ensures text is centered vertically */
+    word-wrap: break-word;
+}
+
+/* Right-align Persian text in first 2 columns */
+td:first-child,
+td:nth-child(2),
+th:first-child,
+th:nth-child(2) {
+    text-align: right;
+}
+
+/* Status column centered */
+td:last-child,
+th:last-child {
+    text-align: center;
+}
+
+/* Optional: alternating row colors */
+tbody tr:nth-child(even) {
+    background-color: #f7faff;
+}
+h4,.page-title {
+    display: inline-block;   /* shrink width to text content */
+    border-bottom: 2px solid rgb(133, 133, 140); /* keeps the line */
+    text-align: right;       /* align text to right */
+    direction: rtl;          /* for Persian text */
+    padding-bottom: 2px;     /* optional spacing between text and line */
+}
+p.notice-text {
+    font-weight: 700; /* کمی پررنگ‌تر از معمول */ 
+    text-align: right;
+}
+
+/* Container for action buttons */
+.card-action {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Edit button */
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #302505;
+    background-color: #ffc506;
+    border: 1px solid #ffc506;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.btn-edit:hover {
+    background-color: #d7830db6;
+    color: #fafafa;
+    transform: translateY(-1px);
+}
+
+/* Delete button */
+.inline-form {
+    margin: 0;
+    display: inline;
+}
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #302505; /* white text for better contrast */
+    background-color: #e74c3c; /* bright red background */
+    border: 1px solid #c0392b; /* darker red border */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b; /* slightly darker on hover */
+    color: #fafafa; /* keep text white */
+    transform: translateY(-1px);
+}
+.btn-delete:active {
+    transform: translateY(0);
+}
+form.no-card {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* ===== Django Error List ===== */
+.errorlist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: #c0392b;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* Input error border */
+input.error,
+select.error,
+textarea.error {
+    border: 1.5px solid #e74c3c !important;
+    background-color: #fff !important; /* فقط سفید، نه صورتی */
+}
+
+/* ===== Error text ===== */
+.guest-page .form-error {
+    margin-top: 2px; /* very close to input */
+    font-size: 0.75rem;
+    color: #dc3545;
+}
+
+/* ===== Guest Card ===== */
+.guest-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Card stays at top */
+    padding-top: 40px; /* distance from top of screen */
+}
+
+.guest-card {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* ===== Form spacing ===== */
+.guest-page .mb-20 {
+    margin-bottom: 0px; /* slightly bigger for clarity */
+}
+
+.guest-page label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 2px; /* reduced spacing */
+}
+
+.guest-page input,
+.guest-page select,
+.guest-page textarea {
+    margin-bottom: 0; /* remove extra bottom margin */
+}
+
+/* ===== Form Title ===== */
+.page-title {
+    text-align: center;
+    margin-bottom: 15px; /* distance to form */
+    font-weight: bold;
+}
+.row-num {
+    width: 60px;          /* adjust as needed */
+    text-align: center;
+    white-space: nowrap;
+  }
+/* table setting */
+table {
+    width: 100%;
+    border-collapse: collapse; /* خیلی مهم */
+    font-family: 'BYekan', sans-serif;
+    table-layout: fixed;
+    border: 1px solid #ccc; /* کادر دور جدول */
+}
+
+/* Header */
 thead.table-header tr {
     background-color: #97b7f2;
 }
 
 thead.table-header th {
     color: #fff;
-    padding: 12px;
+    padding: 12px 10px;
     text-align: center;
-    border: 1px solid #ccc;
+    border: 1px solid #ccc; /* خط دور هر ستون */
 }
 
+/* Body cells */
 tbody td {
     padding: 10px;
-    border: 1px solid #ccc;
     text-align: center;
-    vertical-align: top;
+    border: 1px solid #ccc; /* خطوط داخلی */
 }
 
-tbody tr:nth-child(even) {
-    background-color: #f7faff;
-}
-
+/* Optional: hover effect */
 tbody tr:hover {
     background-color: #f9f9f9;
 }
 
-/* ================= TABLE FORM FIX ================= */
-.field-cell {
-    padding-bottom: 18px;
+
+/* used for Show Error in registration file input text in table  */
+
+td {
+    vertical-align: top;
 }
 
 .input-wrapper {
+    position: relative;
+    display: block;
+}
+
+.input-wrapper input {
+    display: block;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.errorlist {
+    margin: 4px 0 0 0;
+    padding: 0;
+    list-style: none;
+    color: #dc3545;
+    font-size: 12px;
+}
+
+.errorlist li {
+    display: block;
+}
+.field-error {
+    margin-top: 4px;
+}   
+/* Table cells must grow correctly */
+.field-cell {
+    vertical-align: top;
+    padding-bottom: 18px;
+}
+
+/* Stack input + error vertically */
+.input-wrapper {
     display: flex;
     flex-direction: column;
-    width: 100%;
 }
 
-/* ================= DJANGO ERRORS ================= */
-.field-error {
-    min-height: 16px;
-}
-
+/* Error styling */
 .field-error ul {
-    margin: 4px 0 0;
+    margin: 4px 0 0 0;
     padding: 0;
     list-style: none;
     color: #dc3545;
     font-size: 12px;
     line-height: 1.4;
+    min-height: 16px
 }
 
+/* Prevent inline collapse */
 .field-error li {
     display: block;
 }
-
-input.error,
-select.error,
-textarea.error {
-    border: 1.5px solid #e74c3c;
-}
-
-/* ================= TITLES ================= */
-.page-title,
-h4 {
-    display: inline-block;
-    border-bottom: 2px solid #85858c;
-    padding-bottom: 2px;
-}
-
-.page-title {
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-/* ================= FOOTER ================= */
-footer {
-    text-align: center;
-    padding: 25px;
-    background: #2c3e50;
-    color: white;
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 768px) {
-    header nav ul {
-        flex-direction: column;
-    }
-
-    main {
-        padding: 0 15px;
-    }
-
-    table {
-        font-size: 14px;
-    }
+.course-locked {
+    pointer-events: none;
+    background-color: #e9ecef;
 }
