@@ -10,11 +10,43 @@
 
 {% block content %}
 
-<div class="card text-center">
-    <div class="card-body">
-        <i class="fa-solid fa-calendar-plus fa-3x mb-3"></i>
-        <h5 class="card-title">تعریف رویداد / دوره</h5>
-    </div>
-</div>
+<main class="main-content">
 
+    <div class="cards-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        
+        <!-- Card 1: Define Event / Course -->
+        <div class="card" style="flex: 1 1 45%; max-width: 400px;">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-calendar-plus fa-3x mb-10"></i>
+                <h5 class="card-title">تعریف رویداد / دوره</h5>
+            </div>
+        </div>
+
+        <!-- Card 2: My Events -->
+        <div class="card" style="flex: 1 1 45%; max-width: 400px;">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-calendar-check fa-3x mb-10"></i>
+                <h5 class="card-title">رویدادهای من</h5>
+            </div>
+        </div>
+
+        <!-- Card 3: Guest Registration -->
+        <div class="card" style="flex: 1 1 45%; max-width: 400px;">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-user-plus fa-3x mb-10"></i>
+                <h5 class="card-title">ثبت مهمان</h5>
+            </div>
+        </div>
+
+        <!-- Card 4: Reports -->
+        <div class="card" style="flex: 1 1 45%; max-width: 400px;">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-chart-line fa-3x mb-10"></i>
+                <h5 class="card-title">گزارش‌ها</h5>
+            </div>
+        </div>
+
+    </div>
+
+</main>
 {% endblock %}

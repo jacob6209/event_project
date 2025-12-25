@@ -765,3 +765,17 @@ i.fa, i.fas, i.far, i.fab {
     font-family: "Font Awesome 6 Free"; /* for solid icons */
     font-weight: 900; /* necessary for solid icons */
 }
+/* stuff events page */
+.main-content .card {
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer; /* optional, shows it’s interactive */
+}
+
+.main-content .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    background-color: #8bcafdbf;   
+}
