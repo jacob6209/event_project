@@ -144,6 +144,7 @@ class GuestEditForm(forms.ModelForm):
         fields = ['full_name', 'national_id', 'relation', 'is_reserved'] 
 
         widgets = {
+            'national_id': forms.TextInput(attrs={'class': 'form-control'}),
             'is_reserved': forms.CheckboxInput(attrs={'class': 'participant-checkbox'}),
           }
     
@@ -157,8 +158,18 @@ class GuestEditForm(forms.ModelForm):
             raise forms.ValidationError("*کد ملی باید عددی باشد.")
         if len(national_id) != 10:
             raise forms.ValidationError("*کد ملی 10 رقمی است.")
-       
         return national_id
+    def clean_full_name(self):
+        value = self.cleaned_data.get("full_name", "").strip()
+        if not value:
+            raise forms.ValidationError("* این فیلد نمی‌تواند خالی باشد")
+        return value
+
+    def clean_relation(self):
+        value = self.cleaned_data.get("relation", "").strip()
+        if not value:
+            raise forms.ValidationError("* این فیلد نمی‌تواند خالی باشد")
+        return value
     def clean(self):
         cleaned_data = super().clean()
         if not cleaned_data:
@@ -174,7 +185,8 @@ class GuestEditForm(forms.ModelForm):
             # Check in Guest model
             if Guest.objects.filter(national_id=normalized_national_id,
                                     registration=registration).exclude(pk=self.instance.pk).exists():
-                print(f'duplicated field======>{national_id}')
+                
+                self.add_error('national_id', " * کد ملی تکراری ")
                 raise forms.ValidationError(
                     "این کد ملی قبلاً برای این رویداد ثبت شده است."
                 )
@@ -185,6 +197,7 @@ class GuestEditForm(forms.ModelForm):
                     english_to_persian_numbers(normalized_national_id)
         ]
             ).exists():
+                self.add_error('national_id', " * کد ملی تکراری ")
                 raise forms.ValidationError(
                     "این کد ملی قبلاً به عنوان شرکت‌کننده برای این رویداد ثبت شده است."
                 )

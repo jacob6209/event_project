@@ -57,21 +57,38 @@
                     {% comment %} for guest table section {% endcomment %}
                     {% for guest,form in guest_forms%}
                     <tr>
-                        <td>{{ forloop.counter|add:participants_count|persian_digits }}</td>
-                        <td>{{ form.full_name }}</td>
+                        <td class="row-num">{{ forloop.counter|add:participants_count|persian_digits }}</td>
+                    
                         <td class="field-cell">
                             <div class="input-wrapper">
-                                <input type="text"
-                                       name="{{ form.national_id.html_name }}"
-                                       value="{{ form.national_id.value|default_if_none:''|persian_digits }}">
-                        
-                                {{ form.national_id.errors }}
+                                {{ form.full_name }}
+                                <div class="field-error">
+                                    {{ form.full_name.errors }}
+                                </div>
                             </div>
                         </td>
-                        {% comment %} <td><input type="text" name="{{ form.national_id.name }}" value="{{ form.national_id.value|default_if_none:''|persian_digits }}"></td> {% endcomment %}
-                        <td>{{ form.relation }}</td>
+                    
+                        <td class="field-cell">
+                            <div class="input-wrapper">
+                                {{ form.national_id }}
+                                <div class="field-error">
+                                    {{ form.national_id.errors }}
+                                </div>
+                            </div>
+                        </td>
+                    
+                        <td class="field-cell">
+                            <div class="input-wrapper">
+                                {{ form.relation }}
+                                <div class="field-error">
+                                    {{ form.relation.errors }}
+                                </div>
+                            </div>
+                        </td>
+                    
                         <td>{{ form.is_reserved }}</td>
                     </tr>
+                    
                     {%endfor%}
                 </tbody>
             </table>

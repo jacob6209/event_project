@@ -69,9 +69,9 @@ class Guest(models.Model):
     on_delete=models.CASCADE,
     related_name='guests'
     )
-    full_name = models.CharField(max_length=200)
-    national_id = models.CharField(max_length=20, blank=True, null=True)
-    relation= models.CharField(max_length=100)
+    full_name = models.CharField(max_length=200,blank=False,null=False)
+    national_id = models.CharField(max_length=20,blank=False,null=False)
+    relation= models.CharField(max_length=100,blank=False,null=False)
     is_active = models.BooleanField(default=True)
     is_reserved = models.BooleanField(default=True)
 
