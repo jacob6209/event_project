@@ -1,0 +1,25 @@
+{% load event_tags %}
+<div class="wizard-progress">
+    <div class="step {% if step >= 1 %}active{% endif %}">
+        <span>{{1|persian_digits}}</span>
+        <p> نوع رویداد </p>
+    </div>
+    <div class="line"></div>
+
+    <div class="step {% if step >= 2 %}active{% endif %}">
+        <span>{{2|persian_digits}}</span>
+        <p>تعریف رویداد</p>
+    </div>
+    <div class="line"></div>
+
+    <div class="step {% if step >= 3 %}active{% endif %}">
+        <span>{{3|persian_digits}}</span>
+        <p>تعریف دوره </p>
+    </div>
+    <div class="line"></div>
+
+    <div class="step {% if step >= 4 %}active{% endif %}">
+        <span>{{4|persian_digits}}</span>
+        <p>تایید و پایان</p>
+    </div>
+</div>

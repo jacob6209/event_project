@@ -1,0 +1,54 @@
+{% extends "_base.html" %}
+{% load event_tags %}
+{% load static %}
+
+{% block title %}Step {{1|persian_digits}} – Event Type{% endblock %}
+
+{% block content %}
+
+{% include "_wizard_progress.html" %}
+
+<div class="card">
+    <h2>قدم {{1|persian_digits}}:نوع رویداد</h2>
+    <p>لطفا یکی از انواع رویدادها را انتخاب یا یکی جدید ایجاد کنید</p>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-section">
+            <h4>انتخاب دسته بندی </h4>
+        
+            <select name="event_type_id" class="form-control">
+                <option value="">-- یکی را انتخاب کنید  --</option>
+        
+                {% for et in event_types %}
+                    <option value="{{ et.id }}">{{ et.name }}</option>
+                {% empty %}
+                    <option disabled>No event types available</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+
+        <hr>
+
+        <div class="form-section">
+            <h4> یا جدیدایجاد کنید</h4>
+            <input type="text" name="new_title" placeholder="عنوان دسته بندی رویداد جدید ">
+        </div>
+
+        <br>
+        <div style="text-align: right;">
+            <button class="btn-submit" type="submit">
+                بعدی
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

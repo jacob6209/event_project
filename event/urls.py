@@ -2,7 +2,8 @@ from django.urls import path
 from .views import reregistration_view\
                     ,registration_lookup_view,my_events_view\
                     ,registration_edit_view,registration_delete_view\
-                    ,register_guest,delete_guest,stuff_events
+                    ,register_guest,delete_guest,staff_events\
+                    ,staff_add_event,event_type_step
 from django.views.generic import TemplateView
 
 urlpatterns = [
@@ -17,5 +18,7 @@ urlpatterns = [
     path("registration/lookup/<str:code>/", registration_lookup_view, name="registration_lookup"),
     path("registration/edit/<int:registration_id>/",registration_edit_view,name="registration_edit"),
     # stuff path
-    path("stuff_events/",stuff_events,name="stuff_events"),
+    path("staff_events/",staff_events,name="staff_events"),
+    path("staff_add_event/",staff_add_event,name="staff_add_event"),
+    path("wizard/event-type/", event_type_step, name="wizard_event_type"),
 ]

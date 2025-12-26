@@ -8,7 +8,7 @@ from django.urls import reverse
 class EventType(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
-
+    is_publish = models.BooleanField(default=False)
     def __str__(self):
         return self.name
 
@@ -25,7 +25,7 @@ class Event(models.Model):
     requires_approval = models.BooleanField(default=False)
     max_capacity = models.PositiveIntegerField(default=10)
     max_guests_per_user = models.PositiveIntegerField(default=0)
-    
+    is_publish = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title} ({self.event_type})"
@@ -39,6 +39,7 @@ class Course(models.Model):
     registration_start = models.DateTimeField()
     max_capacity = models.PositiveIntegerField(default=10)
     registration_end = models.DateTimeField()
+    is_publish = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.event.title} - {self.title}"

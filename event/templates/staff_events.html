@@ -15,13 +15,15 @@
         <div class="cards-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
             
             <!-- Card 1: Define Event / Course -->
-            <div class="card" style="flex: 1 1 45%; max-width: 400px;">
-                <div class="card-body text-center">
-                    <i class="fa-solid fa-calendar-plus fa-3x mb-10"></i>
-                    <h5 class="card-title">تعریف رویداد / دوره</h5>
+            
+                <div class="card" style="flex: 1 1 45%; max-width: 400px;">
+                    <a href="{% url 'wizard_event_type' %}" style="text-decoration: none; color: inherit;">
+                        <div class="card-body text-center">
+                            <i class="fa-solid fa-calendar-plus fa-3x mb-10"></i>
+                            <h5 class="card-title">تعریف رویداد / دوره</h5>
+                        </div>
+                    </a>
                 </div>
-            </div>
-
             <!-- Card 2: My Events -->
             <div class="card" style="flex: 1 1 45%; max-width: 400px;">
                 <div class="card-body text-center">

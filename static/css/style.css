@@ -765,7 +765,7 @@ i.fa, i.fas, i.far, i.fab {
     font-family: "Font Awesome 6 Free"; /* for solid icons */
     font-weight: 900; /* necessary for solid icons */
 }
-/* stuff events page */
+/* stuff events page menu*/
 .stuff-content .card {
     padding: 30px;
     border-radius: 10px;
@@ -779,3 +779,46 @@ i.fa, i.fas, i.far, i.fab {
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     background-color: #8bcafdbf;   
 }
+/* Progress bar css section */
+.wizard-progress {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.wizard-progress .step {
+    text-align: center;
+    color: #999;
+}
+
+.wizard-progress .step span {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    border-radius: 50%;
+    background: #ddd;
+    color: #fff;
+    font-weight: bold;
+}
+
+.wizard-progress .step.active span {
+    background: #8bcafdbf;
+}
+
+.wizard-progress .step.active p {
+    color: #8bcafdbf;
+}
+
+.wizard-progress .line {
+    flex: 1;
+    height: 3px;
+    background: #ddd;
+}
+
+.wizard-progress .step.active + .line {
+    background: #1b75fc;
+}
+

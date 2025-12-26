@@ -5,6 +5,7 @@ from .models import Participant,Guest,Registration,RegisteredParticipant,Event,E
 
 from django import forms
 from .models import Event, EventType
+from django.forms import inlineformset_factory
 
 class EventTypeForm(forms.ModelForm):
     class Meta:
@@ -122,6 +123,10 @@ class CourseForm(forms.ModelForm):
 
         return cleaned_data
 
+# Inline formset for courses
+CourseFormSet = inlineformset_factory(
+    Event, Course, form=CourseForm, extra=1, can_delete=True
+)
 
 class ParticipantActiveForm(forms.ModelForm):
     class Meta:

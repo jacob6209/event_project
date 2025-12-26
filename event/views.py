@@ -1,21 +1,101 @@
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404,redirect
-from .models import Participant, RegisteredParticipant, Registration, Course,Guest
+from .models import Participant, RegisteredParticipant, Registration, Course,Guest,EventType
 from django.contrib.auth.decorators import login_required
-from .forms import ParticipantActiveForm,GuestForm,GuestEditForm
+from .forms import ParticipantActiveForm,GuestForm,GuestEditForm, EventTypeForm, EventForm, CourseFormSet
 from django.contrib import messages
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
 
 # stuff View
+
 @login_required
-def stuff_events(request):
+def staff_events(request):
     if not request.user.is_staff:
         messages.error(request, "شما اجازه دسترسی به این صفحه را ندارید.")
         return render(request, "registration_not_found.html")
-    return render(request,"stuff_events.html")
+    return render(request,"staff_events.html")
+
+def staff_add_event(request):
+    if request.method == "POST":
+        # Check if creating a new EventType
+        if "new_event_type" in request.POST:
+            event_type_form = EventTypeForm(request.POST, prefix="type")
+            if event_type_form.is_valid():
+                event_type = event_type_form.save()
+        else:
+            event_type_id = request.POST.get("event_type")
+            event_type = EventType.objects.get(id=event_type_id)
+
+        event_form = EventForm(request.POST, prefix="event")
+        if event_form.is_valid():
+            event = event_form.save(commit=False)
+            event.event_type = event_type
+            event.save()
+
+            # Only show courses if multi-course
+            if event.is_multi_course:
+                course_formset = CourseFormSet(request.POST, instance=event, prefix="course")
+                if course_formset.is_valid():
+                    course_formset.save()
+            return redirect("staff_event_list")
+    else:
+        event_type_form = EventTypeForm(prefix="type")
+        event_form = EventForm(prefix="event")
+        course_formset = CourseFormSet(prefix="course")
+
+    return render(request, "staff_add_event.html", {
+        "event_type_form": event_type_form,
+        "event_form": event_form,
+        "course_formset": course_formset,
+        "event_types": EventType.objects.all()
+    })
+# use wizard 
+# events/views.py
+
+@login_required
+def event_type_step(request):
+    if not request.user.is_staff:
+        return redirect("index")
+
+    event_types = EventType.objects.all()
+
+    if request.method == "POST":
+        selected_id = request.POST.get("event_type_id")
+        new_title = request.POST.get("new_title", "").strip()
+
+        if selected_id and new_title:
+            return render(request, "step_event_type.html", {
+                "event_types": event_types,
+                "step": 1,
+                "error": "لطفا فقط یک گزینه را انتخاب کنید."
+            })
+
+        if selected_id:
+            event_type = get_object_or_404(EventType, id=selected_id)
+
+        elif new_title:
+            event_type = EventType.objects.create(
+                title=new_title,
+                is_publish=False
+            )
+        else:
+            return render(request, "step_event_type.html", {
+                "event_types": event_types,
+                "step": 1,
+                "error": "Please select or create an Event Type."
+            })
+
+        request.session["event_type_id"] = event_type.id
+        return redirect("wizard_event")
+
+    return render(request, "step_event_type.html", {
+        "event_types": event_types,
+        "step": 1
+    })
 
 
+# ------------------------------------------------
 # User View
 @login_required
 def register_guest(request):
