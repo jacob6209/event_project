@@ -1,7 +1,127 @@
 from django import forms
 
 from event.utils import english_to_persian_numbers, persian_to_english_numbers
-from .models import Participant,Guest,Registration,RegisteredParticipant
+from .models import Participant,Guest,Registration,RegisteredParticipant,Event,EventType,Course
+
+from django import forms
+from .models import Event, EventType
+
+class EventTypeForm(forms.ModelForm):
+    class Meta:
+        model = EventType
+        fields = ["name", "description"]
+
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+        }
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = [
+            "event_type",
+            "title",
+            "image",
+            "is_multi_course",
+            "rules",
+            "has_food",
+            "allows_guests",
+            "max_guests",
+            "requires_approval",
+            "max_capacity",
+            "max_guests_per_user",
+        ]
+
+        widgets = {
+            "event_type": forms.Select(attrs={"class": "form-control"}),
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "image": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "rules": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
+            "max_guests": forms.NumberInput(attrs={"class": "form-control"}),
+            "max_capacity": forms.NumberInput(attrs={"class": "form-control"}),
+            "max_guests_per_user": forms.NumberInput(attrs={"class": "form-control"}),
+
+            "is_multi_course": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "has_food": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "allows_guests": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "requires_approval": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        allows_guests = cleaned_data.get("allows_guests")
+        max_guests = cleaned_data.get("max_guests")
+
+        if allows_guests and max_guests == 0:
+            self.add_error(
+                "max_guests",
+                "وقتی مهمان مجاز است، تعداد مهمان باید بیشتر از صفر باشد."
+            )
+
+        return cleaned_data
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = [
+            "event",
+            "title",
+            "start_date",
+            "end_date",
+            "registration_start",
+            "registration_end",
+            "max_capacity",
+        ]
+
+        widgets = {
+            "event": forms.Select(attrs={"class": "form-control"}),
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+
+            "start_date": forms.DateInput(
+                attrs={"class": "form-control", "type": "date"}
+            ),
+            "end_date": forms.DateInput(
+                attrs={"class": "form-control", "type": "date"}
+            ),
+
+            "registration_start": forms.DateTimeInput(
+                attrs={"class": "form-control", "type": "datetime-local"}
+            ),
+            "registration_end": forms.DateTimeInput(
+                attrs={"class": "form-control", "type": "datetime-local"}
+            ),
+
+            "max_capacity": forms.NumberInput(attrs={"class": "form-control"}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+        reg_start = cleaned_data.get("registration_start")
+        reg_end = cleaned_data.get("registration_end")
+
+        if start_date and end_date and start_date > end_date:
+            self.add_error(
+                "end_date",
+                "تاریخ پایان نمی‌تواند قبل از تاریخ شروع باشد."
+            )
+
+        if reg_start and reg_end and reg_start >= reg_end:
+            self.add_error(
+                "registration_end",
+                "پایان ثبت‌نام باید بعد از شروع ثبت‌نام باشد."
+            )
+
+        if start_date and reg_end and reg_end.date() > start_date:
+            self.add_error(
+                "registration_end",
+                "ثبت‌نام باید قبل از شروع دوره به پایان برسد."
+            )
+
+        return cleaned_data
+
 
 class ParticipantActiveForm(forms.ModelForm):
     class Meta:

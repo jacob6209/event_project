@@ -16,6 +16,7 @@ class EventType(models.Model):
 class Event(models.Model):
     event_type = models.ForeignKey(EventType, on_delete=models.CASCADE, related_name='events')
     title = models.CharField(max_length=300)
+    image = models.ImageField(upload_to="events/", blank=True, null=True)
     is_multi_course = models.BooleanField(default=False)
     rules = models.TextField(blank=True)
     has_food = models.BooleanField(default=False)
@@ -24,6 +25,7 @@ class Event(models.Model):
     requires_approval = models.BooleanField(default=False)
     max_capacity = models.PositiveIntegerField(default=10)
     max_guests_per_user = models.PositiveIntegerField(default=0)
+    
 
     def __str__(self):
         return f"{self.title} ({self.event_type})"
