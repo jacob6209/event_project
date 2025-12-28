@@ -3,7 +3,7 @@ from .views import reregistration_view\
                     ,registration_lookup_view,my_events_view\
                     ,registration_edit_view,registration_delete_view\
                     ,register_guest,delete_guest,staff_events\
-                    ,staff_add_event,event_type_step
+                    ,staff_add_event,event_type_step,event_step
 from django.views.generic import TemplateView
 
 urlpatterns = [
@@ -21,4 +21,5 @@ urlpatterns = [
     path("staff_events/",staff_events,name="staff_events"),
     path("staff_add_event/",staff_add_event,name="staff_add_event"),
     path("wizard/event-type/", event_type_step, name="wizard_event_type"),
+    path("wizard/event/", event_step, name="wizard_event"),
 ]

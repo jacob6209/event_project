@@ -354,7 +354,7 @@ footer p {
     margin: 40px auto;
 }
 
-.card {
+.card:not(.mode-card) {
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -821,4 +821,194 @@ i.fa, i.fas, i.far, i.fab {
 .wizard-progress .step.active + .line {
     background: #1b75fc;
 }
+/* for wizard Style Section Setting =======================================<>    */
+.wizard-form {
+    margin-top: 20px;
+}
 
+.grid-2 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.form-section label {
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-section input,
+.form-section textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    transition: 0.3s;
+}
+
+.form-section input:focus,
+.form-section textarea:focus {
+    outline: none;
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.checkbox-card {
+    background: #f9f9ff;
+    border: 1px solid #e0e0ff;
+    border-radius: 12px;
+    padding: 10px 15px;/* reduce top/bottom padding if needed */
+    cursor: pointer;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.checkbox-card:hover {
+    background: #f0f0ff;
+}
+
+.checkbox-card input {
+    transform: scale(1.2); 
+    margin: 0 4px 0 0;
+}
+
+
+.wizard-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+.wizard-actions-left {
+    display: flex;
+    justify-content: left;
+    margin-top: 30px;
+}
+.btn-prev,
+.btn-next {
+    border: none;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-prev {
+    background: #eee;
+}
+
+.btn-prev:hover {
+    background: #ddd;
+}
+
+.btn-next {
+    background: linear-gradient(135deg, #6c63ff, #857dff);
+    color: #fff;
+}
+
+.btn-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(108,99,255,0.3);
+}
+/* جلوگیری از خراب شدن ظاهر چک‌باکس توسط reset جهانی */
+input[type="checkbox"] {
+    padding: initial !important;  
+    margin: initial !important;  
+    width: auto !important;       
+    height: auto !important;       
+    appearance: auto !important;   
+    -webkit-appearance: checkbox !important; 
+    -moz-appearance: checkbox !important;    
+}
+
+/* ================= MODE CARDS - RADIO BUTTON ON RIGHT ================= */
+/* ================= MODE CARDS - RADIO BUTTON ON RIGHT + PROPER PADDING ================= */
+.mode-card .card-header {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background-color: #f8fbff;
+    border-bottom: 1px solid #e0e7ff;
+    border-radius: 12px 12px 0 0;
+    min-height: 64px;
+}
+
+.mode-card .card-title {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+    text-align: right;
+}
+
+.mode-card .card-radio input[type="radio"] {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: #007bff;
+    margin: 0;
+}
+
+.mode-card.active .card-header {
+    background-color: #e3f2fd;
+    border-bottom-color: #2196f3;
+}
+
+.mode-card.disabled .card-header {
+    background-color: #f5f5f5;
+    opacity: 0.9;
+}
+
+/* کارت اصلی - فاصله داخلی اضافه شد */
+.mode-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    padding: 20px 24px 28px 24px; /* ← فاصله داخلی عالی برای همه طرف‌ها */
+}
+
+/* وقتی کارت غیرفعال است، کمی کم‌رنگ‌تر */
+.mode-card.disabled {
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+/* افکت هاور (فقط برای کارت فعال) */
+.mode-card:hover:not(.disabled) {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* فاصله مناسب برای بخش‌های فرم داخل کارت */
+.mode-card .form-section {
+    margin-bottom: 20px;
+}
+
+.mode-card .grid-2,
+.mode-card .grid-3,
+.mode-card .checkbox-grid {
+    margin-top: 10px;
+}

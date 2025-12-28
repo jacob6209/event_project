@@ -1,0 +1,164 @@
+{% extends "_base.html" %}
+{% load static %}
+{% load event_tags %}
+
+{% block title %}ایجاد رویداد{% endblock %}
+
+{% block content %}
+
+{% include "_wizard_progress.html" %}
+
+<form method="post" enctype="multipart/form-data" class="wizard-form">
+    {% csrf_token %}
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <!-- ================= SELECT EVENT CARD ================= -->
+    <div class="card mode-card active" data-mode="select">
+
+        <div class="card-header">
+            <h3 class="card-title">انتخاب رویداد </h3>
+            <div class="card-radio">
+                <input type="radio" name="mode" value="select" id="mode-select" checked>
+            </div>
+            
+        </div>
+
+        <div class="form-section">
+            <label>انتخاب یکی از رویدادهای موجود</label>
+            <select name="event_id" class="form-control">
+                <option value="">-- یکی را انتخاب کنید --</option>
+                {% for e in event %}
+                    <option value="{{ e.id }}">{{ e.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- ================= CREATE EVENT CARD ================= -->
+    <div class="card mode-card disabled" data-mode="create">
+
+        <div class="card-header">
+            <h3 class="card-title">ایجاد رویداد جدید</h3>
+            <div class="card-radio">
+                <input type="radio" name="mode" value="create" id="mode-create">
+            </div>
+            
+        </div>
+
+        <div class="grid-2">
+            <div class="form-section">
+                <label>عنوان رویداد</label>
+                <input type="text" name="title" placeholder="مثلاً: نوروز 1405">
+            </div>
+
+            <div class="form-section">
+                <label>تصویر رویداد</label>
+                <input type="file" name="image">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>قوانین</label>
+            <textarea name="rules" rows="4"></textarea>
+        </div>
+
+        <hr>
+
+        <div class="grid-3">
+            <div class="form-section">
+                <label>ظرفیت کل پذیرش</label>
+                <input type="number" name="max_capacity" min="1" value="10">
+            </div>
+
+            <div class="form-section">
+                <label>ظرفیت کل پذیرش میهمان</label>
+                <input type="number" name="max_guests" min="0" value="0">
+            </div>
+
+            <div class="form-section">
+                <label>حداکثر پذیرش میهمان برای هر کاربر</label>
+                <input type="number" name="max_guests_per_user" min="0" value="0">
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="checkbox-grid">
+            <label class="checkbox-card">
+                <input type="checkbox" name="is_multi_course">
+                <span>چند دوره‌ای</span>
+            </label>
+
+            <label class="checkbox-card">
+                <input type="checkbox" name="has_food">
+                <span>وعده غذایی</span>
+            </label>
+
+            <label class="checkbox-card">
+                <input type="checkbox" name="allows_guests">
+                <span>پذیرش میهمان</span>
+            </label>
+
+            <label class="checkbox-card">
+                <input type="checkbox" name="requires_approval">
+                <span>نیاز به تأیید</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- ================= ACTIONS ================= -->
+    <div class="wizard-actions">
+        <button type="submit" name="action" value="prev"
+                class="btn-prev" formnovalidate>
+            <i class="fa-solid fa-arrow-right"></i>
+            قبلی
+        </button>
+
+        <button type="submit" class="btn-next">
+            بعدی
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+    </div>
+
+</form>
+
+<!-- ================= JS (بدون تغییر) ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const cards = document.querySelectorAll(".mode-card");
+
+    function activate(mode) {
+        cards.forEach(card => {
+            const isActive = card.dataset.mode === mode;
+
+            card.classList.toggle("active", isActive);
+            card.classList.toggle("disabled", !isActive);
+
+            card.querySelectorAll("input, select, textarea").forEach(el => {
+                if (el.name !== "mode") {
+                    el.disabled = !isActive;
+                }
+            });
+        });
+    }
+
+    cards.forEach(card => {
+        card.addEventListener("click", () => {
+            const radio = card.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                activate(radio.value);
+            }
+        });
+    });
+
+    // حالت اولیه
+    activate("select");
+});
+</script>
+
+{% endblock %}

@@ -2,7 +2,8 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import Participant, RegisteredParticipant, Registration, Course,Guest,EventType
 from django.contrib.auth.decorators import login_required
-from .forms import ParticipantActiveForm,GuestForm,GuestEditForm, EventTypeForm, EventForm, CourseFormSet
+from .forms import ParticipantActiveForm,GuestForm,GuestEditForm\
+     , EventTypeForm, EventForm, CourseFormSet,Event
 from django.contrib import messages
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
@@ -51,10 +52,9 @@ def staff_add_event(request):
         "event_types": EventType.objects.all()
     })
 # use wizard 
-# events/views.py
-
 @login_required
 def event_type_step(request):
+
     if not request.user.is_staff:
         return redirect("index")
 
@@ -71,27 +71,58 @@ def event_type_step(request):
                 "error": "لطفا فقط یک گزینه را انتخاب کنید."
             })
 
-        if selected_id:
-            event_type = get_object_or_404(EventType, id=selected_id)
-
-        elif new_title:
-            event_type = EventType.objects.create(
-                title=new_title,
-                is_publish=False
-            )
-        else:
+        if not selected_id and not new_title:
             return render(request, "step_event_type.html", {
                 "event_types": event_types,
                 "step": 1,
-                "error": "Please select or create an Event Type."
+                "error": "لطفا یکی را انتخاب یا ایجاد کنید."
             })
 
-        request.session["event_type_id"] = event_type.id
+        request.session["event_type_id"] = selected_id
+        request.session["event_type_new_title"] = new_title
+
+        # print(f'event Type id :{request.session["event_type_id"]}')
+        # print(f'event Type name :{request.session["event_type_new_title"]}')
         return redirect("wizard_event")
 
     return render(request, "step_event_type.html", {
         "event_types": event_types,
         "step": 1
+    })
+
+@login_required
+def event_step(request):
+
+    if not request.user.is_staff:
+        return redirect("index")
+    
+    # 🔐 Guard: Step 1 must be completed
+    if not request.session.get("event_type_id") and not request.session.get("event_type_new_title"):
+        return redirect("event_type_step")
+    
+    event=Event.objects.all()
+
+    if request.method == "POST":
+        title = request.POST.get("title")
+        date = request.POST.get("date")
+        action = request.POST.get("action")
+
+        if action == "prev":
+            return redirect("wizard_event_type")
+        if not title or not date:
+            return render(request, "step_event.html", {
+                "error": "همه فیلدها الزامی هستند",
+                "step": 2
+            })
+
+        request.session["event_title"] = title
+        request.session["event_date"] = date
+
+        return redirect("wizard_confirm")
+
+    return render(request, "step_event.html", {
+        "event":event,
+        "step": 2
     })
 
 
