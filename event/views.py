@@ -58,72 +58,137 @@ def event_type_step(request):
     if not request.user.is_staff:
         return redirect("index")
 
-    event_types = EventType.objects.all()
+    prefill = {
+        "name": request.session.get("event_type_new_title", "")
+    }
 
     if request.method == "POST":
-        selected_id = request.POST.get("event_type_id")
         new_title = request.POST.get("new_title", "").strip()
 
-        if selected_id and new_title:
+
+        if  not new_title:
             return render(request, "step_event_type.html", {
-                "event_types": event_types,
                 "step": 1,
-                "error": "لطفا فقط یک گزینه را انتخاب کنید."
+                "error": "ورود عنوان اجباری است"
             })
 
-        if not selected_id and not new_title:
-            return render(request, "step_event_type.html", {
-                "event_types": event_types,
-                "step": 1,
-                "error": "لطفا یکی را انتخاب یا ایجاد کنید."
-            })
-
-        request.session["event_type_id"] = selected_id
         request.session["event_type_new_title"] = new_title
 
-        # print(f'event Type id :{request.session["event_type_id"]}')
-        # print(f'event Type name :{request.session["event_type_new_title"]}')
-        return redirect("wizard_event")
+        prefill={
+            "name": request.session.get("event_type_new_title", ""),
+        }
+        if EventType.objects.filter(name=new_title).exists():
+            return render(request, "step_event_type.html", {
+                "step": 1,
+                "error": "دسته بندی با این نام قبلا ثبت شده است."
+            })
 
+        return redirect("wizard_event")
+        
     return render(request, "step_event_type.html", {
-        "event_types": event_types,
-        "step": 1
+        "step": 1,
+        "prefill": prefill
     })
 
 @login_required
 def event_step(request):
-
     if not request.user.is_staff:
         return redirect("index")
     
-    # 🔐 Guard: Step 1 must be completed
-    if not request.session.get("event_type_id") and not request.session.get("event_type_new_title"):
+    # user must come from event_type_step
+    if not request.session.get("event_type_new_title"):
         return redirect("event_type_step")
-    
-    event=Event.objects.all()
+
+    prefill = {}  # dictionary to pass to template
 
     if request.method == "POST":
-        title = request.POST.get("title")
-        date = request.POST.get("date")
         action = request.POST.get("action")
-
         if action == "prev":
+            request.session["event_title"] = request.POST.get("title", "")
+            request.session["event_rules"] = request.POST.get("rules", "")
+            request.session["event_is_multi_course"] = bool(request.POST.get("is_multi_course"))
+            request.session["event_has_food"] = bool(request.POST.get("has_food"))
+            request.session["event_allows_guests"] = bool(request.POST.get("allows_guests"))
+            request.session["event_requires_approval"] = bool(request.POST.get("requires_approval"))
+            request.session["event_max_capacity"] = int(request.POST.get("max_capacity") or 10)
+            request.session["event_max_guests"] = int(request.POST.get("max_guests") or 0)
+            request.session["event_max_guests_per_user"] = int(request.POST.get("max_guests_per_user") or 0)
+           
             return redirect("wizard_event_type")
-        if not title or not date:
-            return render(request, "step_event.html", {
-                "error": "همه فیلدها الزامی هستند",
-                "step": 2
-            })
 
+        has_error = False
+
+        # ===== Extract fields =====
+        title = request.POST.get("title", "").strip()
+        rules = request.POST.get("rules", "").strip()
+        is_multi_course = bool(request.POST.get("is_multi_course"))
+        has_food = bool(request.POST.get("has_food"))
+        allows_guests = bool(request.POST.get("allows_guests"))
+        requires_approval = bool(request.POST.get("requires_approval"))
+        max_capacity = int(request.POST.get("max_capacity") or 10)
+        max_guests = int(request.POST.get("max_guests") or 0)
+        max_guests_per_user = int(request.POST.get("max_guests_per_user") or 0)
+
+        # ===== Validation =====
+        if not title:
+            messages.error(request, "برای ایجاد رویداد جدید، وارد کردن عنوان الزامی است")
+            has_error = True
+        if allows_guests and max_guests == 0:
+            messages.error(request, "در صورت پذیرش مهمان، ظرفیت مهمان نمی‌تواند صفر باشد")
+            has_error = True
+        if max_guests_per_user > max_guests:
+            messages.error(request, "حداکثر مهمان هر کاربر نمی‌تواند بیشتر از کل ظرفیت مهمان باشد")
+            has_error = True
+        if not allows_guests and max_guests > 0:
+            allows_guests = True
+
+        # ===== Prepare prefill from POST so form keeps data =====
+        prefill = {
+            "title": title,
+            "rules": rules,
+            "is_multi_course": is_multi_course,
+            "has_food": has_food,
+            "allows_guests": allows_guests,
+            "requires_approval": requires_approval,
+            "max_capacity": max_capacity,
+            "max_guests": max_guests,
+            "max_guests_per_user": max_guests_per_user,
+        }
+
+        if has_error:
+            return render(request, "step_event.html", {"step": 2, "prefill": prefill})
+
+        # ===== Store in session (safe, only if no error) =====
         request.session["event_title"] = title
-        request.session["event_date"] = date
+        request.session["event_rules"] = rules
+        request.session["event_is_multi_course"] = is_multi_course
+        request.session["event_has_food"] = has_food
+        request.session["event_allows_guests"] = allows_guests
+        request.session["event_requires_approval"] = requires_approval
+        request.session["event_max_capacity"] = max_capacity
+        request.session["event_max_guests"] = max_guests
+        request.session["event_max_guests_per_user"] = max_guests_per_user
+
+        # ===== Image (temporary) =====
+        if "image" in request.FILES:
+            request.session["event_image_name"] = request.FILES["image"].name
 
         return redirect("wizard_confirm")
 
-    return render(request, "step_event.html", {
-        "event":event,
-        "step": 2
-    })
+    # ===== GET ===== use prefilled session data if no POST =====
+    prefill = {
+        "title": request.session.get("event_title", ""),
+        "rules": request.session.get("event_rules", ""),
+        "is_multi_course": request.session.get("event_is_multi_course", False),
+        "has_food": request.session.get("event_has_food", False),
+        "allows_guests": request.session.get("event_allows_guests", False),
+        "requires_approval": request.session.get("event_requires_approval", False),
+        "max_capacity": request.session.get("event_max_capacity", 10),
+        "max_guests": request.session.get("event_max_guests", 0),
+        "max_guests_per_user": request.session.get("event_max_guests_per_user", 0),
+    }
+
+    return render(request, "step_event.html", {"step": 2, "prefill": prefill})
 
 
 # ------------------------------------------------

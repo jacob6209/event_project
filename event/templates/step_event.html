@@ -8,61 +8,48 @@
 
 {% include "_wizard_progress.html" %}
 
-<form method="post" enctype="multipart/form-data" class="wizard-form">
+<form method="post" enctype="multipart/form-data" class="wizard-form" novalidate>
     {% csrf_token %}
 
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li style="color:red; text-align:center; margin:15px 0;">{{ message }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
 
-    <!-- ================= SELECT EVENT CARD ================= -->
-    <div class="card mode-card active" data-mode="select">
-
-        <div class="card-header">
-            <h3 class="card-title">انتخاب رویداد </h3>
-            <div class="card-radio">
-                <input type="radio" name="mode" value="select" id="mode-select" checked>
-            </div>
-            
-        </div>
-
-        <div class="form-section">
-            <label>انتخاب یکی از رویدادهای موجود</label>
-            <select name="event_id" class="form-control">
-                <option value="">-- یکی را انتخاب کنید --</option>
-                {% for e in event %}
-                    <option value="{{ e.id }}">{{ e.title }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-
     <!-- ================= CREATE EVENT CARD ================= -->
-    <div class="card mode-card disabled" data-mode="create">
+    <div class="card mode-card active">
 
         <div class="card-header">
             <h3 class="card-title">ایجاد رویداد جدید</h3>
-            <div class="card-radio">
-                <input type="radio" name="mode" value="create" id="mode-create">
-            </div>
-            
         </div>
 
         <div class="grid-2">
             <div class="form-section">
                 <label>عنوان رویداد</label>
-                <input type="text" name="title" placeholder="مثلاً: نوروز 1405">
+                <input
+                    type="text"
+                    name="title"
+                    required
+                    placeholder="مثلاً: نوروز 1405"
+                    value="{{ prefill.title }}"
+                >
             </div>
 
             <div class="form-section">
                 <label>تصویر رویداد</label>
                 <input type="file" name="image">
+                {% if request.session.event_image_name %}
+                    <p style="margin-top:5px;">تصویر فعلی: {{ request.session.event_image_name }}</p>
+                {% endif %}
             </div>
         </div>
 
         <div class="form-section">
             <label>قوانین</label>
-            <textarea name="rules" rows="4"></textarea>
+            <textarea name="rules" rows="4">{{ prefill.rules }}</textarea>
         </div>
 
         <hr>
@@ -70,17 +57,17 @@
         <div class="grid-3">
             <div class="form-section">
                 <label>ظرفیت کل پذیرش</label>
-                <input type="number" name="max_capacity" min="1" value="10">
+                <input type="number" name="max_capacity" min="1" value="{{ prefill.max_capacity }}">
             </div>
 
             <div class="form-section">
                 <label>ظرفیت کل پذیرش میهمان</label>
-                <input type="number" name="max_guests" min="0" value="0">
+                <input type="number" name="max_guests" min="0" value="{{ prefill.max_guests }}">
             </div>
 
             <div class="form-section">
                 <label>حداکثر پذیرش میهمان برای هر کاربر</label>
-                <input type="number" name="max_guests_per_user" min="0" value="0">
+                <input type="number" name="max_guests_per_user" min="0" value="{{ prefill.max_guests_per_user }}">
             </div>
         </div>
 
@@ -88,22 +75,22 @@
 
         <div class="checkbox-grid">
             <label class="checkbox-card">
-                <input type="checkbox" name="is_multi_course">
+                <input type="checkbox" name="is_multi_course" {% if prefill.is_multi_course %}checked{% endif %}>
                 <span>چند دوره‌ای</span>
             </label>
 
             <label class="checkbox-card">
-                <input type="checkbox" name="has_food">
+                <input type="checkbox" name="has_food" {% if prefill.has_food %}checked{% endif %}>
                 <span>وعده غذایی</span>
             </label>
 
             <label class="checkbox-card">
-                <input type="checkbox" name="allows_guests">
+                <input type="checkbox" name="allows_guests" {% if prefill.allows_guests %}checked{% endif %}>
                 <span>پذیرش میهمان</span>
             </label>
 
             <label class="checkbox-card">
-                <input type="checkbox" name="requires_approval">
+                <input type="checkbox" name="requires_approval" {% if prefill.requires_approval %}checked{% endif %}>
                 <span>نیاز به تأیید</span>
             </label>
         </div>
@@ -124,41 +111,5 @@
     </div>
 
 </form>
-
-<!-- ================= JS (بدون تغییر) ================= -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const cards = document.querySelectorAll(".mode-card");
-
-    function activate(mode) {
-        cards.forEach(card => {
-            const isActive = card.dataset.mode === mode;
-
-            card.classList.toggle("active", isActive);
-            card.classList.toggle("disabled", !isActive);
-
-            card.querySelectorAll("input, select, textarea").forEach(el => {
-                if (el.name !== "mode") {
-                    el.disabled = !isActive;
-                }
-            });
-        });
-    }
-
-    cards.forEach(card => {
-        card.addEventListener("click", () => {
-            const radio = card.querySelector('input[type="radio"]');
-            if (radio) {
-                radio.checked = true;
-                activate(radio.value);
-            }
-        });
-    });
-
-    // حالت اولیه
-    activate("select");
-});
-</script>
 
 {% endblock %}

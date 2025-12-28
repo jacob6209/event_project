@@ -15,40 +15,21 @@
         <p style="color:red; text-align:center; margin:15px 0;">{{ error }}</p>
     {% endif %}
 
-    <!-- ================= SELECT EVENT TYPE CARD ================= -->
-    <div class="card mode-card active" data-mode="select">
-        <div class="card-header">
-            <h3 class="card-title">انتخاب دسته‌بندی </h3>
-            <div class="card-radio">
-                <input type="radio" name="mode" value="select" id="mode-select" checked>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <label>یکی از دسته‌بندی‌های موجود را انتخاب کنید</label>
-            <select name="event_type_id" class="form-control">
-                <option value="">-- یکی را انتخاب کنید --</option>
-                {% for et in event_types %}
-                    <option value="{{ et.id }}">{{ et.name }}</option>
-                {% empty %}
-                    <option disabled>دسته‌بندی موجود نیست</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-
     <!-- ================= CREATE EVENT TYPE CARD ================= -->
-    <div class="card mode-card disabled" data-mode="create">
+    <div class="card mode-card active">
         <div class="card-header">
             <h3 class="card-title">ایجاد دسته‌بندی جدید</h3>
-            <div class="card-radio">
-                <input type="radio" name="mode" value="create" id="mode-create">
-            </div>
         </div>
 
         <div class="form-section">
-            <label>عنوان دسته‌بندی جدید</label>
-            <input type="text" name="new_title" placeholder="مثلاً: سمینار، همایش، کارگاه آموزشی">
+            <label>عنوان دسته‌بندی</label>
+            <input
+                type="text"
+                name="new_title"
+                required
+                placeholder="مثلاً: نام مهمانسرا،اقامتگاه   "
+                value="{{ prefill.name|default:'' }}"
+            >
         </div>
     </div>
 
@@ -60,39 +41,5 @@
         </button>
     </div>
 </form>
-
-<!-- ================= JAVASCRIPT (کپی از صفحه قبلی) ================= -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const cards = document.querySelectorAll(".mode-card");
-
-    function activate(mode) {
-        cards.forEach(card => {
-            const isActive = card.dataset.mode === mode;
-            card.classList.toggle("active", isActive);
-            card.classList.toggle("disabled", !isActive);
-
-            card.querySelectorAll("input, select, textarea").forEach(el => {
-                if (el.name !== "mode") {
-                    el.disabled = !isActive;
-                }
-            });
-        });
-    }
-
-    cards.forEach(card => {
-        card.addEventListener("click", () => {
-            const radio = card.querySelector('input[type="radio"]');
-            if (radio) {
-                radio.checked = true;
-                activate(radio.value);
-            }
-        });
-    });
-
-    // حالت اولیه
-    activate("select");
-});
-</script>
 
 {% endblock %}
