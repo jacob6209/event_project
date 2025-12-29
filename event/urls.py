@@ -1,11 +1,13 @@
 from django.urls import path
+
+from config import settings
 from .views import reregistration_view\
                     ,registration_lookup_view,my_events_view\
                     ,registration_edit_view,registration_delete_view\
                     ,register_guest,delete_guest,staff_events\
-                    ,staff_add_event,event_type_step,event_step,course_step
+                    ,staff_add_event,event_type_step,event_step,course_step,confirm_step
 from django.views.generic import TemplateView
-
+from django.conf.urls.static import static
 urlpatterns = [
     path('register/', reregistration_view, name='reregistration'),
     path('index/', TemplateView.as_view(template_name="index.html"),name="index"),
@@ -23,4 +25,10 @@ urlpatterns = [
     path("wizard/event-type/", event_type_step, name="wizard_event_type"),
     path("wizard/event/", event_step, name="wizard_event"),
     path("wizard/course/",course_step , name="wizard_course"),
+    path("wizard/confirm/",confirm_step , name="confirm_step"),
 ]
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

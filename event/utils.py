@@ -40,7 +40,12 @@ def english_to_persian_numbers(s):
     persian_numbers = '۰۱۲۳۴۵۶۷۸۹'
     translation_table = str.maketrans(english_numbers, persian_numbers)
     return s.translate(translation_table)
-
+def serialize_course_data(course_data):
+    serialized = course_data.copy()
+    for field in ["start_date", "end_date", "registration_start", "registration_end"]:
+        if serialized.get(field):
+            serialized[field] = serialized[field].isoformat()
+    return serialized
 # def calculate_priority_score(participant, event_type):
 #     score = 0
 

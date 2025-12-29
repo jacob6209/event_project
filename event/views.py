@@ -1,5 +1,9 @@
+import datetime
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404,redirect
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from event.utils import serialize_course_data
 from .models import Participant, RegisteredParticipant, Registration, Course,Guest,EventType
 from django.contrib.auth.decorators import login_required
 from .forms import CourseDateFormSet, ParticipantActiveForm,GuestForm,GuestEditForm\
@@ -56,6 +60,7 @@ def staff_add_event(request):
         "event_types": EventType.objects.all()
     })
 # use wizard 
+
 @login_required
 def event_type_step(request):
 
@@ -99,7 +104,7 @@ def event_step(request):
     if not request.user.is_staff:
         return redirect("index")
     
-    # user must come from event_type_step
+    # User must come from event_type_step
     if not request.session.get("event_type_new_title"):
         return redirect("event_type_step")
 
@@ -107,7 +112,9 @@ def event_step(request):
 
     if request.method == "POST":
         action = request.POST.get("action")
+
         if action == "prev":
+            # Save POSTed values into session before going back
             request.session["event_title"] = request.POST.get("title", "")
             request.session["event_rules"] = request.POST.get("rules", "")
             request.session["event_is_multi_course"] = bool(request.POST.get("is_multi_course"))
@@ -117,10 +124,7 @@ def event_step(request):
             request.session["event_max_capacity"] = int(request.POST.get("max_capacity") or 10)
             request.session["event_max_guests"] = int(request.POST.get("max_guests") or 0)
             request.session["event_max_guests_per_user"] = int(request.POST.get("max_guests_per_user") or 0)
-           
             return redirect("wizard_event_type")
-
-        has_error = False
 
         # ===== Extract fields =====
         title = request.POST.get("title", "").strip()
@@ -134,6 +138,7 @@ def event_step(request):
         max_guests_per_user = int(request.POST.get("max_guests_per_user") or 0)
 
         # ===== Validation =====
+        has_error = False
         if not title:
             messages.error(request, "برای ایجاد رویداد جدید، وارد کردن عنوان الزامی است")
             has_error = True
@@ -146,7 +151,7 @@ def event_step(request):
         if not allows_guests and max_guests > 0:
             allows_guests = True
 
-        # ===== Prepare prefill from POST so form keeps data =====
+        # ===== Prepare prefill for template =====
         prefill = {
             "title": title,
             "rules": rules,
@@ -162,7 +167,7 @@ def event_step(request):
         if has_error:
             return render(request, "step_event.html", {"step": 2, "prefill": prefill})
 
-        # ===== Store in session (safe, only if no error) =====
+        # ===== Store in session =====
         request.session["event_title"] = title
         request.session["event_rules"] = rules
         request.session["event_is_multi_course"] = is_multi_course
@@ -173,13 +178,15 @@ def event_step(request):
         request.session["event_max_guests"] = max_guests
         request.session["event_max_guests_per_user"] = max_guests_per_user
 
-        # ===== Image (temporary) =====
+        # ===== Handle image upload =====
         if "image" in request.FILES:
-            request.session["event_image_name"] = request.FILES["image"].name
+            image = request.FILES["image"]
+            saved_name = default_storage.save(image.name, ContentFile(image.read()))
+            request.session["event_image_name"] = saved_name  # now points to actual file in MEDIA_ROOT
 
         return redirect("wizard_course")
 
-    # ===== GET ===== use prefilled session data if no POST =====
+    # ===== GET ===== prefill from session =====
     prefill = {
         "title": request.session.get("event_title", ""),
         "rules": request.session.get("event_rules", ""),
@@ -190,6 +197,7 @@ def event_step(request):
         "max_capacity": request.session.get("event_max_capacity", 10),
         "max_guests": request.session.get("event_max_guests", 0),
         "max_guests_per_user": request.session.get("event_max_guests_per_user", 0),
+        "image_name": request.session.get("event_image_name"),
     }
 
     return render(request, "step_event.html", {"step": 2, "prefill": prefill})
@@ -239,13 +247,12 @@ def course_step(request):
 
             # Save cleaned data to session
             request.session["courses_data"] = [
-                form.cleaned_data
+                serialize_course_data(form.cleaned_data)
                 for form in formset.forms
                 if form.cleaned_data and not form.cleaned_data.get("DELETE")
-            ]
+                ]
             request.session.modified = True
-
-            return redirect("next_step")
+            return redirect("confirm_step")
 
     else:
         # GET request → just create empty formset
@@ -255,6 +262,98 @@ def course_step(request):
 
     return render(request, "step_course.html",
                   {"formset": formset, "is_multi_course": is_multi_course, "step": 3})
+@login_required
+def confirm_step(request):
+    from pprint import pprint
+
+    if not request.user.is_staff:
+        return redirect("index")
+
+    # Check required session data
+    if not request.session.get("event_type_new_title"):
+        return redirect("wizard_event_type")
+    if not request.session.get("event_title"):
+        return redirect("wizard_event")
+    if not request.session.get("courses_data"):
+        return redirect("wizard_course")
+
+    # Collect all prefill data
+    prefill = {
+        "event_type": request.session.get("event_type_new_title"),
+        "event": {
+            "title": request.session.get("event_title"),
+            "rules": request.session.get("event_rules"),
+            "is_multi_course": request.session.get("event_is_multi_course", False),
+            "has_food": request.session.get("event_has_food", False),
+            "allows_guests": request.session.get("event_allows_guests", False),
+            "requires_approval": request.session.get("event_requires_approval", False),
+            "max_capacity": request.session.get("event_max_capacity", 10),
+            "max_guests": request.session.get("event_max_guests", 0),
+            "max_guests_per_user": request.session.get("event_max_guests_per_user", 0),
+            "image_name": request.session.get("event_image_name"),
+        },
+        "courses": request.session.get("courses_data", [])
+    }
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "prev_event_type":
+            return redirect("wizard_event_type")
+        elif action == "prev_event":
+            return redirect("wizard_event")
+        elif action == "prev_course":
+            return redirect("wizard_course")
+        elif action in ["save", "save_publish"]:
+            # Create EventType
+            event_type, _ = EventType.objects.get_or_create(name=prefill["event_type"])
+
+            # Create Event
+            event = Event.objects.create(
+                event_type=event_type,
+                title=prefill["event"]["title"],
+                rules=prefill["event"]["rules"],
+                is_multi_course=prefill["event"]["is_multi_course"],
+                has_food=prefill["event"]["has_food"],
+                allows_guests=prefill["event"]["allows_guests"],
+                requires_approval=prefill["event"]["requires_approval"],
+                max_capacity=prefill["event"]["max_capacity"],
+                max_guests=prefill["event"]["max_guests"],
+                max_guests_per_user=prefill["event"]["max_guests_per_user"],
+                image=request.session.get("event_image_file", None),
+                is_publish=(action == "save_publish")
+            )
+
+            # Create Courses (deserialize dates)
+            for course_data in prefill["courses"]:
+                def parse_date(date_str):
+                    return datetime.fromisoformat(date_str).date() if date_str else None
+
+                Course.objects.create(
+                    event=event,
+                    title=course_data.get("title"),
+                    start_date=parse_date(course_data.get("start_date")),
+                    end_date=parse_date(course_data.get("end_date")),
+                    registration_start=parse_date(course_data.get("registration_start")),
+                    registration_end=parse_date(course_data.get("registration_end")),
+                    max_capacity=course_data.get("max_capacity"),
+                    is_publish=(action == "save_publish")
+                )
+
+            # Clear all wizard sessions
+            for key in ["event_type_new_title", "event_title", "event_rules",
+                        "event_is_multi_course", "event_has_food", "event_allows_guests",
+                        "event_requires_approval", "event_max_capacity", "event_max_guests",
+                        "event_max_guests_per_user", "event_image_name", "event_image_file",
+                        "courses_data"]:
+                if key in request.session:
+                    del request.session[key]
+
+            messages.success(request, "اطلاعات با موفقیت ثبت شد.")
+            return redirect("index")  # Adjust to your listing page
+
+    return render(request, "confirm_step.html", {"step":4,"prefill": prefill})
+
 # ------------------------------------------------
 # User View
 @login_required

@@ -727,6 +727,7 @@ td {
     padding-bottom: 18px;
 }
 
+
 /* Stack input + error vertically */
 .input-wrapper {
     display: flex;
@@ -1024,4 +1025,120 @@ input[type="checkbox"] {
 .mode-card .grid-3,
 .mode-card .checkbox-grid {
     margin-top: 10px;
+}
+.ltr {
+    direction: ltr !important;
+    text-align: left !important;
+}
+
+.ltr > * {
+    direction: ltr !important;
+}
+.event-info-ltr-wrapper {
+    direction: ltr;
+    text-align: right;
+}
+
+.event-info-grid {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+}
+
+.event-image {
+    flex: 1;
+    text-align: center;
+}
+
+.event-image .label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.event-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.no-image {
+    height: 280px;
+    background: #f9f9f9;
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+.event-details {
+    flex: 2;
+}
+
+.detail-item {
+    margin-bottom: 18px;
+}
+
+.detail-item .label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.detail-item .value {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #222;
+}
+
+.detail-item .pre-line {
+    white-space: pre-line;
+    color: #333;
+}
+
+.event-capacity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 24px 0;
+}
+
+.capacity-item .label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.capacity-item .value {
+    font-size: 1.2em;
+    color: #222;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 28px 0;
+}
+
+.event-flags-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    font-size: 1.05em;
+}
+
+.course-dates-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 16px 0;
+}
+
+.course-capacity {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
 }

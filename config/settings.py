@@ -157,7 +157,7 @@ STATICFILES_DIRS=[str(BASE_DIR.joinpath('static'))]
 
 # media setting config
 MEDIA_URL = "/media/"
-MEDIA_ROOT =[str(BASE_DIR.joinpath('media'))]
+MEDIA_ROOT = str(BASE_DIR / "media")
 
 # AllAuth Settings
 ACCOUNT_FORMS = {

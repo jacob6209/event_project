@@ -1,0 +1,156 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}تأیید اطلاعات{% endblock %}
+
+{% block content %}
+{% include "_wizard_progress.html" %}
+
+<form method="post" enctype="multipart/form-data" class="wizard-form" novalidate>
+    {% csrf_token %}
+
+    <!-- ================= EVENT TYPE ================= -->
+    <div class="card mode-card active">
+        <div class="card-header">
+            <h3 class="card-title">دسته‌بندی رویداد</h3>
+        </div>
+
+        <div class="form-section">
+            <p>{{ prefill.event_type }}</p>
+        </div>
+
+        <div class="wizard-actions">
+            <button type="submit" name="action" value="prev_event_type" class="btn-prev" formnovalidate>
+                ویرایش
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= EVENT INFO ================= -->
+    <div class="card mode-card active">
+        <div class="card-header">
+            <h3 class="card-title">اطلاعات رویداد</h3>
+        </div>
+
+        <div class="event-info-ltr-wrapper">
+            <div class="event-info-grid">
+
+                <!-- تصویر رویداد -->
+                <div class="event-image">
+                    <div class="label">تصویر رویداد</div>
+                    {% if prefill.event.image_name %}
+                        <img src="/media/{{ prefill.event.image_name }}" alt="تصویر رویداد" class="event-img">
+                    {% else %}
+                        <div class="no-image">تصویری انتخاب نشده</div>
+                    {% endif %}
+                </div>
+
+                <!-- جزئیات رویداد -->
+                <div class="event-details">
+                    <div class="detail-item">
+                        <div class="label">عنوان</div>
+                        <div class="value">{{ prefill.event.title }}</div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="label">قوانین</div>
+                        <div class="value pre-line">{{ prefill.event.rules|default:"—" }}</div>
+                    </div>
+
+                    <div class="event-capacity-grid">
+                        <div class="capacity-item">
+                            <div class="label">حداکثر ظرفیت کل</div>
+                            <div class="value">{{ prefill.event.max_capacity|default:"نامحدود" }}</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="label">ظرفیت مهمان</div>
+                            <div class="value">{{ prefill.event.max_guests|default:"0" }}</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="label">حداکثر مهمان هر کاربر</div>
+                            <div class="value">{{ prefill.event.max_guests_per_user|default:"0" }}</div>
+                        </div>
+                    </div>
+
+                    <hr class="divider">
+
+                    <div class="event-flags-grid">
+                        <div><strong>چند دوره‌ای:</strong> {{ prefill.event.is_multi_course|yesno:"بله,خیر" }}</div>
+                        <div><strong>وعده غذایی:</strong> {{ prefill.event.has_food|yesno:"دارد,ندارد" }}</div>
+                        <div><strong>پذیرش مهمان:</strong> {{ prefill.event.allows_guests|yesno:"دارد,ندارد" }}</div>
+                        <div><strong>نیاز به تأیید:</strong> {{ prefill.event.requires_approval|yesno:"نیاز دارد,نیاز ندارد" }}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="wizard-actions">
+            <button type="submit" name="action" value="prev_event" class="btn-prev" formnovalidate>
+                ویرایش
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= COURSES ================= -->
+    {% for course in prefill.courses %}
+    <div class="card mode-card active">
+        <div class="card-header">
+            <h3 class="card-title">دوره {{ forloop.counter }}</h3>
+        </div>
+
+        <div class="course-title">
+            <div class="form-section">
+                <label>عنوان دوره</label>
+                <p>{{ course.title }}</p>
+            </div>
+        </div>
+
+        <div class="course-dates-grid">
+            <div class="form-section">
+                <label>تاریخ شروع</label>
+                <p>{{ course.start_date }}</p>
+            </div>
+
+            <div class="form-section">
+                <label>تاریخ پایان</label>
+                <p>{{ course.end_date }}</p>
+            </div>
+
+            <div class="form-section">
+                <label>شروع ثبت‌نام</label>
+                <p>{{ course.registration_start }}</p>
+            </div>
+
+            <div class="form-section">
+                <label>پایان ثبت‌نام</label>
+                <p>{{ course.registration_end }}</p>
+            </div>
+        </div>
+
+        <div class="course-capacity">
+            <div class="form-section">
+                <label>حداکثر ظرفیت</label>
+                <p>{{ course.max_capacity }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- ================= ACTIONS ================= -->
+    <div class="wizard-actions">
+        <button type="submit" name="action" value="prev_course" class="btn-prev" formnovalidate>
+            ویرایش دوره‌ها
+        </button>
+
+        <button type="submit" name="action" value="save" class="btn-next">
+            ذخیره
+        </button>
+
+        <button type="submit" name="action" value="save_publish" class="btn-next">
+            ذخیره و انتشار
+        </button>
+    </div>
+
+</form>
+{% endblock %}
