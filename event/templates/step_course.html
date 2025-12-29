@@ -1,0 +1,176 @@
+{% extends "_base.html" %}
+{% load static %}
+
+{% block title %}ایجاد دوره جدید{% endblock %}
+
+{% block content %}
+{{ formset.media }}
+{% include "_wizard_progress.html" %}
+
+<form method="post" class="wizard-form" novalidate>
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    <div id="course-formset">
+        {% for form in formset %}
+        <div class="card mode-card active course-form">
+
+            <div class="card-header">
+                <h3 class="card-title">دوره {{ forloop.counter }}</h3>
+            </div>
+
+            <div class="grid-event-title">
+                <div class="form-section {% if form.title.errors %}is-invalid{% endif %}">
+                    {{ form.title.label_tag }}
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="field-error">{{ form.title.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid-course">
+                <div class="form-section {% if form.start_date.errors %}is-invalid{% endif %}">
+                    {{ form.start_date.label_tag }}
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}
+                        <div class="field-error">{{ form.start_date.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-section {% if form.end_date.errors %}is-invalid{% endif %}">
+                    {{ form.end_date.label_tag }}
+                    {{ form.end_date }}
+                    {% if form.end_date.errors %}
+                        <div class="field-error">{{ form.end_date.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-section {% if form.registration_start.errors %}is-invalid{% endif %}">
+                    {{ form.registration_start.label_tag }}
+                    {{ form.registration_start }}
+                    {% if form.registration_start.errors %}
+                        <div class="field-error">{{ form.registration_start.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-section {% if form.registration_end.errors %}is-invalid{% endif %}">
+                    {{ form.registration_end.label_tag }}
+                    {{ form.registration_end }}
+                    {% if form.registration_end.errors %}
+                        <div class="field-error">{{ form.registration_end.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-section {% if form.max_capacity.errors %}is-invalid{% endif %}">
+                    {{ form.max_capacity.label_tag }}
+                    {{ form.max_capacity }}
+                    {% if form.max_capacity.errors %}
+                        <div class="field-error">{{ form.max_capacity.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-section {% if form.max_guests.errors %}is-invalid{% endif %}">
+                    {{ form.max_guests.label_tag }}
+                    {{ form.max_guests }}
+                    {% if form.max_guests.errors %}
+                        <div class="field-error">{{ form.max_guests.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-section {% if form.max_guests_per_user.errors %}is-invalid{% endif %}">
+                    {{ form.max_guests_per_user.label_tag }}
+                    {{ form.max_guests_per_user }}
+                    {% if form.max_guests_per_user.errors %}
+                        <div class="field-error">{{ form.max_guests_per_user.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="checkbox-grid">
+                <label class="checkbox-card">
+                    {{ form.has_food }}
+                    <span>{{ form.has_food.label }}</span>
+                </label>
+
+                <label class="checkbox-card">
+                    {{ form.allows_guests }}
+                    <span>{{ form.allows_guests.label }}</span>
+                </label>
+
+                <label class="checkbox-card">
+                    {{ form.requires_approval }}
+                    <span>{{ form.requires_approval.label }}</span>
+                </label>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_multi_course %}
+    <div style="margin: 1rem 0;">
+        <button type="button" id="add-course-btn" class="btn-next">
+            + افزودن دوره جدید
+        </button>
+    </div>
+    {% endif %}
+
+    <div class="wizard-actions">
+        <button type="submit" name="action" value="prev" class="btn-prev" formnovalidate>
+            <i class="fa-solid fa-arrow-right"></i>
+            قبلی
+        </button>
+
+        <button type="submit" name="action" value="next" class="btn-next">
+            بعدی
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+    </div>
+</form>
+
+<script>
+(function () {
+    const formsetDiv = document.getElementById("course-formset");
+    const addBtn = document.getElementById("add-course-btn");
+    const totalForms = document.getElementById("id_form-TOTAL_FORMS");
+
+    if (addBtn) {
+        addBtn.addEventListener("click", function () {
+            const formCount = parseInt(totalForms.value);
+            const firstForm = formsetDiv.children[0];
+            const newForm = firstForm.cloneNode(true);
+
+            // Update form indices
+            newForm.innerHTML = newForm.innerHTML.replace(/form-(\d+)-/g, `form-${formCount}-`);
+
+            // Clear values for inputs that are empty or checkboxes
+            newForm.querySelectorAll("input, select, textarea").forEach(input => {
+                const name = input.name;
+                if (!input.value || input.type === "checkbox") {
+                    if (input.type === "checkbox") input.checked = false;
+                    else input.value = "";
+                }
+                input.classList.remove("is-invalid");
+            });
+
+            // Remove old error messages
+            newForm.querySelectorAll(".field-error").forEach(err => err.remove());
+
+            // Update card title dynamically
+            const titleElem = newForm.querySelector(".card-title");
+            if (titleElem) {
+                titleElem.textContent = `دوره ${formCount + 1}`;
+            }
+
+            formsetDiv.appendChild(newForm);
+            totalForms.value = formCount + 1;
+        });
+    }
+})();
+</script>
+{% endblock %}

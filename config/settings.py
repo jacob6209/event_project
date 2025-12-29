@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
+    'jalali_date',
     'django_jalali',
     'widget_tweaks',
     

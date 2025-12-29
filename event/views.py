@@ -2,11 +2,15 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404,redirect
 from .models import Participant, RegisteredParticipant, Registration, Course,Guest,EventType
 from django.contrib.auth.decorators import login_required
-from .forms import ParticipantActiveForm,GuestForm,GuestEditForm\
-     , EventTypeForm, EventForm, CourseFormSet,Event
+from .forms import CourseDateFormSet, ParticipantActiveForm,GuestForm,GuestEditForm\
+     , EventTypeForm, EventForm, CourseFormSet,Event,CourseDateForm
 from django.contrib import messages
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
+
+from django.contrib.auth.decorators import login_required
+from django.forms import modelformset_factory
+from django.shortcuts import redirect, render
 
 # stuff View
 
@@ -173,7 +177,7 @@ def event_step(request):
         if "image" in request.FILES:
             request.session["event_image_name"] = request.FILES["image"].name
 
-        return redirect("wizard_confirm")
+        return redirect("wizard_course")
 
     # ===== GET ===== use prefilled session data if no POST =====
     prefill = {
@@ -190,7 +194,67 @@ def event_step(request):
 
     return render(request, "step_event.html", {"step": 2, "prefill": prefill})
 
+@login_required
+def course_step(request):
+    if not request.user.is_staff:
+        return redirect("index")
 
+    if "event_is_multi_course" not in request.session:
+        return redirect("event_step")
+
+    is_multi_course = request.session.get("event_is_multi_course", False)
+
+    # Always at least 1 empty form
+    CourseFormSet = modelformset_factory(
+        Course,
+        form=CourseDateForm,
+        extra=1,
+        can_delete=True,
+    )
+
+    if request.method == "POST":
+        if request.POST.get("action") == "prev":
+            return redirect("wizard_event")
+
+        formset = CourseFormSet(request.POST, queryset=Course.objects.none())
+
+        # Force validation for all forms
+        for form in formset.forms:
+            form.empty_permitted = False
+
+        if formset.is_valid():
+            # Ensure at least one non-deleted form
+            has_data = any(form.cleaned_data and not form.cleaned_data.get("DELETE")
+                           for form in formset.forms)
+            if not has_data:
+                messages.error(request, "لطفاً حداقل یک دوره را پر کنید")
+                return render(request, "step_course.html",
+                              {"formset": formset, "is_multi_course": is_multi_course, "step": 3})
+
+            courses = formset.save(commit=False)
+            if is_multi_course and len(courses) < 2:
+                messages.error(request, "در حالت چند دوره‌ای باید حداقل دو دوره ایجاد شود")
+                return render(request, "step_course.html",
+                              {"formset": formset, "is_multi_course": is_multi_course, "step": 3})
+
+            # Save cleaned data to session
+            request.session["courses_data"] = [
+                form.cleaned_data
+                for form in formset.forms
+                if form.cleaned_data and not form.cleaned_data.get("DELETE")
+            ]
+            request.session.modified = True
+
+            return redirect("next_step")
+
+    else:
+        # GET request → just create empty formset
+        formset = CourseFormSet(queryset=Course.objects.none())
+        for form in formset.forms:
+            form.empty_permitted = False
+
+    return render(request, "step_course.html",
+                  {"formset": formset, "is_multi_course": is_multi_course, "step": 3})
 # ------------------------------------------------
 # User View
 @login_required

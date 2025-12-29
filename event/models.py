@@ -36,9 +36,9 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     start_date = models.DateField()
     end_date = models.DateField()
-    registration_start = models.DateTimeField()
+    registration_start = models.DateField()
     max_capacity = models.PositiveIntegerField(default=10)
-    registration_end = models.DateTimeField()
+    registration_end = models.DateField()
     is_publish = models.BooleanField(default=False)
 
     def __str__(self):

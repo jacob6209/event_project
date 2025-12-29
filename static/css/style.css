@@ -718,6 +718,8 @@ td {
 }
 .field-error {
     margin-top: 4px;
+    color: #dc3545;
+    /* font-size: 14px; */
 }   
 /* Table cells must grow correctly */
 .field-cell {
@@ -831,7 +833,17 @@ i.fa, i.fas, i.far, i.fab {
     grid-template-columns: 2fr 1fr;
     gap: 20px;
 }
-
+.grid-event-title {
+    display: grid;
+    /* grid-template-columns: 2fr 1fr; */
+    gap: 20px;
+}
+.grid-course{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* grid-template-columns: 1fr 1fr; */
+    gap: 10px;
+}
 .grid-3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -852,6 +864,7 @@ i.fa, i.fas, i.far, i.fab {
     border: 1px solid #ddd;
     transition: 0.3s;
 }
+
 
 .form-section input:focus,
 .form-section textarea:focus {

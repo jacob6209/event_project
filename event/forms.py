@@ -1,11 +1,134 @@
-from django import forms
-
 from event.utils import english_to_persian_numbers, persian_to_english_numbers
 from .models import Participant,Guest,Registration,RegisteredParticipant,Event,EventType,Course
 
 from django import forms
 from .models import Event, EventType
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
+
+from jalali_date.fields import JalaliDateField
+from jalali_date.widgets import AdminJalaliDateWidget
+
+
+class CourseDateForm(forms.ModelForm):
+
+    title = forms.CharField(
+    label="عنوان دوره",
+    required=True,
+    error_messages={
+            "required": "این فیلد اجباری است"
+        },
+    widget=forms.TextInput(attrs={
+        "placeholder": "مثلاً: دوره اول:از تاریخ ۲۷ اسفند تا ۳ فروردین"
+    })
+    )
+
+    start_date = JalaliDateField(
+        required=True,
+        label="تاریخ شروع",
+        error_messages={
+            "required": "این فیلد اجباری است"
+        },
+        widget=AdminJalaliDateWidget(attrs={"class": "form-section__input"})
+    )
+
+    end_date = JalaliDateField(
+        required=True,
+        label="تاریخ پایان",
+        error_messages={
+            "required": "این فیلد اجباری است"
+        },
+        widget=AdminJalaliDateWidget(attrs={"class": "form-section__input"})
+    )
+
+    registration_start = JalaliDateField(
+        required=True,
+        label="شروع ثبت نام",
+        error_messages={
+            "required": "این فیلد اجباری است"
+        },
+        widget=AdminJalaliDateWidget(attrs={"class": "form-section__input"})
+    )
+
+    registration_end = JalaliDateField(
+        required=True,
+        label="پایان ثبت نام",
+        error_messages={
+            "required": "این فیلد اجباری است"
+        },
+        widget=AdminJalaliDateWidget(attrs={"class": "form-section__input"})
+    )
+
+    max_capacity = forms.IntegerField(
+        required=True,
+        label="حداکثر ظرفیت",
+        min_value=1,
+        initial=10
+    )
+
+    max_guests = forms.IntegerField(
+        required=True,
+        label="ظرفیت مهمان",
+        min_value=0,
+        initial=0
+    )
+
+    max_guests_per_user = forms.IntegerField(
+        required=True,
+        label="حداکثر مهمان برای هر کاربر",
+        min_value=0,
+        initial=0
+    )
+
+    has_food = forms.BooleanField(
+        label="وعده غذایی",
+        required=False
+    )
+
+    allows_guests = forms.BooleanField(
+        label="پذیرش میهمان",
+        required=False
+    )
+
+    requires_approval = forms.BooleanField(
+        label="نیاز به تأیید",
+        required=False
+    )
+    class Meta:
+        model = Course
+        fields = [
+            'title',
+            'start_date',
+            'end_date',
+            'registration_start',
+            'registration_end',
+            'max_capacity',
+            'max_guests',
+            'max_guests_per_user',
+            'has_food',
+            'allows_guests',
+            'requires_approval',
+        ]
+        def clean(self):
+            cleaned_data = super().clean()
+            # Check if any field is empty
+            required_fields = [
+                "title", "start_date", "end_date",
+                "registration_start", "registration_end",
+                "max_capacity", "max_guests", "max_guests_per_user"
+            ]
+            for field in required_fields:
+                if cleaned_data.get(field) in [None, ""]:
+                    self.add_error(field, "این فیلد الزامی است")
+            return cleaned_data
+
+
+
+CourseDateFormSet = modelformset_factory(
+    Course,
+    form=CourseDateForm,
+    extra=1,
+    can_delete=False
+)
 
 class EventTypeForm(forms.ModelForm):
     class Meta:
