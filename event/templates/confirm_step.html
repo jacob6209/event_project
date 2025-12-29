@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}تأیید اطلاعات{% endblock %}
-
+{% load event_tags%}
 {% block content %}
 {% include "_wizard_progress.html" %}
 
@@ -37,7 +37,7 @@
 
                 <!-- تصویر رویداد -->
                 <div class="event-image">
-                    <div class="label">تصویر رویداد</div>
+                    <div class="label">پیش نمایش تصویر</div>
                     {% if prefill.event.image_name %}
                         <img src="/media/{{ prefill.event.image_name }}" alt="تصویر رویداد" class="event-img">
                     {% else %}
@@ -75,10 +75,10 @@
                     <hr class="divider">
 
                     <div class="event-flags-grid">
-                        <div><strong>چند دوره‌ای:</strong> {{ prefill.event.is_multi_course|yesno:"بله,خیر" }}</div>
+                        <div><strong>چند دوره‌ای:</strong> {{ prefill.event.is_multi_course|yesno:"دارد,ندارد" }}</div>
                         <div><strong>وعده غذایی:</strong> {{ prefill.event.has_food|yesno:"دارد,ندارد" }}</div>
                         <div><strong>پذیرش مهمان:</strong> {{ prefill.event.allows_guests|yesno:"دارد,ندارد" }}</div>
-                        <div><strong>نیاز به تأیید:</strong> {{ prefill.event.requires_approval|yesno:"نیاز دارد,نیاز ندارد" }}</div>
+                        <div><strong>نیاز به تأیید:</strong> {{ prefill.event.requires_approval|yesno:" دارد, ندارد" }}</div>
                     </div>
                 </div>
 
@@ -108,32 +108,47 @@
 
         <div class="course-dates-grid">
             <div class="form-section">
-                <label>تاریخ شروع</label>
+                <label> تاریخ شروع دوره</label>
                 <p>{{ course.start_date }}</p>
             </div>
 
             <div class="form-section">
-                <label>تاریخ پایان</label>
+                <label>تاریخ پایان دوره</label>
                 <p>{{ course.end_date }}</p>
             </div>
 
             <div class="form-section">
-                <label>شروع ثبت‌نام</label>
+                <label> شروع ثبت‌نام دوره</label>
                 <p>{{ course.registration_start }}</p>
             </div>
 
             <div class="form-section">
-                <label>پایان ثبت‌نام</label>
+                <label>پایان ثبت‌نام دوره</label>
                 <p>{{ course.registration_end }}</p>
             </div>
         </div>
 
-        <div class="course-capacity">
+        <div class="course-dates-grid">
             <div class="form-section">
-                <label>حداکثر ظرفیت</label>
-                <p>{{ course.max_capacity }}</p>
+                <label> حداکثر ظرفیت کل دوره</label>
+                <p>{{ course.max_capacity|persian_digits }}</p>
+            </div>
+
+            <div class="form-section">
+                <label> حداکثر پذیرش میهمانان </label>
+                <p>{{ course.max_guests|persian_digits}}</p>
+            </div>
+
+            <div class="form-section">
+                <label> حداکثر میهمانان برای کاربر </label>
+                <p>{{ course.max_guests_per_user|persian_digits}}</p>
             </div>
         </div>
+            
+        
+
+
+        
     </div>
     {% endfor %}
 
