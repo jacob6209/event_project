@@ -1,4 +1,5 @@
 import datetime
+from datetime import datetime
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404,redirect
 from django.core.files.storage import default_storage
@@ -59,8 +60,9 @@ def staff_add_event(request):
         "course_formset": course_formset,
         "event_types": EventType.objects.all()
     })
-# use wizard 
 
+
+# use wizard 
 @login_required
 def event_type_step(request):
 
@@ -108,7 +110,7 @@ def event_step(request):
     if not request.session.get("event_type_new_title"):
         return redirect("event_type_step")
 
-    prefill = {}  # dictionary to pass to template
+    prefill = {}
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -257,14 +259,14 @@ def course_step(request):
     else:
         # GET request → just create empty formset
         formset = CourseFormSet(queryset=Course.objects.none())
-        for form in formset.forms:
-            form.empty_permitted = False
+
+        # for form in formset.forms:
+        #     form.empty_permitted = False
 
     return render(request, "step_course.html",
                   {"formset": formset, "is_multi_course": is_multi_course, "step": 3})
 @login_required
 def confirm_step(request):
-    from pprint import pprint
 
     if not request.user.is_staff:
         return redirect("index")
@@ -305,53 +307,73 @@ def confirm_step(request):
         elif action == "prev_course":
             return redirect("wizard_course")
         elif action in ["save", "save_publish"]:
-            # Create EventType
-            event_type, _ = EventType.objects.get_or_create(name=prefill["event_type"])
 
-            # Create Event
-            event = Event.objects.create(
-                event_type=event_type,
-                title=prefill["event"]["title"],
-                rules=prefill["event"]["rules"],
-                is_multi_course=prefill["event"]["is_multi_course"],
-                has_food=prefill["event"]["has_food"],
-                allows_guests=prefill["event"]["allows_guests"],
-                requires_approval=prefill["event"]["requires_approval"],
-                max_capacity=prefill["event"]["max_capacity"],
-                max_guests=prefill["event"]["max_guests"],
-                max_guests_per_user=prefill["event"]["max_guests_per_user"],
-                image=request.session.get("event_image_file", None),
-                is_publish=(action == "save_publish")
-            )
+            is_publish = (action == "save_publish")
 
-            # Create Courses (deserialize dates)
-            for course_data in prefill["courses"]:
-                def parse_date(date_str):
-                    return datetime.fromisoformat(date_str).date() if date_str else None
+            # helper function (OUTSIDE loop)
+            def parse_date(date_str):
+                return datetime.fromisoformat(date_str).date() if date_str else None
 
-                Course.objects.create(
-                    event=event,
-                    title=course_data.get("title"),
-                    start_date=parse_date(course_data.get("start_date")),
-                    end_date=parse_date(course_data.get("end_date")),
-                    registration_start=parse_date(course_data.get("registration_start")),
-                    registration_end=parse_date(course_data.get("registration_end")),
-                    max_capacity=course_data.get("max_capacity"),
-                    is_publish=(action == "save_publish")
+            try:
+                with transaction.atomic():
+                    event_type, _ = EventType.objects.get_or_create(
+                        name=prefill["event_type"]
+                    )
+
+                    event = Event.objects.create(
+                        event_type=event_type,
+                        title=prefill["event"]["title"],
+                        rules=prefill["event"]["rules"],
+                        is_multi_course=prefill["event"]["is_multi_course"],
+                        has_food=prefill["event"]["has_food"],
+                        allows_guests=prefill["event"]["allows_guests"],
+                        requires_approval=prefill["event"]["requires_approval"],
+                        max_capacity=prefill["event"]["max_capacity"],
+                        max_guests=prefill["event"]["max_guests"],
+                        max_guests_per_user=prefill["event"]["max_guests_per_user"],
+                        image=request.session.get("event_image_file"),
+                        is_publish=is_publish,
+                    )
+                    for course_data in prefill["courses"]:
+                        Course.objects.create(
+                            event=event,
+                            title=course_data.get("title"),
+                            start_date=parse_date(course_data.get("start_date")),
+                            end_date=parse_date(course_data.get("end_date")),
+                            registration_start=parse_date(course_data.get("registration_start")),
+                            registration_end=parse_date(course_data.get("registration_end")),
+                            max_capacity=course_data.get("max_capacity"),
+                            is_publish=is_publish,
+                        )
+
+            except Exception as e:
+                print(f'{e}')
+                messages.error(
+                    request,
+                    "خطا در ذخیره اطلاعات. لطفاً دوباره تلاش کنید."
                 )
+                return redirect("wizard_confirm")
 
-            # Clear all wizard sessions
-            for key in ["event_type_new_title", "event_title", "event_rules",
-                        "event_is_multi_course", "event_has_food", "event_allows_guests",
-                        "event_requires_approval", "event_max_capacity", "event_max_guests",
-                        "event_max_guests_per_user", "event_image_name", "event_image_file",
-                        "courses_data"]:
-                if key in request.session:
-                    del request.session[key]
+            for key in [
+                "event_type_new_title",
+                "event_title",
+                "event_rules",
+                "event_is_multi_course",
+                "event_has_food",
+                "event_allows_guests",
+                "event_requires_approval",
+                "event_max_capacity",
+                "event_max_guests",
+                "event_max_guests_per_user",
+                "event_image_name",
+                "event_image_file",
+                "courses_data",
+            ]:
+                request.session.pop(key, None)
 
             messages.success(request, "اطلاعات با موفقیت ثبت شد.")
-            return redirect("index")  # Adjust to your listing page
-
+            return redirect("index")
+                
     return render(request, "confirm_step.html", {"step":4,"prefill": prefill})
 
 # ------------------------------------------------

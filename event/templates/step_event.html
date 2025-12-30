@@ -11,13 +11,13 @@
 <form method="post" enctype="multipart/form-data" class="wizard-form">
     {% csrf_token %}
 
-    {% if messages %}
+    {% comment %} {% if messages %}
         <ul class="messages">
             {% for message in messages %}
                 <li style="color:red; text-align:center; margin:15px 0;">{{ message }}</li>
             {% endfor %}
         </ul>
-    {% endif %}
+    {% endif %} {% endcomment %}
 
     <!-- ================= CREATE EVENT CARD ================= -->
     <div class="card mode-card active">

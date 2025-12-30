@@ -9,7 +9,7 @@
 <form method="post" enctype="multipart/form-data" class="wizard-form" novalidate>
     {% csrf_token %}
 
-    <!-- ================= EVENT TYPE ================= -->
+    <!-- ================= EVENT TYPE =================     -->
     <div class="card mode-card active">
         <div class="card-header">
             <h3 class="card-title">دسته‌بندی رویداد</h3>
@@ -144,10 +144,6 @@
                 <p>{{ course.max_guests_per_user|persian_digits}}</p>
             </div>
         </div>
-            
-        
-
-
         
     </div>
     {% endfor %}

@@ -25,7 +25,7 @@ urlpatterns = [
     path("wizard/event-type/", event_type_step, name="wizard_event_type"),
     path("wizard/event/", event_step, name="wizard_event"),
     path("wizard/course/",course_step , name="wizard_course"),
-    path("wizard/confirm/",confirm_step , name="confirm_step"),
+    path("wizard/confirm/",confirm_step , name="wizard_confirm"),
 ]
 if settings.DEBUG:
     urlpatterns += static(
