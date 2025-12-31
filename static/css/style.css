@@ -1123,6 +1123,11 @@ input[type="checkbox"] {
     margin: 28px 0;
 }
 
+.divider-s1 {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 10px 0;
+}
 .event-flags-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1142,3 +1147,136 @@ input[type="checkbox"] {
     grid-template-columns: 1fr;
     gap: 12px;
 }
+.index-data-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin: 16px 0;
+}
+/* ===== Courses Section (Index Page) ===== */
+.course-section {
+    margin-top: 20px;
+}
+
+.course-section .section-title {
+    font-size: 1.05rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #2c3e50;
+    border-bottom: 2px solid #e0e0e0;
+    display: inline-block;
+    padding-bottom: 4px;
+}
+
+/* Grid of courses */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+/* Single course card */
+.course-card {
+    background: #f9fbff;
+    border: 1px solid #e0e7ff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: all 0.25s ease;
+}
+
+.course-card:hover {
+    background: #eef4ff;
+    transform: translateY(-2px);
+}
+
+/* Course title */
+.course-title {
+    font-weight: 600;
+    color: #1b3a57;
+    margin-bottom: 8px;
+}
+
+/* Dates */
+.course-dates {
+    font-size: 0.9rem;
+    color: #555;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+/* ===== EVENT LAYOUT ===== */
+
+.event-content {
+    width: 100%;
+}
+
+/* image + details */
+.event-top {
+    display: flex;
+    direction: ltr;
+    flex-direction: row;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.event-image {
+    width: 320px;
+    flex-shrink: 0;
+}
+
+.event-img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+/* force text RTL */
+.event-details {
+    direction: rtl;
+    text-align: right;
+}
+
+/* rules, flags, etc */
+.event-details * {
+    direction: rtl;
+}
+
+/* ===== FULL WIDTH CAPACITY ===== */
+
+.event-capacity {
+    margin-top: 24px;
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.capacity-item {
+    flex: 1;
+    background: #f6f8fb;
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+}
+
+.capacity-item .label {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.capacity-item .value {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.course-grid-x1 {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.course-card-x1 {
+    width: 100%;
+    background: #f9fafc;
+    border-radius: 14px;
+    padding: 18px;
+}
+

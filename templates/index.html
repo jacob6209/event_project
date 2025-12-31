@@ -1,16 +1,149 @@
 {% extends "_base.html" %}
 {% load static %}
+{% load jformat %}
+{% load event_tags %}
 
-{% block title %}صفحه اصلی{% endblock %}
+{% block title %}رویدادها{% endblock %}
+
 
 {% block content %}
-<div class="main-content text-center">
+<div class="main-content">
 
-    <h2 class="page-title">به سیستم ثبت نام رویدادهای رفاهی شرکت نفت و گاز پارس خوش آمدید</h1>
+    <h2 class="page-title text-center">
+        رویدادهای رفاهی و تفریحی
+    </h2>
 
-    <p class="mb-20" style="font-size: 18px; color: #555;">
-        ثبت و مدیریت رویدادها رفاهی و تفریحی
-    </p>
+    {% for type in event_types %}
+        {% if type.events.exists %}
+        <div class="card mode-card active">
+
+            {% for event in type.events.all %}
+            <!-- ================= EVENT ================= -->
+            <div class="card mode-card active" style="margin-top:20px">
+
+                <div class="card-header">
+                    <h3 class="card-title">{{ type.name }}-{{ event.title }}</h3>
+                </div>
+
+                <!-- ================= EVENT CONTENT ================= -->
+                <div class="event-content">
+
+                    <!-- ===== TOP ROW (IMAGE + DETAILS) ===== -->
+                    <div class="event-top">
+                        <br>
+                        <!-- IMAGE -->
+                        <div class="event-image">
+                            <br>
+                            {% if event.image %}
+                                <img src="{{ event.image.url }}" class="event-img">
+                            {% else %}
+                                <div class="no-image">تصویری ثبت نشده</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- DETAILS -->
+                        <div class="event-details">
+
+                            <!-- Rules -->
+                            <div class="detail-item">
+                                <br>
+                                    {{ event.rules|default:"—" }}
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== ✅ FULL WIDTH CAPACITY ROW ===== -->
+                    <div class="event-capacity">
+
+                        <div class="capacity-item">
+                            <div class="label">چند دوره‌ای</div>
+                            <div class="value">{{ event.is_multi_course|yesno:"دارد,ندارد" }}</div>
+                        </div>
+
+                        <div class="capacity-item">
+                            <div class="label">وعده غذایی</div>
+                            <div class="value"> {{ event.has_food|yesno:"دارد,ندارد" }}</div>
+                        </div>
+
+                        <div class="capacity-item">
+                            <div class="label">پذیرش مهمان</div>
+                            <div class="value">{{ event.allows_guests|yesno:"دارد,ندارد" }}</div>
+                        </div>
+                        <div class="capacity-item">
+                            <div class="label">نیاز به تأییدیه</div>
+                            <div class="value">{{ event.requires_approval|yesno:"دارد,ندارد" }}</div>
+                        </div>
+
+                    </div>
+                    {% comment %} Statistic {% endcomment %}
+                    <div class="event-capacity">
+
+                        <div class="capacity-item">
+                            <div class="label">ظرفیت کل</div>
+                            <div class="value">
+                                 {{ event.max_capacity|persian_digits|default:"نامحدود" }} نفر
+                            </div>
+                        </div>
+
+                        <div class="capacity-item">
+                            <div class="label">ظرفیت مهمان</div>
+                            <div class="value">{{ event.max_guests|persian_digits|default:"0" }} نفر</div>
+                        </div>
+
+                        <div class="capacity-item">
+                            <div class="label">مهمان برای هر کاربر</div>
+                            <div class="value">{{ event.max_guests_per_user|persian_digits|default:"0" }} نفر </div>
+                        </div>
+
+                    </div>
+
+                    <hr class="divider">
+
+                    <!-- ===== COURSES ===== -->
+                    {% if event.courses.exists %}
+                    <div class="course-section">
+                        <h4 class="section-title">دوره‌ها</h4>
+
+                        <div class="course-grid-x1">
+                            {% for course in event.courses.all %}
+                            <div class="course-card-x1">
+
+                                <div class="course-title">
+                                    {{ course.title|persian_digits}}
+                                </div>
+
+                                <div class="course-dates">
+                                    <span>📅 شروع دوره: {{ course.start_date|jformat:"%Y/%m/%d"|persian_digits }}</span>
+                                    <span>📅 پایان دوره: {{ course.end_date|jformat:"%Y/%m/%d"|persian_digits }}</span>
+                                    <span>📝 شروع ثبت‌نام: {{ course.registration_start|jformat:"%Y/%m/%d"|persian_digits }}</span>
+                                    <span>🛑 پایان ثبت‌نام: {{ course.registration_end|jformat:"%Y/%m/%d"|persian_digits }}</span>
+                                    {% comment %} <hr class="divider-s2">
+                                    <span> ظرفیت دوره:{{ course.max_capacity }}</span>
+                                    <span> ظرفیت پذیرش میهمانان: {{ event.max_guests }}</span>
+                                    <span>مهمان برای هر کاربر: {{ event.max_guests_per_user }}</span> {% endcomment %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                        <p class="empty-text">
+                            دوره‌ای برای این رویداد ثبت نشده است.
+                        </p>
+                    {% endif %}
+
+                </div>
+                <!-- ================= END EVENT CONTENT ================= -->
+
+            </div>
+            {% endfor %}
+
+        </div>
+        {% endif %}
+    {% empty %}
+        <p class="text-center">هیچ رویدادی وجود ندارد.</p>
+    {% endfor %}
 
 </div>
 {% endblock %}

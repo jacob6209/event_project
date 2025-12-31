@@ -11,13 +11,24 @@ from .forms import CourseDateFormSet, ParticipantActiveForm,GuestForm,GuestEditF
      , EventTypeForm, EventForm, CourseFormSet,Event,CourseDateForm
 from django.contrib import messages
 from django.db import transaction
-from django.contrib.admin.views.decorators import staff_member_required
-
-from django.contrib.auth.decorators import login_required
 from django.forms import modelformset_factory
-from django.shortcuts import redirect, render
+from django.db.models import Prefetch
 
 # stuff View
+
+
+def index(request):
+    event_types = EventType.objects.prefetch_related(
+        Prefetch(
+            "events",
+            queryset=Event.objects.filter(is_publish=True).prefetch_related("courses")
+        )
+    ).order_by("-id")
+
+    context = {
+        "event_types": event_types
+    }
+    return render(request, "index.html", context)
 
 @login_required
 def staff_events(request):

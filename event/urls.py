@@ -5,12 +5,13 @@ from .views import reregistration_view\
                     ,registration_lookup_view,my_events_view\
                     ,registration_edit_view,registration_delete_view\
                     ,register_guest,delete_guest,staff_events\
-                    ,staff_add_event,event_type_step,event_step,course_step,confirm_step
+                    ,staff_add_event,event_type_step,event_step,course_step,confirm_step,index
 from django.views.generic import TemplateView
 from django.conf.urls.static import static
 urlpatterns = [
     path('register/', reregistration_view, name='reregistration'),
-    path('index/', TemplateView.as_view(template_name="index.html"),name="index"),
+    path('index/', index, name='index'),
+    # path('index/', TemplateView.as_view(template_name="index.html"),name="index"),
     path("my_events/",my_events_view, name="my_events"),
     path("registration/guest/",register_guest, name="registration_guest"),
     # delete an Guest
