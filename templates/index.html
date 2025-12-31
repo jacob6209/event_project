@@ -37,7 +37,7 @@
                             {% if event.image %}
                                 <img src="{{ event.image.url }}" class="event-img">
                             {% else %}
-                                <div class="no-image">تصویری ثبت نشده</div>
+                                <img src="{% static 'images/no_image_cover.png' %}" class="event-img">
                             {% endif %}
                         </div>
 
