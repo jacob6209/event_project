@@ -46,10 +46,20 @@
 
                             <!-- Rules -->
                             <div class="detail-item">
-                                <br>
-                                    {{ event.rules|default:"—" }}
-                                
-                            </div>
+                            <br>
+                            {% if event.rules %}
+                                {% if event.rules|length > 150 %}
+                                    <details>
+                                        <summary>{{ event.rules|slice:":150"|linebreaksbr}}...</summary>
+                                        <p>{{ event.rules|linebreaksbr }}</p>
+                                    </details>
+                                {% else %}
+                                    {{ event.rules|linebreaksbr }}
+                                {% endif %}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </div>
                         </div>
                     </div>
 

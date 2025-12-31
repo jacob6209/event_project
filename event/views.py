@@ -13,7 +13,8 @@ from django.contrib import messages
 from django.db import transaction
 from django.forms import modelformset_factory
 from django.db.models import Prefetch
-
+from django.core.files import File
+import os
 # stuff View
 
 
@@ -99,11 +100,11 @@ def event_type_step(request):
         prefill={
             "name": request.session.get("event_type_new_title", ""),
         }
-        if EventType.objects.filter(name=new_title).exists():
-            return render(request, "step_event_type.html", {
-                "step": 1,
-                "error": "دسته بندی با این نام قبلا ثبت شده است."
-            })
+        # if EventType.objects.filter(name=new_title).exists():
+        #     return render(request, "step_event_type.html", {
+        #         "step": 1,
+        #         "error": "دسته بندی با این نام قبلا ثبت شده است."
+        #     })
 
         return redirect("wizard_event")
         
@@ -114,20 +115,22 @@ def event_type_step(request):
 
 @login_required
 def event_step(request):
+
     if not request.user.is_staff:
         return redirect("index")
-    
+
     # User must come from event_type_step
     if not request.session.get("event_type_new_title"):
         return redirect("event_type_step")
 
-    prefill = {}
-
+    # =========================
+    # POST
+    # =========================
     if request.method == "POST":
         action = request.POST.get("action")
 
+        # ----- Go back -----
         if action == "prev":
-            # Save POSTed values into session before going back
             request.session["event_title"] = request.POST.get("title", "")
             request.session["event_rules"] = request.POST.get("rules", "")
             request.session["event_is_multi_course"] = bool(request.POST.get("is_multi_course"))
@@ -139,7 +142,7 @@ def event_step(request):
             request.session["event_max_guests_per_user"] = int(request.POST.get("max_guests_per_user") or 0)
             return redirect("wizard_event_type")
 
-        # ===== Extract fields =====
+        # ----- Extract fields -----
         title = request.POST.get("title", "").strip()
         rules = request.POST.get("rules", "").strip()
         is_multi_course = bool(request.POST.get("is_multi_course"))
@@ -150,37 +153,28 @@ def event_step(request):
         max_guests = int(request.POST.get("max_guests") or 0)
         max_guests_per_user = int(request.POST.get("max_guests_per_user") or 0)
 
-        # ===== Validation =====
+        # ----- Validation -----
         has_error = False
+
         if not title:
             messages.error(request, "برای ایجاد رویداد جدید، وارد کردن عنوان الزامی است")
             has_error = True
+
         if allows_guests and max_guests == 0:
             messages.error(request, "در صورت پذیرش مهمان، ظرفیت مهمان نمی‌تواند صفر باشد")
             has_error = True
+
         if max_guests_per_user > max_guests:
-            messages.error(request, "حداکثر مهمان هر کاربر نمی‌تواند بیشتر از کل ظرفیت مهمان باشد")
+            messages.error(
+                request,
+                "حداکثر مهمان هر کاربر نمی‌تواند بیشتر از کل ظرفیت مهمان باشد"
+            )
             has_error = True
+
         if not allows_guests and max_guests > 0:
             allows_guests = True
 
-        # ===== Prepare prefill for template =====
-        prefill = {
-            "title": title,
-            "rules": rules,
-            "is_multi_course": is_multi_course,
-            "has_food": has_food,
-            "allows_guests": allows_guests,
-            "requires_approval": requires_approval,
-            "max_capacity": max_capacity,
-            "max_guests": max_guests,
-            "max_guests_per_user": max_guests_per_user,
-        }
-
-        if has_error:
-            return render(request, "step_event.html", {"step": 2, "prefill": prefill})
-
-        # ===== Store in session =====
+        # ----- Store valid data in session -----
         request.session["event_title"] = title
         request.session["event_rules"] = rules
         request.session["event_is_multi_course"] = is_multi_course
@@ -191,15 +185,25 @@ def event_step(request):
         request.session["event_max_guests"] = max_guests
         request.session["event_max_guests_per_user"] = max_guests_per_user
 
-        # ===== Handle image upload =====
+        # ----- Handle image upload (TEMP for preview) -----
         if "image" in request.FILES:
             image = request.FILES["image"]
-            saved_name = default_storage.save(image.name, ContentFile(image.read()))
-            request.session["event_image_name"] = saved_name  # now points to actual file in MEDIA_ROOT
+
+            temp_path = default_storage.save(
+                f"temp/{image.name}",
+                ContentFile(image.read())
+            )
+
+            request.session["event_image_path"] = temp_path
+
+        if has_error:
+            return redirect("wizard_event")
 
         return redirect("wizard_course")
 
-    # ===== GET ===== prefill from session =====
+    # =========================
+    # GET (prefill)
+    # =========================
     prefill = {
         "title": request.session.get("event_title", ""),
         "rules": request.session.get("event_rules", ""),
@@ -210,10 +214,18 @@ def event_step(request):
         "max_capacity": request.session.get("event_max_capacity", 10),
         "max_guests": request.session.get("event_max_guests", 0),
         "max_guests_per_user": request.session.get("event_max_guests_per_user", 0),
-        "image_name": request.session.get("event_image_name"),
+        # 👇 MUST match confirm_step
+        "image_path": request.session.get("event_image_path"),
     }
 
-    return render(request, "step_event.html", {"step": 2, "prefill": prefill})
+    return render(
+        request,
+        "step_event.html",
+        {
+            "step": 2,
+            "prefill": prefill,
+        }
+    )
 
 @login_required
 def course_step(request):
@@ -265,7 +277,7 @@ def course_step(request):
                 if form.cleaned_data and not form.cleaned_data.get("DELETE")
                 ]
             request.session.modified = True
-            return redirect("confirm_step")
+            return redirect("wizard_confirm")
 
     else:
         # GET request → just create empty formset
@@ -276,13 +288,14 @@ def course_step(request):
 
     return render(request, "step_course.html",
                   {"formset": formset, "is_multi_course": is_multi_course, "step": 3})
+
 @login_required
 def confirm_step(request):
 
     if not request.user.is_staff:
         return redirect("index")
 
-    # Check required session data
+    # ===== Required session checks =====
     if not request.session.get("event_type_new_title"):
         return redirect("wizard_event_type")
     if not request.session.get("event_title"):
@@ -290,7 +303,7 @@ def confirm_step(request):
     if not request.session.get("courses_data"):
         return redirect("wizard_course")
 
-    # Collect all prefill data
+    # ===== Prefill data for template (preview) =====
     prefill = {
         "event_type": request.session.get("event_type_new_title"),
         "event": {
@@ -303,34 +316,42 @@ def confirm_step(request):
             "max_capacity": request.session.get("event_max_capacity", 10),
             "max_guests": request.session.get("event_max_guests", 0),
             "max_guests_per_user": request.session.get("event_max_guests_per_user", 0),
-            "image_name": request.session.get("event_image_name"),
+            # 👇 path to temp image for preview
+            "image_path": request.session.get("event_image_path"),
         },
-        "courses": request.session.get("courses_data", [])
+        "courses": request.session.get("courses_data", []),
     }
 
     if request.method == "POST":
         action = request.POST.get("action")
 
+        # ===== Navigation buttons =====
         if action == "prev_event_type":
             return redirect("wizard_event_type")
         elif action == "prev_event":
             return redirect("wizard_event")
         elif action == "prev_course":
             return redirect("wizard_course")
+
+        # ===== Save / Save & Publish =====
         elif action in ["save", "save_publish"]:
 
             is_publish = (action == "save_publish")
 
-            # helper function (OUTSIDE loop)
             def parse_date(date_str):
                 return datetime.fromisoformat(date_str).date() if date_str else None
 
+            temp_image_path = request.session.get("event_image_path")
+
             try:
                 with transaction.atomic():
+
+                    # --- EventType ---
                     event_type, _ = EventType.objects.get_or_create(
                         name=prefill["event_type"]
                     )
 
+                    # --- Event (WITHOUT image) ---
                     event = Event.objects.create(
                         event_type=event_type,
                         title=prefill["event"]["title"],
@@ -342,9 +363,19 @@ def confirm_step(request):
                         max_capacity=prefill["event"]["max_capacity"],
                         max_guests=prefill["event"]["max_guests"],
                         max_guests_per_user=prefill["event"]["max_guests_per_user"],
-                        image=request.session.get("event_image_file"),
                         is_publish=is_publish,
                     )
+
+                    # --- Move temp image → ImageField (ONE TIME) ---
+                    if temp_image_path and default_storage.exists(temp_image_path):
+                        with default_storage.open(temp_image_path, "rb") as f:
+                            event.image.save(
+                                os.path.basename(temp_image_path),
+                                File(f),
+                                save=True,
+                            )
+
+                    # --- Courses ---
                     for course_data in prefill["courses"]:
                         Course.objects.create(
                             event=event,
@@ -358,12 +389,16 @@ def confirm_step(request):
                         )
 
             except Exception as e:
-                print(f'{e}')
+                print(e)
                 messages.error(
                     request,
                     "خطا در ذخیره اطلاعات. لطفاً دوباره تلاش کنید."
                 )
                 return redirect("wizard_confirm")
+
+            # ===== Cleanup =====
+            if temp_image_path and default_storage.exists(temp_image_path):
+                default_storage.delete(temp_image_path)
 
             for key in [
                 "event_type_new_title",
@@ -376,17 +411,22 @@ def confirm_step(request):
                 "event_max_capacity",
                 "event_max_guests",
                 "event_max_guests_per_user",
-                "event_image_name",
-                "event_image_file",
+                "event_image_path",
                 "courses_data",
             ]:
                 request.session.pop(key, None)
 
             messages.success(request, "اطلاعات با موفقیت ثبت شد.")
             return redirect("index")
-                
-    return render(request, "confirm_step.html", {"step":4,"prefill": prefill})
 
+    return render(
+        request,
+        "confirm_step.html",
+        {
+            "step": 4,
+            "prefill": prefill,
+        },
+    )
 # ------------------------------------------------
 # User View
 @login_required

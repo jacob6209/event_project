@@ -1279,4 +1279,25 @@ input[type="checkbox"] {
     border-radius: 14px;
     padding: 18px;
 }
-
+/* Text clipsable Shourt Description in index page */
+details summary {
+    cursor: pointer;
+    font-weight: bold;
+}
+details[open] summary::after {
+    content: " (مشاهده کمتر)";
+    color: rgb(183, 179, 179);
+}
+details summary::after {
+    content: " (مشاهده بیشتر)";
+    color: rgb(183, 179, 179);
+}
+.preview-img {
+    max-width: 300px;   /* adjust as you want */
+    max-height: 200px;  /* maintain aspect ratio */
+    width: auto;
+    height: auto;
+    object-fit: contain; /* keep proportions */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

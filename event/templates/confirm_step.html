@@ -38,10 +38,10 @@
                 <!-- تصویر رویداد -->
                 <div class="event-image">
                     <div class="label">پیش نمایش تصویر</div>
-                    {% if prefill.event.image_name %}
-                        <img src="/media/{{ prefill.event.image_name }}" alt="تصویر رویداد" class="event-img">
-                    {% else %}
-                        <div class="no-image">تصویری انتخاب نشده</div>
+                    {% if prefill.event.image_path %}
+                        <img src="{{ MEDIA_URL }}{{ prefill.event.image_path }}" class="preview-img">
+                    {%else%} 
+                        <img src="{% static 'images/no_image_cover.png' %}" class="event-img">
                     {% endif %}
                 </div>
 
@@ -54,7 +54,7 @@
 
                     <div class="detail-item">
                         <div class="label">قوانین</div>
-                        <div class="value pre-line">{{ prefill.event.rules|default:"—" }}</div>
+                        <div>{{ prefill.event.rules|default:"—" }}</div>
                     </div>
 
                     <div class="event-capacity-grid">

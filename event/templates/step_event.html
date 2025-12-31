@@ -28,18 +28,18 @@
 
         <div class="grid-2">
             <div class="form-section">
-                <label>عنوان رویداد</label>
+                <label>عنوان </label>
                 <input
                     type="text"
                     name="title"
                     required
-                    placeholder="مثلاً: نوروز 1405"
+                    placeholder="نام مهمانسرا،اقامتگاه،هتل"
                     value="{{ prefill.title }}"
                 >
             </div>
 
             <div class="form-section">
-                <label>تصویر رویداد</label>
+                <label>تصویر </label>
                 <input type="file" name="image">
                 {% if request.session.event_image_name %}
                     <p style="margin-top:5px;">تصویر فعلی: {{ request.session.event_image_name }}</p>
