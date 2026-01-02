@@ -8,11 +8,11 @@ from event.utils import serialize_course_data
 from .models import Participant, RegisteredParticipant, Registration, Course,Guest,EventType
 from django.contrib.auth.decorators import login_required
 from .forms import CourseDateFormSet, ParticipantActiveForm,GuestForm,GuestEditForm\
-     , EventTypeForm, EventForm, CourseFormSet,Event,CourseDateForm
+     , EventTypeForm, EventForm, CourseFormSet,Event,CourseDateForm,FilterForm
 from django.contrib import messages
 from django.db import transaction
 from django.forms import modelformset_factory
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.core.files import File
 import os
 from django.views.decorators.http import require_POST
@@ -29,14 +29,62 @@ def request_review_list(request):
     """
     if not request.user.is_staff:
         return redirect("index")
+    filter_form = FilterForm(request.GET or None)
 
     registrations = (
         Registration.objects
-        .select_related("user", "course", "course__event")
+        .select_related("user", "course", "course__event").prefetch_related(
+            # Prefetch registered participants
+            Prefetch(
+                'registeredparticipant_set',
+                queryset=RegisteredParticipant.objects.select_related('participant'),
+                 to_attr='participants_info' 
+            ),
+            # Prefetch guests
+            Prefetch(
+                'guests',
+                queryset=Guest.objects.all(),
+                to_attr='guests_info'
+            )
+        )
         .order_by("-registered_at")
     )
+        # ---- Apply filters only if form is valid ----
+    status = request.GET.get("status")
+    event = request.GET.get("event")
+
+
+    if filter_form.is_valid():
+        start = filter_form.cleaned_data.get("start_date")
+        end = filter_form.cleaned_data.get("end_date")
+        if start:
+            registrations = registrations.filter(registered_at__gte=start)
+        if end:
+            registrations = registrations.filter(registered_at__lte=end)
+
+ 
+    if status:
+        registrations = registrations.filter(status=status)
+    if event:
+        registrations = registrations.filter(course__event_id=event)
+        # Start date (Jalali → Gregorian handled by JalaliDateField)
+
+
+    # Search filter
+    search = request.GET.get("search")
+    if search:
+        registrations = registrations.filter(
+            Q(user__username__icontains=search) |
+            Q(user__email__icontains=search) |
+            Q(user__national_code__icontains=search)
+        )
+
+    # ---- Events for dropdown ----
+    events = Event.objects.filter(is_publish=True)
     return render(request, "request_review.html", {
-        "requests": registrations
+        "requests": registrations,
+        "filterForm":filter_form,
+        "events": events,
     })
 
 @login_required

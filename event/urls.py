@@ -29,8 +29,8 @@ urlpatterns = [
     path("wizard/event/", event_step, name="wizard_event"),
     path("wizard/course/",course_step , name="wizard_course"),
     path("wizard/confirm/",confirm_step , name="wizard_confirm"),
-    path("request_review/",request_review_list , name="request_review"),
     path("request_review/",request_review_list , name="request_review_list"),
+    path("request_review/",staff_events , name="request_review"),
     path("request_review/<int:registration_id>/action/",
         request_review_action,
         name="request_review_action"

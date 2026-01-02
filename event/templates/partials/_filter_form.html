@@ -1,0 +1,67 @@
+<!-- ================= FILTER FORM ================= -->
+<form method="get" class="no-card" >
+    <div class="card mode-card active">
+        {% comment %} <div class="card-header">
+            <h3 class="card-title">فیلتر درخواست‌ها</h3>
+        </div> {% endcomment %}
+
+        <div class="grid-review">
+            <!-- Status -->
+            <div class="form-section">
+                <label for="status">وضعیت</label>
+                <select name="status" id="status">
+                    <option value="">همه</option>
+                    <option value="pending"  {% if request.GET.status == "pending" %}selected{% endif %}>در حال بررسی</option>
+                    <option value="accepted" {% if request.GET.status == "accepted" %}selected{% endif %}>قبول شده</option>
+                    <option value="rejected" {% if request.GET.status == "rejected" %}selected{% endif %}>رد شده</option>
+                    <option value="canceled" {% if request.GET.status == "canceled" %}selected{% endif %}>لغو شده</option>
+                </select>
+            </div>
+
+            <!-- Event -->
+            <div class="form-section">
+                <label for="event">رویداد</label>
+                <select name="event" id="event">
+                    <option value="">همه رویدادها</option>
+                    {% for event in events %}
+                        {% if event.is_publish %}
+                            <option value="{{ event.id }}" {% if request.GET.event == event.id|stringformat:"s" %}selected{% endif %}>
+                                {{ event.title }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Start Date -->
+            <div class="form-section">
+                <label for="start_date">از تاریخ</label>
+                {{filterForm.start_date}}
+                {% comment %} <input type="date" name="start_date" id="start_date" value="{{ request.GET.start_date }}"> {% endcomment %}
+            </div>
+
+            <!-- End Date -->
+            <div class="form-section">
+                <label for="end_date">تا تاریخ</label>
+                {% comment %} <input type="date" name="end_date" id="end_date" value="{{ request.GET.end_date }}"> {% endcomment %}
+                {{filterForm.end_date}}
+            </div>
+
+            <!-- Search -->
+            <div class="form-section flex-grow-1">
+                <label for="search">جستجو</label>
+                <input type="text" name="search" id="search" placeholder="نام کاربری / حساب / کد ملی" value="{{ request.GET.search }}">
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Buttons -->
+        <div class="wizard-actions">
+            <button type="submit" class="btn-next">جستجو</button>
+            {% if request.GET.status or request.GET.event or request.GET.start_date or request.GET.end_date or request.GET.search %}
+                <a href="{% url 'request_review_list' %}" class="btn btn-outline-secondary">حذف فیلتر</a>
+            {% endif %}
+        </div>
+    </div>
+</form>

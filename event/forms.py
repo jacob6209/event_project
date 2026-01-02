@@ -8,6 +8,19 @@ from django.forms import inlineformset_factory, modelformset_factory
 from jalali_date.fields import JalaliDateField
 from jalali_date.widgets import AdminJalaliDateWidget
 
+class FilterForm(forms.Form):
+
+    start_date = JalaliDateField(
+        required=False,
+        label="تاریخ شروع",
+        widget=AdminJalaliDateWidget(attrs={"class": "form-section__input"})
+    )
+
+    end_date = JalaliDateField(
+        required=False,
+        label="تاریخ پایان",
+        widget=AdminJalaliDateWidget(attrs={"class": "form-section__input"})
+    )
 
 class CourseDateForm(forms.ModelForm):
 

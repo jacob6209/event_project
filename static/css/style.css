@@ -827,7 +827,18 @@ i.fa, i.fas, i.far, i.fab {
 /* for wizard Style Section Setting =======================================<>    */
 .wizard-form {
     margin-top: 20px;
+    
 }
+
+
+.wizard-form .card{
+    width: 100%;         /* Full width up to max */
+    margin: 0 0 0 auto;      /* Center the card */
+    padding: 10px;       /* Optional: increase padding for spacious look */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* subtle shadow */
+    }
+
+
 
 .grid-2 {
     display: grid;
@@ -849,6 +860,12 @@ i.fa, i.fas, i.far, i.fab {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+}
+.grid-review{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* grid-template-columns: 1fr 1fr; */
+    gap: 10px;
 }
 
 .form-section label {
@@ -1350,4 +1367,192 @@ details summary::after {
 /* Reject hover */
 .table-action-buttons .btn-reject:hover {
     background-color: #f5c6cb !important;
+}
+/* Filter form wrapper */
+.filter-form {
+    background: #fff; /* White background */
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Labels */
+.filter-form label {
+    min-width: 70px;
+    text-align: right;
+}
+
+/* Selects and inputs */
+.filter-form select,
+.filter-form input {
+    border-radius: 5px;
+    height: 36px;
+    font-size: 0.875rem;
+}
+
+/* Buttons */
+.filter-form .btn {
+    height: 36px;
+    font-size: 0.875rem;
+}
+
+form.no-card {
+    max-width: 1200px;
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+/* ===== Request Review Table Styling ===== */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'BYekan', sans-serif;
+    table-layout: fixed;
+    border: 1px solid #ccc; /* outer table border */
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: #97b7f2;
+    color: #fff;
+}
+
+
+
+.table thead th {
+    padding: 12px 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+    font-weight: bold;
+}
+
+.table tbody td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f7faff;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f8ff;
+}
+
+/* Right-align first columns (Persian text) */
+.table td:first-child,
+.table td:nth-child(2),
+.table th:first-child,
+.table th:nth-child(2) {
+    text-align: right;
+}
+
+/* Status badges */
+.status-pending {
+    color: rgb(217, 128, 19);
+    font-weight: bold;
+    background-color: #efbd7359;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-accepted {
+    color: #006400;
+    font-weight: bold;
+    background-color: #d4edda;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-rejected {
+    color: rgb(181, 7, 7);
+    font-weight: bold;
+    background-color: #f8d7da;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.status-canceled {
+    color: #4B4B4B;
+    font-weight: bold;
+    background-color: #e2e2e2;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Action buttons inside table */
+.table-action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+}
+
+.table-action-buttons button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    font-family: 'BYekan', sans-serif;
+}
+
+.table-action-buttons .btn-approve {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.table-action-buttons .btn-approve:hover {
+    background-color: #c3e6cb;
+}
+
+.table-action-buttons .btn-reject {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.table-action-buttons .btn-reject:hover {
+    background-color: #f5c6cb;
+}
+
+/* Scroll for too-wide tables on small screens */
+@media (max-width: 992px) {
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
+
+/* Persian numbers alignment in table */
+td, th {
+    font-family: 'BYekan', sans-serif;
+}
+
+/* Optional: shrink first # column */
+td.row-num, th.row-num {
+    width: 40px;
+    white-space: nowrap;
 }

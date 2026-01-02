@@ -1,86 +1,104 @@
 {% extends "_base.html" %}
 {% load static %}
+
 {% load event_tags %}
 
 {% block title %}بررسی درخواست‌ها{% endblock %}
 
 {% block head %}
-<style>
-    .status-badge {
-        font-size: 0.85rem;
-        padding: 6px 10px;
-        border-radius: 20px;
-    }
-</style>
+{{ filterForm.media }}
 {% endblock %}
 
 {% block content %}
+
 <div class="container my-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold">بررسی درخواست‌ها</h4>
-    </div>
+    {% include "partials/_filter_form.html"%}
 
+    <!-- ================= REQUEST TABLE ================= -->
     {% if requests %}
-        <div class="table-responsive">
+        <div class="table-responsive mt-3">
             <table class="table table-bordered align-middle text-center">
-                <thead class="table-light">
+                <thead class="table-header">
                     <tr>
-                        <th>#</th>
+                        <th style="width: 40px;">#</th>
                         <th>کاربر</th>
                         <th>رویداد</th>
                         <th>تاریخ ثبت درخواست</th>
+                        <th style="width: 40px;">#</th>
+                        <th>همراهان</th>
+                        <th style="width: 40px;">#</th>
+                        <th>میهمانان</th>
                         <th>وضعیت</th>
                         <th>عملیات</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for req in requests %}
-                    <tr>
-                        <td>{{ forloop.counter|persian_digits }}</td>
+                    {% for req in requests %}
+                        <tr>
+                            <td>{{ forloop.counter|persian_digits }}</td>
+                            <td>{{ req.user.get_full_name|default:req.user.username }}</td>
+                            <td>{{ req.event.title }}</td>
+                            <td>{{ req.registered_at|to_jalali|slice:"9:"|persian_digits }}</td>
 
-                        <td>
-                            {{ req.user.get_full_name|default:req.user.username }}
-                        </td>
+                            <!-- Participants -->
+                            <td>{{ req.participants_info|length|persian_digits }}</td>
+                            <td style="direction: rtl; text-align: right;">
+                                {% if req.participants_info %}
+                                    {% for participant in req.participants_info %}
+                                        {{ forloop.counter|persian_digits }}. {{ participant.participant.full_name }}<br>
+                                    {% endfor %}
+                                {% else %}
+                                    ندارد
+                                {% endif %}
+                            </td>
 
-                        <td>{{ req.event.title }}</td>
+                            <!-- Guests -->
+                            <td>{{ req.guests_info|length|persian_digits }}</td>
+                            <td style="direction: rtl; text-align: right;">
+                                {% if req.guests_info %}
+                                    {% for guest in req.guests_info %}
+                                        {{ forloop.counter|persian_digits }}. {{ guest.full_name }}<br>
+                                    {% endfor %}
+                                {% else %}
+                                    ندارد
+                                {% endif %}
+                            </td>
 
-                        <td >{{ req.registered_at|to_jalali|persian_digits }}</td>
+                            <!-- Status -->
+                            <td>
+                                <p class="{% if req.status == 'pending' %}status-pending
+                                {% elif req.status == 'accepted' %}status-accepted
+                                {% elif req.status == 'rejected' %}status-rejected
+                                {% elif req.status == 'canceled' %}status-canceled
+                                {% endif %}">
+                                    {{ req.get_status_display }}
+                                </p>
+                            </td>
 
-                        <td>
-                            <p class="{% if req.status == 'pending' %}status-pending
-                            {% elif req.status == 'accepted' %}status-accepted
-                            {% elif req.status == 'rejected' %}status-rejected
-                            {% elif req.status == 'canceled' %}status-canceled
-                            {% endif %}">
-                            {{ req.get_status_display }}
-                        </td>
-
-                        <td>
-                            {% if req.status == "pending" %}
-                                <form method="post" action="{% url 'request_review_action' req.id %}" class="table-action-buttons">
-                                    {% csrf_token %}
-                                    <button type="submit" name="action" value="approve" class="btn-approve">
-                                        <i class="fa-solid fa-check"></i> تأیید
-                                    </button>
-                                    
-                                    <button type="submit" name="action" value="reject" class="btn-reject">
-                                        <i class="fa-solid fa-xmark"></i> رد
-                                    </button>
-                                </form>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
-                        </td>
-                        
-                        
-                    </tr>
-                {% endfor %}
+                            <!-- Actions -->
+                            <td>
+                                {% if req.status == "pending" %}
+                                    <form method="post" action="{% url 'request_review_action' req.id %}" class="table-action-buttons">
+                                        {% csrf_token %}
+                                        <button type="submit" name="action" value="approve" class="btn-approve">
+                                            <i class="fa-solid fa-check"></i> تأیید
+                                        </button>
+                                        <button type="submit" name="action" value="reject" class="btn-reject">
+                                            <i class="fa-solid fa-xmark"></i> رد
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     {% else %}
-        <div class="alert alert-info text-center">
+        <div class="alert alert-info text-center mt-3">
             هیچ درخواستی برای بررسی وجود ندارد
         </div>
     {% endif %}
