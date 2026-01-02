@@ -1292,6 +1292,7 @@ details summary::after {
     content: " (مشاهده بیشتر)";
     color: rgb(183, 179, 179);
 }
+/* for image preview in  */
 .preview-img {
     max-width: 300px;   /* adjust as you want */
     max-height: 200px;  /* maintain aspect ratio */
@@ -1300,4 +1301,53 @@ details summary::after {
     object-fit: contain; /* keep proportions */
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+/* ----------------- request review */
+
+.table-action-buttons {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+.table-action-buttons button {
+    background: none !important;
+    box-shadow: none !important;
+    border: 1px solid transparent;
+    padding: 6px 12px !important;
+    font-size: 0.85rem !important;
+    line-height: 1 !important;
+    border-radius: 6px !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Approve button */
+.table-action-buttons .btn-approve {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    border: 1px solid #c3e6cb !important;
+}
+
+/* Approve hover */
+.table-action-buttons .btn-approve:hover {
+    background-color: #c3e6cb !important;
+}
+
+/* Reject button */
+.table-action-buttons .btn-reject {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
+}
+
+/* Reject hover */
+.table-action-buttons .btn-reject:hover {
+    background-color: #f5c6cb !important;
 }

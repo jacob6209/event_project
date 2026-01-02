@@ -15,7 +15,63 @@ from django.forms import modelformset_factory
 from django.db.models import Prefetch
 from django.core.files import File
 import os
+from django.views.decorators.http import require_POST
 # stuff View
+
+
+def event_detail(request):
+    return render(request,"event_detail.html")
+
+@login_required
+def request_review_list(request):
+    """
+    Show all requests for staff review
+    """
+    if not request.user.is_staff:
+        return redirect("index")
+
+    registrations = (
+        Registration.objects
+        .select_related("user", "course", "course__event")
+        .order_by("-registered_at")
+    )
+    return render(request, "request_review.html", {
+        "requests": registrations
+    })
+
+@login_required
+@require_POST
+def request_review_action(request, registration_id):
+    if not request.user.is_staff:
+        return redirect("index")
+
+    registration = get_object_or_404(
+        Registration,
+        id=registration_id
+    )
+    accepted_count = Registration.objects.filter(
+    course=registration.course,
+    status="accepted"
+    ).count()
+
+    if accepted_count >= registration.course.max_capacity:
+        messages.error(request, "ظرفیت دوره تکمیل شده است")
+        return redirect("request_review_list")
+    
+    if registration.status != "pending":
+        return redirect("request_review_list")
+
+    action = request.POST.get("action")
+
+    if action == "approve":
+        registration.status = "accepted"
+
+    elif action == "reject":
+        registration.status = "rejected"
+
+    registration.save(update_fields=["status"])
+
+    return redirect("request_review_list")
 
 
 def index(request):
@@ -415,7 +471,6 @@ def confirm_step(request):
                 "courses_data",
             ]:
                 request.session.pop(key, None)
-
             messages.success(request, "اطلاعات با موفقیت ثبت شد.")
             return redirect("index")
 

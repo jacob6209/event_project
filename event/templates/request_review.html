@@ -1,0 +1,89 @@
+{% extends "_base.html" %}
+{% load static %}
+{% load event_tags %}
+
+{% block title %}بررسی درخواست‌ها{% endblock %}
+
+{% block head %}
+<style>
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+        border-radius: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold">بررسی درخواست‌ها</h4>
+    </div>
+
+    {% if requests %}
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>کاربر</th>
+                        <th>رویداد</th>
+                        <th>تاریخ ثبت درخواست</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for req in requests %}
+                    <tr>
+                        <td>{{ forloop.counter|persian_digits }}</td>
+
+                        <td>
+                            {{ req.user.get_full_name|default:req.user.username }}
+                        </td>
+
+                        <td>{{ req.event.title }}</td>
+
+                        <td >{{ req.registered_at|to_jalali|persian_digits }}</td>
+
+                        <td>
+                            <p class="{% if req.status == 'pending' %}status-pending
+                            {% elif req.status == 'accepted' %}status-accepted
+                            {% elif req.status == 'rejected' %}status-rejected
+                            {% elif req.status == 'canceled' %}status-canceled
+                            {% endif %}">
+                            {{ req.get_status_display }}
+                        </td>
+
+                        <td>
+                            {% if req.status == "pending" %}
+                                <form method="post" action="{% url 'request_review_action' req.id %}" class="table-action-buttons">
+                                    {% csrf_token %}
+                                    <button type="submit" name="action" value="approve" class="btn-approve">
+                                        <i class="fa-solid fa-check"></i> تأیید
+                                    </button>
+                                    
+                                    <button type="submit" name="action" value="reject" class="btn-reject">
+                                        <i class="fa-solid fa-xmark"></i> رد
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        
+                        
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            هیچ درخواستی برای بررسی وجود ندارد
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

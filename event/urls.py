@@ -5,7 +5,9 @@ from .views import reregistration_view\
                     ,registration_lookup_view,my_events_view\
                     ,registration_edit_view,registration_delete_view\
                     ,register_guest,delete_guest,staff_events\
-                    ,staff_add_event,event_type_step,event_step,course_step,confirm_step,index
+                    ,staff_add_event,event_type_step,event_step\
+                    ,course_step,confirm_step,index,event_detail,request_review_list\
+                    ,request_review_action
 from django.views.generic import TemplateView
 from django.conf.urls.static import static
 urlpatterns = [
@@ -27,6 +29,14 @@ urlpatterns = [
     path("wizard/event/", event_step, name="wizard_event"),
     path("wizard/course/",course_step , name="wizard_course"),
     path("wizard/confirm/",confirm_step , name="wizard_confirm"),
+    path("request_review/",request_review_list , name="request_review"),
+    path("request_review/",request_review_list , name="request_review_list"),
+    path("request_review/<int:registration_id>/action/",
+        request_review_action,
+        name="request_review_action"
+    ),
+
+    path("wizard/detail/",event_detail , name="event_detail"),
 ]
 if settings.DEBUG:
     urlpatterns += static(

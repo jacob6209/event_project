@@ -26,18 +26,22 @@
                 </div>
             <!-- Card 2: My Events -->
             <div class="card" style="flex: 1 1 45%; max-width: 400px;">
-                <div class="card-body text-center">
-                    <i class="fa-solid fa-calendar-check fa-3x mb-10"></i>
-                    <h5 class="card-title">رویدادهای من</h5>
-                </div>
+                    <a href="{% url 'request_review' %}" style="text-decoration: none; color: inherit;">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-calendar-check fa-3x mb-10"></i>
+                        <h5 class="card-title">بررسی درخواست ها </h5>
+                    </div>
+                </a>
             </div>
 
             <!-- Card 3: Guest Registration -->
             <div class="card" style="flex: 1 1 45%; max-width: 400px;">
-                <div class="card-body text-center">
-                    <i class="fa-solid fa-user-plus fa-3x mb-10"></i>
-                    <h5 class="card-title">ثبت مهمان</h5>
-                </div>
+                <a href="{% url 'event_detail' %}" style="text-decoration: none; color: inherit;">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-user-plus fa-3x mb-10"></i>
+                        <h5 class="card-title">ثبت مهمان</h5>
+                    </div>
+                </a>
             </div>
 
             <!-- Card 4: Reports -->
