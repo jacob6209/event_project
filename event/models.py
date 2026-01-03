@@ -170,10 +170,10 @@ class Participant(models.Model):
 User = get_user_model()
 class Registration(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'درخواست تحت بررسی'),
-        ('accepted', 'درخواست قبول شده'),
-        ('rejected', ' مردودی از طرف ادمین'),
-        ('canceled', '  انصراف از طرف کاربر'),
+        ('pending', ' تحت بررسی'),
+        ('accepted', ' قبول '),
+        ('rejected', ' مردود'),
+        ('canceled', '  انصرافی'),
     )
     transaction_id = models.CharField(
         max_length=9,

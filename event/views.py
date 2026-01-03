@@ -29,6 +29,7 @@ def request_review_list(request):
     """
     if not request.user.is_staff:
         return redirect("index")
+    
     filter_form = FilterForm(request.GET or None)
 
     registrations = (
@@ -38,7 +39,7 @@ def request_review_list(request):
             Prefetch(
                 'registeredparticipant_set',
                 queryset=RegisteredParticipant.objects.select_related('participant'),
-                 to_attr='participants_info' 
+                to_attr='participants_info' 
             ),
             # Prefetch guests
             Prefetch(
@@ -49,7 +50,8 @@ def request_review_list(request):
         )
         .order_by("-registered_at")
     )
-        # ---- Apply filters only if form is valid ----
+    
+    # ---- Apply filters only if form is valid ----
     status = request.GET.get("status")
     event = request.GET.get("event")
 
@@ -75,8 +77,8 @@ def request_review_list(request):
     if search:
         registrations = registrations.filter(
             Q(user__username__icontains=search) |
-            Q(user__email__icontains=search) |
-            Q(user__national_code__icontains=search)
+            Q(user__email__icontains=search) 
+            # Q(user__national_code__icontains=search)
         )
 
     # ---- Events for dropdown ----
