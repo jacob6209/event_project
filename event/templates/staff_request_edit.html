@@ -1,0 +1,113 @@
+{% extends "_base.html"%}
+{%load static%}
+{% load event_tags %}
+
+{% block title %}فرم تعین وضعیت کاربران{% endblock %}
+
+{% block head %}
+{{ filterForm.media }}
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="card">
+        <h2 class="page-title">مدیریت شرکت‌کنندگان شما</h2>
+
+        <form method="post" action="{% if is_edit %}
+            {% url 'registration_edit' registration.id %}
+            {% else %}
+            {% url 'reregistration' %}
+            {% endif %}">
+            {% csrf_token %}
+
+            <!-- Course Selection -->
+            <div class="form-group">
+                <label for="course">دوره انتخابی</label>
+                <select name="course" id="course" class="form-control {% if is_edit %}course-locked{% endif %}" required >
+                    <option value="" disabled {% if not selected_course %} selected {% endif %}>
+                        انتخاب دوره
+                    </option>
+                    {% for course in courses %}
+                        <option value="{{ course.id }}"
+                            {% if selected_course and course.id == selected_course.id %} selected {% endif %}>
+                            {{ course.event.title }} - {{ course.title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Participants Table -->
+            <table>
+                <thead class="table-header">
+                    <tr>
+                        <th class="row-num">ردیف</th>
+                        <th>نام کامل</th>
+                        <th>کد ملی</th>
+                        <th>نسبت</th>
+                        <th>رزرو شود / نشود</th>
+                        <th>*</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% comment %} for Prticipant table section {% endcomment %}
+                    {% for participant, form in participant_forms %}
+                        <tr>
+                            <td>{{ forloop.counter|persian_digits }}</td>
+                            <td>{{ participant.full_name }}</td>
+                            <td>{{ participant.national_id|persian_digits }}</td>
+                            <td>{{ participant.get_relation_display }}</td>
+                            <td>{{ form.is_reserved }}</td>
+                        </tr>
+                    {% endfor %}
+                    {% comment %} for guest table section {% endcomment %}
+                    {% for guest,form in guest_forms%}
+                    <tr>
+                        <td>{{ forloop.counter|add:participants_count|persian_digits }}</td>
+                        <td class="field-cell">
+                            <div class="input-wrapper">
+                                {{ form.full_name }}
+                                {{ form.full_name.errors }}
+                            </div>
+                        
+                        </td>
+                        <td class="field-cell">
+                            <div class="input-wrapper">
+                                {{ form.national_id }}
+                                <div class="field-error">
+                                    {{ form.national_id.errors }}
+                                </div>
+                            </div>
+                        <td class="field-cell">
+                            <div class="input-wrapper">
+                                {{ form.relation }}
+                                <div class="field-error">
+                                    {{ form.relation.errors }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ form.is_reserved }}</td>
+                        <td>
+                            <a href="{% url 'delete_guest' guest.id %}" class="btn-delete"
+                                onclick="return confirm('آیا از حذف این مهمان مطمئن هستید؟');">
+                                🗑️ حذف
+                            </a>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    {% if is_edit %}
+                    💾 ذخیره تغییرات
+                    {% else %}
+                        ثبت درخواست
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{%endblock%}

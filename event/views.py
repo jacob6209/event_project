@@ -23,6 +23,39 @@ def event_detail(request):
     return render(request,"event_detail.html")
 
 @login_required
+def staff_checkin_status(request, pk):
+    if not request.user.is_staff:
+        messages.error(request, "شما اجازه دسترسی به این صفحه را ندارید.")
+        return render(request, "registration_not_found.html")
+
+    registrations_qs = (
+        Registration.objects
+        .select_related("user", "course", "course__event")
+        .prefetch_related(
+            Prefetch(
+                'registeredparticipant_set',
+                queryset=RegisteredParticipant.objects.select_related('participant'),
+                to_attr='participants_info'
+            ),
+            Prefetch(
+                'guests',
+                queryset=Guest.objects.all(),
+                to_attr='guests_info'
+            )
+        )
+    )
+
+    registration = get_object_or_404(registrations_qs, pk=pk)
+
+    context = {
+        "registration": registration,
+        "participants": registration.participants_info,
+        "guests": registration.guests_info,
+    }
+
+    return render(request, "staff_request_edit.html", context)
+
+@login_required
 def request_review_list(request):
     """
     Show all requests for staff review
@@ -801,7 +834,8 @@ def reregistration_view(request):
         
         # CHECK CAPACITY
         participants_count = RegisteredParticipant.objects.filter(
-            registration__course=selected_course
+            registration__course=selected_course,
+            is_reserved=True
         ).count()
 
         guests_count = Guest.objects.filter(
@@ -829,11 +863,16 @@ def reregistration_view(request):
                 if form.is_valid():
                     is_reserved = form.cleaned_data['is_reserved']
                     
-                    RegisteredParticipant.objects.update_or_create(
+                    RegisteredParticipant.objects.create(
                         registration=registration,
                         participant=p,
-                        defaults={'is_reserved': is_reserved}
+                        is_reserved= is_reserved
                     )
+                    # RegisteredParticipant.objects.update_or_create(
+                    #     registration=registration,
+                    #     participant=p,
+                    #     defaults={'is_reserved': is_reserved}
+                    # )
                 transaction_code= registration.transaction_id
         return redirect("registration_lookup",code=transaction_code)
         # return render(request,'success.html',{"transaction_code":transaction_code})  # replace with your actual success URL
